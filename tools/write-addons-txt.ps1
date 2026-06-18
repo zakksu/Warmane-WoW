@@ -103,6 +103,28 @@ function Get-AddonsTxtTargets {
 }
 
 $manifestRules = Read-Manifest -Path $ManifestPath -InstalledNames $installed
+
+function Detect-PackGuide {
+    param([string]$AddonsDir)
+    $loader = Join-Path $AddonsDir "PhaseOneLoader\PhaseOneLoader.lua"
+    if (Test-Path $loader) {
+        $text = Get-Content -Path $loader -Raw -ErrorAction SilentlyContinue
+        if ($text -match "Warlock Pack") { return "WARLOCK" }
+        if ($text -match "Druid Pack") { return "DRUID" }
+    }
+    if (Test-Path (Join-Path $AddonsDir "P1DruidGuide")) { return "DRUID" }
+    if (Test-Path (Join-Path $AddonsDir "P1WarlockHUD")) { return "WARLOCK" }
+    return "DRUID"
+}
+
+$packGuide = Detect-PackGuide -AddonsDir $addonsDir
+if ($packGuide -eq "WARLOCK") {
+    $manifestRules["P1DruidGuide"] = 0
+    $manifestRules["P1AdventureGuide"] = 1
+} else {
+    $manifestRules["P1DruidGuide"] = 1
+    $manifestRules["P1AdventureGuide"] = 0
+}
 $wtfAccount = Join-Path $WowPath "WTF\Account"
 if (-not (Test-Path $wtfAccount)) {
     Write-Host "No WTF/Account yet - AddOns.txt will be created on first login."

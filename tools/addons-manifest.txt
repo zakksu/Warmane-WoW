@@ -1,11 +1,12 @@
 # Phase One Quest Pack — AddOns.txt manifest (1=on, 0=off)
 # Wildcards: Bagnon* matches any folder starting with Bagnon
+# Guide addon: write-addons-txt.ps1 enables P1DruidGuide (druid) or P1AdventureGuide (warlock)
 
 PhaseOneLoader: 1
 P1AutoQuest: 1
 P1QuestNav: 1
 P1DruidGuide: 1
-P1AdventureGuide: 1
+P1AdventureGuide: 0
 Questie-335: 1
 TomTom: 1
 !Astrolabe: 1

@@ -27,7 +27,7 @@ local SLOT_HUES = {
     { 0.75, 0.55, 1.0 },
 }
 
-local VERSION = "1.2.7"
+local VERSION = "1.3.2"
 
 local function SyncLoaderNav(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.navEnabled = on end
@@ -58,6 +58,10 @@ local legendLines = {}
 local legendDots = {}
 local worldBadges = {}
 local nextLineFrame, nextLineText
+local lastTomPrimaryId = nil
+local lastTomZoneId = nil
+local primaryPlacement = "none"
+local areaIdFallbackLogged = {}
 
 local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, QuestXP, HBD
 local LoadQuestieModules
@@ -157,12 +161,24 @@ local function AreaIdToCZ(areaId)
         local c, z = QuestieCompat.AreaIdToCZ(areaId)
         if c then return c, z end
     end
-    local ast = GetAstrolabe()
-    if ast and ast.GetCurrentPlayerPosition then
-        local c, z = ast:GetCurrentPlayerPosition()
-        if c and c >= 0 then return c, z end
+    if debugMode and not areaIdFallbackLogged[areaId] then
+        areaIdFallbackLogged[areaId] = true
+        print(string.format("|cff00ccffP1 Nav|r AreaIdToCZ miss for zone %s — using world coords for edge pin",
+            tostring(areaId)))
     end
     return nil, nil
+end
+
+local function ClearTomTomWaypoint()
+    if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint then
+        if TomTom and TomTom.RemoveWaypoint then
+            TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
+        end
+        Questie.db.char._tom_waypoint = nil
+    end
+    if TomTom and TomTom.SetActiveWaypoint then
+        TomTom:SetActiveWaypoint(nil)
+    end
 end
 
 local function GetQuestXP(questId)
@@ -445,6 +461,7 @@ local function CollectTrackedQuests()
     for i = 1, math.min(MAX_TRACKED, #list) do
         out[i] = list[i]
         out[i].slot = i
+        out[i].dirLabel = GetDirectionLabel(list[i])
     end
     return out
 end
@@ -529,26 +546,50 @@ local function EnsurePinFrames()
 end
 
 local function PlacePinOnEdge(pin, target)
-    local ast = GetAstrolabe()
-    if not ast or not target or not target.spawn then
+    if not target or not target.spawn then
         pin:Hide()
-        return false
+        return false, "hidden"
+    end
+    local radius = (Minimap:GetWidth() / 2) - 14
+    local hbd = GetHBD()
+    if hbd and target.zone then
+        local px, py = hbd:GetPlayerWorldPosition()
+        local uiMapId = target.zone
+        if ZoneDB and ZoneDB.GetUiMapIdByAreaId then
+            uiMapId = ZoneDB:GetUiMapIdByAreaId(target.zone) or target.zone
+        end
+        local tx, ty = hbd:GetWorldCoordinatesFromZone(target.spawn[1] / 100, target.spawn[2] / 100, uiMapId)
+        if px and tx then
+            local angle = math.atan2(tx - px, -(ty - py))
+            pin:ClearAllPoints()
+            pin:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * radius, -math.cos(angle) * radius)
+            pin:Show()
+            pin.onEdge = true
+            return true, "edge-world"
+        end
+    end
+    local ast = GetAstrolabe()
+    if not ast then
+        pin:Hide()
+        return false, "hidden"
     end
     local pc, pz, px, py = ast:GetCurrentPlayerPosition()
-    if not pc then pin:Hide(); return false end
+    if not pc then pin:Hide(); return false, "hidden" end
     local wc, wz = AreaIdToCZ(target.zone)
-    if not wc then wc, wz = pc, pz end
+    if not wc then
+        pin:Hide()
+        return false, "hidden"
+    end
     local wx, wy = target.spawn[1] / 100, target.spawn[2] / 100
     if ast.TranslateWorldMapPosition then
         wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
     end
     local angle = math.atan2(wx - px, -(wy - py))
-    local radius = (Minimap:GetWidth() / 2) - 14
     pin:ClearAllPoints()
     pin:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * radius, -math.cos(angle) * radius)
     pin:Show()
     pin.onEdge = true
-    return true
+    return true, "edge-astro"
 end
 
 local function EnsureMinimapDots()
@@ -692,8 +733,35 @@ end
 
 local function UpdateMinimapLine(target)
     EnsureMinimapDots()
+    if not target or not target.spawn then
+        for _, d in ipairs(minimapDots) do d:Hide() end
+        return
+    end
+    local hbd = GetHBD()
+    if hbd and target.zone then
+        local px, py = hbd:GetPlayerWorldPosition()
+        local uiMapId = target.zone
+        if ZoneDB and ZoneDB.GetUiMapIdByAreaId then
+            uiMapId = ZoneDB:GetUiMapIdByAreaId(target.zone) or target.zone
+        end
+        local tx, ty = hbd:GetWorldCoordinatesFromZone(target.spawn[1] / 100, target.spawn[2] / 100, uiMapId)
+        if px and tx then
+            local angle = math.atan2(tx - px, -(ty - py))
+            local r, g, b = BlendColor(target.mode, 1)
+            local radius = (Minimap:GetWidth() / 2) - 10
+            for i, dot in ipairs(minimapDots) do
+                local frac = i / (DOT_COUNT + 1)
+                local dist = radius * frac
+                dot:ClearAllPoints()
+                dot:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * dist, -math.cos(angle) * dist)
+                dot:SetVertexColor(r, g, b, 0.65 + frac * 0.35)
+                dot:Show()
+            end
+            return
+        end
+    end
     local ast = GetAstrolabe()
-    if not ast or not target or not target.spawn then
+    if not ast then
         for _, d in ipairs(minimapDots) do d:Hide() end
         return
     end
@@ -703,7 +771,10 @@ local function UpdateMinimapLine(target)
         return
     end
     local wc, wz = AreaIdToCZ(target.zone)
-    if not wc then wc, wz = pc, pz end
+    if not wc then
+        for _, d in ipairs(minimapDots) do d:Hide() end
+        return
+    end
     local wx, wy = target.spawn[1] / 100, target.spawn[2] / 100
     if ast.TranslateWorldMapPosition then
         wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
@@ -732,7 +803,10 @@ local function UpdateWorldMapLine(target)
     local pc, pz, px, py = ast:GetCurrentPlayerPosition()
     if not pc then return end
     local wc, wz = AreaIdToCZ(target.zone)
-    if not wc then wc, wz = pc, pz end
+    if not wc then
+        for _, d in ipairs(worldDots) do d:Hide() end
+        return
+    end
     local wx, wy = target.spawn[1] / 100, target.spawn[2] / 100
     if ast.TranslateWorldMapPosition then
         wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
@@ -812,6 +886,7 @@ local function UpdatePins()
             pin.bg:SetVertexColor(r, g, b, 0.95)
             pin.ring:SetVertexColor(1, 1, 1, 0.85)
             local placed = false
+            local mode = "hidden"
             if ast then
                 local wc, wz = AreaIdToCZ(t.zone)
                 if wc then
@@ -822,13 +897,18 @@ local function UpdatePins()
                         pin:Show()
                         pin.onEdge = false
                         placed = true
+                        mode = "map"
                     end
                 end
             end
             if not placed then
                 if ast then ast:RemoveIconFromMinimap(pin) end
-                PlacePinOnEdge(pin, t)
+                local ok
+                ok, mode = PlacePinOnEdge(pin, t)
+                placed = ok
             end
+            pin.placementMode = mode
+            if i == 1 then primaryPlacement = mode end
         else
             if ast then ast:RemoveIconFromMinimap(pin) end
             pin:Hide()
@@ -857,10 +937,18 @@ function P1QuestNav_Refresh(force)
     if tracked[1] then
         UpdateMinimapLine(tracked[1])
         UpdateWorldMapLine(tracked[1])
+        local primaryId = tracked[1].questId
+        if lastTomPrimaryId and lastTomPrimaryId ~= primaryId then
+            ClearTomTomWaypoint()
+        end
+        lastTomPrimaryId = primaryId
         SetTomTomWaypoint(tracked[1])
     else
         for _, d in ipairs(minimapDots) do d:Hide() end
         for _, d in ipairs(worldDots) do d:Hide() end
+        ClearTomTomWaypoint()
+        lastTomPrimaryId = nil
+        primaryPlacement = "none"
     end
 
     if debugMode then
@@ -869,6 +957,12 @@ function P1QuestNav_Refresh(force)
             print(string.format("  %d. %s — %d xp, %.0f yd, score %.2f (travel %.0fs + kill %.0fs)",
                 i, t.questName or "?", t.xp or 0, t.dist or 0, t.score or 0,
                 t.travelTime or 0, t.killTime or 0))
+        end
+        if tracked[1] and tracked[1].spawn then
+            local t = tracked[1]
+            print(string.format("  #1 zone=%s spawn=[%.0f,%.0f] placement=%s dir=%s",
+                tostring(t.zone), t.spawn[1], t.spawn[2], primaryPlacement,
+                t.dirLabel or GetDirectionLabel(t)))
         end
         if #tracked == 0 then
             print("  (none — check Questie tracker / map icons)")
@@ -897,6 +991,7 @@ function P1QuestNav_GetStatus()
         questieLoaded = LoadQuestieModules(),
         astrolabeLoaded = not not GetAstrolabe(),
         tomtomLoaded = not not (TomTom and TomTom.AddWaypoint),
+        primaryPlacement = primaryPlacement,
     }
 end
 
@@ -931,6 +1026,12 @@ eventFrame:SetScript("OnEvent", function(self, event)
     end
     if event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" then
         availCache = nil
+        local zoneId = GetCurrentMapAreaID and GetCurrentMapAreaID() or nil
+        if zoneId and lastTomZoneId and zoneId ~= lastTomZoneId then
+            ClearTomTomWaypoint()
+            lastTomPrimaryId = nil
+        end
+        lastTomZoneId = zoneId
         if IsNavEnabled() then P1QuestNav_Refresh(true) end
         return
     end
@@ -977,6 +1078,9 @@ SlashCmdList["P1NAV"] = function(msg)
     if msg == "debug" then
         debugMode = not debugMode
         print("|cff00ccffP1 Nav|r debug " .. (debugMode and "|cff00ff00ON|r" or "OFF"))
+        if debugMode then
+            print("  Shows zone id, spawn coords, placement mode for #1 quest")
+        end
         P1QuestNav_Refresh(true)
         return
     end
@@ -1001,4 +1105,6 @@ P1QuestNav_API = {
     GetHBD = GetHBD,
     GetQuestXP = GetQuestXP,
     AreaIdToCZ = AreaIdToCZ,
+    GetDirectionLabel = GetDirectionLabel,
+    ClearTomTom = ClearTomTomWaypoint,
 }

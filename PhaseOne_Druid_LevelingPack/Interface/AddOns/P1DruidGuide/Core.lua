@@ -7,7 +7,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.3.1"
+local VERSION = "1.3.2"
 local panel, headerText, bodyText, resizeGrip
 local guideVisible = true
 
@@ -157,7 +157,19 @@ local function GetEquippedIlvl(slot)
     return level or 0
 end
 
-local function BisStatusColor(equipped, minIlvl)
+local function GetEquippedItemId(slot)
+    if not slot then return nil end
+    local link = GetInventoryItemLink("player", slot)
+    if not link then return nil end
+    return tonumber(link:match("item:(%d+)"))
+end
+
+local function BisStatusColor(equipped, minIlvl, slotDef)
+    if slotDef and slotDef.itemId and slotDef.equipSlot then
+        if GetEquippedItemId(slotDef.equipSlot) == slotDef.itemId then
+            return "|cff00ff00"
+        end
+    end
     if not minIlvl or minIlvl <= 0 then return "|cff888888" end
     if equipped >= minIlvl then return "|cff00ff00" end
     if equipped >= minIlvl - 2 then return "|cffffff00" end
@@ -177,6 +189,9 @@ local function BuildHeaderLine()
         return "|cff00ccffP1 Druid Guide|r |cff666666— no active quest|r"
     end
     local dir = primary.dirLabel or ""
+    if dir == "" and P1QuestNav_API and P1QuestNav_API.GetDirectionLabel then
+        dir = P1QuestNav_API.GetDirectionLabel(primary) or ""
+    end
     if dir == "" and primary.dist then dir = string.format("%dy", primary.dist) end
     local xpTag = primary.xp and primary.xp > 0 and string.format(" [%dxp]", primary.xp) or ""
     local gearTag = primary.gearLabel and " |cff44ff44↑gear|r" or ""
@@ -223,8 +238,14 @@ end
 
 local function BuildGatherLines(playerLevel, lines)
     local shown = 0
+    local matsLow = false
+    local tier = PickFaTier(playerLevel, GetFirstAidSkill())
+    if tier and CountItemInBags(tier.clothId) + CountBandageCredit(tier.bandageIds) < tier.goalTotal * 0.5 then
+        matsLow = true
+    end
     for _, item in ipairs(PickHerbMilestone(playerLevel).items) do
         if CountItemInBags(item.id) < item.goal * 0.5 then
+            matsLow = true
             local farm = P1DG.GATHER_FARM[item.id]
             if farm and farm.farms then
                 for _, f in ipairs(farm.farms) do
@@ -239,6 +260,7 @@ local function BuildGatherLines(playerLevel, lines)
     end
     for _, item in ipairs(PickOreMilestone(playerLevel).items) do
         if CountItemInBags(item.id) < item.goal * 0.5 then
+            matsLow = true
             local farm = P1DG.GATHER_FARM[item.id]
             if farm and farm.farms then
                 for _, f in ipairs(farm.farms) do
@@ -251,11 +273,14 @@ local function BuildGatherLines(playerLevel, lines)
             end
         end
     end
-    if playerLevel >= 11 then
+    if playerLevel >= 11 and (matsLow or shown == 0) then
         for _, tip in ipairs(P1DG.AH_TIPS) do
             if shown >= 4 then break end
             if playerLevel >= tip.levelMin and playerLevel <= tip.levelMax + 5 and not tip.skipOnly then
-                if not (tip.itemId and tip.goal and CountItemInBags(tip.itemId) >= tip.goal) then
+                local skip = false
+                if tip.itemId and tip.goal and CountItemInBags(tip.itemId) >= tip.goal then skip = true end
+                if tip.itemId and matsLow and CountItemInBags(tip.itemId) >= (tip.goal or 999) * 0.5 then skip = true end
+                if not skip then
                     table.insert(lines, "  |cff666666AH: " .. tip.tip .. "|r")
                     shown = shown + 1
                 end
@@ -277,7 +302,7 @@ local function BuildBisLines(playerLevel, lines)
     table.sort(slots, function(a, b) return (a.order or 99) < (b.order or 99) end)
     for _, slot in ipairs(slots) do
         local equipped = GetEquippedIlvl(slot.equipSlot)
-        local color = BisStatusColor(equipped, slot.minIlvl)
+        local color = BisStatusColor(equipped, slot.minIlvl, slot)
         local ilvlTag = slot.equipSlot and string.format(" (eq %d)", equipped) or ""
         local nameTag = slot.itemName and (" — " .. slot.itemName) or ""
         table.insert(lines, string.format("  %s%s:|r %s%s%s |cff666666[%s]|r",
@@ -310,8 +335,8 @@ local function ToggleSection(key)
     BuildBody()
 end
 
-local function SectionFromClick(y)
-    if not bodyText then return nil end
+local function ClickTargetFromBody(y)
+    if not bodyText then return nil, nil end
     local text = bodyText:GetText() or ""
     local lineH = 11
     local top = bodyText:GetTop()
@@ -321,12 +346,14 @@ local function SectionFromClick(y)
         current = current + 1
         if current == lineNum then
             for _, key in ipairs(SECTIONS) do
-                if line:find(SECTION_LABELS[key], 1, true) then return key end
+                if line:find(SECTION_LABELS[key], 1, true) then return key, nil end
             end
+            local idx = line:match("^%s*(%d+)%.")
+            if idx then return "next", tonumber(idx) end
             break
         end
     end
-    return nil
+    return nil, nil
 end
 
 local function BuildUI()
@@ -380,7 +407,20 @@ local function BuildUI()
         if button ~= "LeftButton" then return end
         local _, cy = GetCursorPosition()
         local scale = panel:GetEffectiveScale()
-        local key = SectionFromClick(cy / scale)
+        local key, idx = ClickTargetFromBody(cy / scale)
+        if key == "next" and idx then
+            local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
+            if #entries == 0 then
+                local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
+                entries = st and st.tracked or {}
+            end
+            local e = entries[idx]
+            if e and P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+                P1QuestNav_API.SetWaypoint(e)
+                print("|cff00ccffP1 Guide|r TomTom → " .. (e.questName or "?"))
+            end
+            return
+        end
         if key then ToggleSection(key) end
     end)
 

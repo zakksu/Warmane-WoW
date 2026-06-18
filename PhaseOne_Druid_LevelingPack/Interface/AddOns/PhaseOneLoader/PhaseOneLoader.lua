@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.3.1-druid"
+local PACK_VERSION = "1.3.2-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
 local WELCOME_LINE = "|cff00ccffP1 Druid Guide ready|r — |cff00ff00/p1guide|r toggle · |cff00ff00/p1settings|r"
@@ -309,9 +309,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.3.0:|r Unified Druid Guide — NEXT, MATS, GATHER, BIS in one overlay")
-            print("|cff00ccffP1 v1.3.0:|r /p1guide toggle · /p1guide reset · /p1guide scale 0.8")
-            print("|cff00ccffP1 v1.3.0:|r Range + damage HUD removed — quest focus only")
+            print("|cff00ccffP1 v1.3.2:|r Nav cross-zone pins + TomTom cleanup on zone/#1 change")
+            print("|cff00ccffP1 v1.3.2:|r BIS green when exact item equipped · GATHER AH tips when mats low")
+            print("|cff00ccffP1 v1.3.2:|r Pins flaky? |cff00ff00/p1nav debug|r · click NEXT row for TomTom")
         end)
     end
 

@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.3.0"
+local PACK_VERSION = "1.3.2"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Path, Mats — all ON. |cff00ff00/p1settings|r"
@@ -297,9 +297,8 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.2.7:|r NEXT quest line under minimap — always shows #1 target + TomTom auto-set")
-            print("|cff00ccffP1 v1.2.7:|r Range arc replaced with distance number — |cff00ff00/p1range|r toggles")
-            print("|cff00ccffP1 v1.2.7:|r Floating damage numbers on — |cff00ff00/p1dmg|r to toggle or reposition")
+            print("|cff00ccffP1 v1.3.2:|r P1QuestNav cross-zone pins + TomTom cleanup")
+            print("|cff00ccffP1 v1.3.2:|r Pins flaky? |cff00ff00/p1nav debug|r for zone/spawn/placement")
         end)
     end
 

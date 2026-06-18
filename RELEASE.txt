@@ -1,9 +1,18 @@
-Phase One Warmane Leveling Packs — v1.3.1
+Phase One Warmane Leveling Packs — v1.3.2
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.3.2)
+  - P1QuestNav: harden AreaIdToCZ — no wrong player-zone fallback; log misses in debug
+  - Cross-zone minimap edge pins use HBD world coords when Astrolabe cannot place
+  - TomTom: clear stale waypoints on zone change and when #1 ranked quest changes
+  - /p1nav debug: zone id, spawn coords, placement mode (map / edge-world / edge-astro)
+  - P1DruidGuide: header NEXT dirLabel (NE/SW) from nav; BIS green on exact itemId match
+  - GATHER: AH tips when mats below 50% goal; click NEXT row → TomTom waypoint
+  - Manifest: druid pack enables P1DruidGuide (not P1AdventureGuide)
 
 CHANGELOG (v1.3.1)
   - BIS / BUILD: real Horde druid item names + quest sources (lvl 10-40)
@@ -20,11 +29,6 @@ CHANGELOG (v1.3.0)
   - Pack shrinks to 7 addons: Loader, AutoQuest, QuestNav, DruidGuide, Questie, TomTom, Astrolabe
   - Welcome: "P1 Druid Guide ready — /p1guide"
 
-CHANGELOG (v1.2.7)
-  - P1RangeDisplay replaces P1RangeRadar — clean distance number HUD ([ 28 yd ])
-  - P1DamageText (9th addon): floating combat numbers
-  - P1QuestNav: NEXT line under minimap
-
 INSTALL (players)
   Double-click PLAY.bat at repo root → /reload in game
 
@@ -39,7 +43,7 @@ TROUBLESHOOTING
   No guide?                   /p1guide — ensure ON; drag title bar to reposition
   No NEXT quests?               /p1path refresh — needs Questie loaded
   No map icons?                 /p1questie  then open world map
-  No quest pins?                /p1nav debug — check ranked list + scores
+  No quest pins?                /p1nav debug — zone, spawn, placement mode
   Old range/damage addons?      PLAY.bat moves them to _disabled/
 
 COMMANDS
@@ -48,5 +52,6 @@ COMMANDS
   /p1guide scale 0.8  Scale overlay
   /p1settings         Feature toggles (Auto Q, Nav, Path, Guide)
   /p1nav              Toggle minimap pins + TomTom
+  /p1nav debug        Zone id, spawn coords, pin placement for #1
   /p1path             Toggle path scoring (feeds guide NEXT section)
   /p1auto             Toggle auto accept/turn-in
