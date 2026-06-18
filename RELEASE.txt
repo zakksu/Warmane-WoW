@@ -1,9 +1,12 @@
-Phase One Warmane Leveling Packs — v1.1.1
-Released: 2026-06-17
+Phase One Warmane Leveling Packs — v1.1.2
+Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.2)
+  - Questie: auto-accept and auto-complete quests (presets re-applied on upgrade)
 
 CHANGELOG (v1.1.1)
   - P1AdventureGuide — next best action, professions, mat counts, zone rares (/p1guide)
@@ -28,3 +31,4 @@ TROUBLESHOOTING
   Hide Adventure Guide:   /p1guide
 
 GITHUB: https://github.com/zakksu/Warmane-WoW
+
