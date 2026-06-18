@@ -103,6 +103,8 @@ TROUBLESHOOTING
   Questie broken?   → Options → Advanced → "Use WotLK map data"
   No arrow?         → Enable TomTom + !Astrolabe; Ctrl+click quest
   Wrong class tips? → Pack is for Feral Druid; /p1d still works
+  Stuck icon/glow?  → /p1fix  (or /wa → Delete the aura)
+                    → Or disable WeakAuras at character select
 
   GitHub: https://github.com/zakksu/Warmane-WoW
 

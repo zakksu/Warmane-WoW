@@ -13,6 +13,7 @@ local WELCOME_LINES = {
     "|cffaaaaaaPet:|r |cff00ff00Summon Voidwalker|r (lvl 10+) tanks for you.",
     "|cffaaaaaaQuesting:|r Ctrl+click Questie icon for TomTom arrow.",
     "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs.",
+    "|cffaaaaaaStuck glow?|r |cff00ff00/p1fix|r — pause WeakAuras or delete via /wa.",
 }
 
 local function PrintWelcome()
@@ -99,6 +100,22 @@ SLASH_PHASEONE2 = "/phaseone"
 SlashCmdList["PHASEONE"] = function()
     PrintWelcome()
     print("|cff00ccff" .. PACK_NAME .. "|r v" .. PACK_VERSION)
+end
+
+SLASH_P1FIX1 = "/p1fix"
+SlashCmdList["P1FIX"] = function()
+    if TomTom and TomTom.activeWaypoint then
+        TomTom.activeWaypoint = nil
+        if TomTom.arrow then TomTom.arrow:Hide() end
+    end
+    if WeakAuras and WeakAuras.Toggle and WeakAuras.IsPaused and not WeakAuras.IsPaused() then
+        WeakAuras.Toggle()
+        print("|cff00ccffP1 Fix:|r WeakAuras paused. /p1fix again to un-pause.")
+    elseif WeakAuras and WeakAuras.Toggle then
+        WeakAuras.Toggle()
+        print("|cff00ccffP1 Fix:|r WeakAuras un-paused.")
+    end
+    print("|cff00ccffP1 Fix:|r Delete stuck aura: |cff00ff00/wa|r → select it → Delete.")
 end
 
 local loader = CreateFrame("Frame")

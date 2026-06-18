@@ -11,8 +11,8 @@ REQUIRED:
   [x] TomTom
   [x] !Astrolabe
   [x] Leatrix_Plus
-  [x] WeakAuras
-  [x] WeakAurasOptions
+  [ ] WeakAuras              <-- OPTIONAL (P1 Feral HUD replaces this)
+  [ ] WeakAurasOptions       <-- only if WeakAuras enabled
 
 OPTIONAL:
   [ ] Bagnon (+ Bagnon_Config, etc.)

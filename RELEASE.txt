@@ -1,11 +1,15 @@
-Phase One Warmane Leveling Packs — v1.1.0
+Phase One Warmane Leveling Packs — v1.1.1
+Released: 2026-06-17
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
 
-NEW in v1.1: P1 Adventure Guide (next action, profs, mats, rare mobs)
-  Command: /p1guide  |  Click + on panel to expand tabs
+CHANGELOG (v1.1.1)
+  - P1AdventureGuide — next best action, professions, mat counts, zone rares (/p1guide)
+  - /p1fix — clears stuck TomTom arrow and pauses stuck WeakAuras glows/icons
+  - WeakAuras optional — P1 class HUDs work without importing auras
+  - Docs: Adventure Guide mockups, stuck-aura troubleshooting, class tip links
 
 INSTALL (players)
   Run INSTALL.bat inside the pack folder → paste Warmane path → log in → /reload
@@ -17,5 +21,10 @@ AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort)
   Leatrix (auto repair, sell greys)
   P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper)
+  P1 Adventure Guide (/p1guide)
+
+TROUBLESHOOTING
+  Stuck WA icon or glow?  /p1fix
+  Hide Adventure Guide:   /p1guide
 
 GITHUB: https://github.com/zakksu/Warmane-WoW

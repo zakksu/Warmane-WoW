@@ -4,9 +4,13 @@ Docked below the combat HUD (same Phase One style). Auto-loads on install — no
 
 ## UI preview
 
-![Compact](../assets/p1-adventure-guide-compact.png)
+**Compact (collapsed)** — next action at a glance:
 
-![Expanded tabs](../assets/p1-adventure-guide-expanded.png)
+![P1 Adventure Guide compact panel](images/p1-adventure-guide-compact.png)
+
+**Expanded** — click **+** for Next / Profs / Mats / Rare tabs:
+
+![P1 Adventure Guide expanded tabs](images/p1-adventure-guide-expanded.png)
 
 ## Tabs
 
@@ -20,6 +24,7 @@ Docked below the combat HUD (same Phase One style). Auto-loads on install — no
 ## Commands
 
 - `/p1guide` — show/hide panel
+- `/p1fix` — clear stuck TomTom arrow or pause stuck WeakAuras glows
 - Click **+** to expand, **-** to collapse
 - Drag with **right-click**
 

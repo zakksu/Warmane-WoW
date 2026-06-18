@@ -63,9 +63,10 @@ Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.tx
 - **Questie:** ±4 levels, sort by proximity, hide completed in tracker
 - **Leatrix Plus:** Auto-repair, auto-sell junk, faster loot, FPS-friendly options
 - **P1 Feral HUD:** Energy, combo points, Rip/Rake/Mangle alerts — appears automatically
-- **P1 Adventure Guide:** Next best action, professions, mat counts, zone rares — `/p1guide`
+- **P1 Adventure Guide:** Next best action, professions, mat counts, zone rares — `/p1guide`  
+  Preview and tab details: **[Docs/ADVENTURE_GUIDE.md](Docs/ADVENTURE_GUIDE.md)**
 
-WeakAuras is included but **optional** (for advanced customization).
+WeakAuras is included but **optional** (for advanced customization). Stuck icon/glow? `/p1fix`
 
 ---
 

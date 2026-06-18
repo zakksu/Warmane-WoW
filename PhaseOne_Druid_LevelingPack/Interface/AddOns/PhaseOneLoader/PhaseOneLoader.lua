@@ -110,6 +110,24 @@ local function EnsureSlash()
         PrintWelcome()
         print("|cff00ccff" .. PACK_NAME .. "|r v" .. PACK_VERSION)
     end
+
+    SLASH_P1FIX1 = "/p1fix"
+    SlashCmdList["P1FIX"] = function()
+        if TomTom and TomTom.activeWaypoint then
+            TomTom.activeWaypoint = nil
+            if TomTom.arrow then TomTom.arrow:Hide() end
+        end
+        if WeakAuras and WeakAuras.Toggle and not WeakAuras.IsPaused() then
+            WeakAuras.Toggle()
+            print("|cff00ccffP1 Fix:|r WeakAuras paused (stuck glows hidden). /p1fix again to un-pause.")
+        elseif WeakAuras and WeakAuras.Toggle then
+            WeakAuras.Toggle()
+            print("|cff00ccffP1 Fix:|r WeakAuras un-paused.")
+        end
+        if _G.P1FeralHUDFrame then _G.P1FeralHUDFrame:Show() end
+        print("|cff00ccffP1 Fix:|r To delete stuck aura forever: |cff00ff00/wa|r → find it → Delete.")
+        print("|cffaaaaaaTip:|r You don't need WeakAuras — P1 Feral HUD handles combat alerts.")
+    end
 end
 
 local function RetryPresets(attempt)
