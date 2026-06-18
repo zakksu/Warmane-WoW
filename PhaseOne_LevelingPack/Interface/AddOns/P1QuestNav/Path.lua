@@ -4,9 +4,24 @@ P1QuestPathDB = P1QuestPathDB or { enabled = true }
 
 local MAX_PATH = 5
 local REFRESH_INTERVAL = 30
-local VERSION = "1.2.5"
+local VERSION = "1.2.6"
 
-local pathEnabled = P1QuestPathDB.enabled ~= false
+local function SyncLoaderPath(on)
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.pathEnabled = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.pathEnabled = on end
+end
+
+local function ReadPathEnabled()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.pathEnabled ~= nil then
+        return PhaseOneLoaderDB.pathEnabled
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.pathEnabled ~= nil then
+        return PhaseOneDruidLoaderDB.pathEnabled
+    end
+    return P1QuestPathDB.enabled ~= false
+end
+
+local pathEnabled = ReadPathEnabled()
 local lastRefresh = 0
 local pathEntries = {}
 local pathLines = {}
@@ -329,6 +344,7 @@ end
 function P1QuestPath_SetEnabled(on)
     pathEnabled = on and true or false
     P1QuestPathDB.enabled = pathEnabled
+    SyncLoaderPath(pathEnabled)
     P1QuestPath_Refresh(true)
 end
 
@@ -339,7 +355,8 @@ eventFrame:RegisterEvent("QUEST_ACCEPTED")
 eventFrame:RegisterEvent("QUEST_COMPLETE")
 eventFrame:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_LOGIN" then
-        pathEnabled = P1QuestPathDB.enabled ~= false
+        pathEnabled = ReadPathEnabled()
+        P1QuestPathDB.enabled = pathEnabled
         local elapsed = 0
         eventFrame:SetScript("OnUpdate", function(f, e)
             elapsed = elapsed + e

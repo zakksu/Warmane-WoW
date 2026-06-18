@@ -2,7 +2,24 @@
 
 P1RangeRadarDB = P1RangeRadarDB or { enabled = true }
 
-local VERSION = "1.2.5"
+local VERSION = "1.2.6"
+
+local function SyncLoaderRange(on)
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.rangeEnabled = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.rangeEnabled = on end
+end
+
+local function ReadRangeEnabled()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.rangeEnabled ~= nil then
+        return PhaseOneLoaderDB.rangeEnabled
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.rangeEnabled ~= nil then
+        return PhaseOneDruidLoaderDB.rangeEnabled
+    end
+    return P1RangeRadarDB.enabled ~= false
+end
+
+local enabled = ReadRangeEnabled()
 local BAR_W, BAR_H = 200, 40
 local BOTTOM_Y = 120
 local UPDATE_INTERVAL = 0.08
@@ -26,7 +43,6 @@ local TEX_BAR = "Interface\\TargetingFrame\\UI-StatusBar"
 local TEX_BORDER = "Interface\\Buttons\\UI-ActionButton-Border"
 local TEX_DOT = "Interface\\Icons\\Ability_Druid_Mangle2"
 
-local enabled = P1RangeRadarDB.enabled ~= false
 local testMode = false
 local testStart = 0
 local splashUntil = 0
@@ -189,7 +205,9 @@ end
 function P1RangeRadar_SetEnabled(on)
     enabled = on and true or false
     P1RangeRadarDB.enabled = enabled
+    SyncLoaderRange(enabled)
     EnsureFrame()
+    if enabled then frame:Show() end
     UpdateArc()
 end
 
@@ -228,10 +246,11 @@ end)
 local login = CreateFrame("Frame")
 login:RegisterEvent("PLAYER_LOGIN")
 login:SetScript("OnEvent", function()
-    enabled = P1RangeRadarDB.enabled ~= false
+    enabled = ReadRangeEnabled()
+    P1RangeRadarDB.enabled = enabled
     splashUntil = GetTime() + 2
     EnsureFrame()
-    frame:Show()
+    if enabled then frame:Show() end
     UpdateArc()
 end)
 

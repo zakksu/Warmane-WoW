@@ -1,27 +1,25 @@
--- Phase One Loader: quest pack welcome + Questie presets
+-- Phase One Loader: quest pack welcome + Questie presets + smart defaults
 
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.5"
+local PACK_VERSION = "1.2.6"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
-local WELCOME_LINES = {
-    "|cff00ccff[" .. PACK_NAME .. "]|r Welcome!",
-    "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + numbered quest arrows.",
-    "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
-    "|cffaaaaaaNav:|r exp/min ranked pins 1-5 + list left of minimap · |cff00ff00/p1nav|r · click pin for TomTom.",
-    "|cffaaaaaaRange:|r HUD bar above action bars · |cff00ff00/p1range|r · |cff00ff00/p1range test|r to verify.",
-    "|cffaaaaaaPath:|r optimal quest route (xp + gear) · |cff00ff00/p1path|r below mats panel.",
-    "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + AH tips lvl 11+.",
-    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1nav debug|r · |cff00ff00/p1questie|r · |cff00ff00/p1minimal|r.",
-}
+local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Path, Range, Mats — all ON. |cff00ff00/p1settings|r to see toggles"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
+local function Trim(s)
+    return (s or ""):match("^%s*(.-)%s*$") or ""
+end
+
+local function IsFeatureOn(key)
+    return db[key] ~= false
+end
+
 local function IsAutoQuestEnabled()
-    if db.autoQuestEnabled ~= nil then return db.autoQuestEnabled end
-    return true
+    return IsFeatureOn("autoQuestEnabled")
 end
 
 local function ApplyAutoQuestToQuestie(enabled)
@@ -47,16 +45,17 @@ function P1_IsAutoQuestEnabled()
     return IsAutoQuestEnabled()
 end
 
-local function SetAutoQuestEnabled(enabled)
+local function SetAutoQuestEnabled(enabled, quiet)
     db.autoQuestEnabled = enabled
     ApplyAutoQuestToQuestie(enabled)
     if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(enabled) end
-    if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(enabled) end
     P1_AutoQuest_RefreshButtons()
-    if enabled then
-        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — accept/turn-in + quest arrows.")
-    else
-        print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — manual questing.")
+    if not quiet then
+        if enabled then
+            print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — accept/turn-in + quest arrows.")
+        else
+            print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — manual questing.")
+        end
     end
 end
 
@@ -65,9 +64,7 @@ function P1_AutoQuest_Toggle()
 end
 
 local function PrintWelcome()
-    for _, line in ipairs(WELCOME_LINES) do
-        DEFAULT_CHAT_FRAME:AddMessage(line)
-    end
+    DEFAULT_CHAT_FRAME:AddMessage(WELCOME_LINE)
 end
 
 local function PrintMinimalAddons()
@@ -76,7 +73,32 @@ local function PrintMinimalAddons()
     print("  [x] Questie-335, TomTom, !Astrolabe")
     print("  [x] Load out of date AddOns")
     print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
-    print("|cffaaaaaaToggle auto quests:|r /p1auto or Auto Q button (top-right)")
+    print("|cffaaaaaaToggle features:|r /p1settings")
+end
+
+local function Yn(on)
+    return on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
+end
+
+local function PrintSettings()
+    print("|cff00ccffP1 Settings|r v" .. PACK_VERSION)
+    print("  Auto Q:  " .. Yn(IsFeatureOn("autoQuestEnabled")) .. "  — /p1auto")
+    print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
+    print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path")
+    print("  Range:   " .. Yn(IsFeatureOn("rangeEnabled")) .. "  — /p1range")
+    print("  Mats:    " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
+    print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
+    print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
+end
+
+local function SetAllFeatures(on)
+    db.autoQuestEnabled = on
+    db.navEnabled = on
+    db.pathEnabled = on
+    db.rangeEnabled = on
+    db.guideVisible = on
+    ApplyFeatureDefaults(1)
+    print("|cff00ccffP1 Settings:|r all features " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
 end
 
 local function QuestieIconCount()
@@ -160,6 +182,28 @@ local function Delay(seconds, fn)
     end)
 end
 
+function ApplyFeatureDefaults(attempt)
+    attempt = attempt or 1
+    SetAutoQuestEnabled(IsFeatureOn("autoQuestEnabled"), true)
+    if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(IsFeatureOn("navEnabled")) end
+    if P1QuestPath_SetEnabled then P1QuestPath_SetEnabled(IsFeatureOn("pathEnabled")) end
+    if P1RangeRadar_SetEnabled then P1RangeRadar_SetEnabled(IsFeatureOn("rangeEnabled")) end
+    if P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
+    ApplyQuestiePresets()
+    if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
+    if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
+    if P1QuestPath_Refresh then P1QuestPath_Refresh(true) end
+
+    local needRetry = false
+    if IsFeatureOn("navEnabled") and not P1QuestNav_SetEnabled then needRetry = true end
+    if IsFeatureOn("pathEnabled") and not P1QuestPath_SetEnabled then needRetry = true end
+    if IsFeatureOn("rangeEnabled") and not P1RangeRadar_SetEnabled then needRetry = true end
+    if IsFeatureOn("guideVisible") and not P1AdventureGuide_SetVisible then needRetry = true end
+    if needRetry and attempt < 6 then
+        Delay(attempt == 1 and 2 or 1, function() ApplyFeatureDefaults(attempt + 1) end)
+    end
+end
+
 local function RetryPresets(attempt)
     attempt = attempt or 1
     if db.presetsApplied == PACK_VERSION then return end
@@ -178,6 +222,20 @@ SLASH_P1AUTO1 = "/p1auto"
 SLASH_P1AUTO2 = "/p1qauto"
 SlashCmdList["P1AUTO"] = function()
     P1_AutoQuest_Toggle()
+end
+
+SLASH_P1SETTINGS1 = "/p1settings"
+SlashCmdList["P1SETTINGS"] = function(msg)
+    msg = string.lower(Trim(msg))
+    if msg == "all on" then
+        SetAllFeatures(true)
+        return
+    end
+    if msg == "all off" then
+        SetAllFeatures(false)
+        return
+    end
+    PrintSettings()
 end
 
 SLASH_P1FIX1 = "/p1fix"
@@ -241,16 +299,10 @@ loader:SetScript("OnEvent", function()
     db.lastSeenVersion = PACK_VERSION
 
     RetryPresets(1)
-    Delay(2, function()
-        ApplyAutoQuestToQuestie(IsAutoQuestEnabled())
-        if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(IsAutoQuestEnabled()) end
-        if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(IsAutoQuestEnabled()) end
-        if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
-        if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
-        P1_AutoQuest_RefreshButtons()
+    Delay(2, function() ApplyFeatureDefaults(1) end)
+    Delay(5, function()
+        ApplyFeatureDefaults(1)
+        ForceQuestieIconRefresh()
     end)
-    Delay(5, function() ForceQuestieIconRefresh() end)
-    if not db.welcomed or db.presetsApplied == PACK_VERSION then
-        Delay(3, function() PrintWelcome() db.welcomed = true end)
-    end
+    Delay(3, function() PrintWelcome() end)
 end)

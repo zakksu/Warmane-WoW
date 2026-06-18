@@ -1,9 +1,17 @@
-Phase One Warmane Leveling Packs — v1.2.5
+Phase One Warmane Leveling Packs — v1.2.6
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.6)
+  - Smart defaults: all recommended features ON at login (no manual toggles)
+  - PhaseOneLoader applies Auto Q, Nav, Path, Range, Mats + Questie presets on login
+  - New /p1settings — feature table; /p1settings all on|off for power users
+  - Nav decoupled from Auto Q — /p1nav works independently
+  - Toggles persist in PhaseOneLoaderDB (navEnabled, pathEnabled, rangeEnabled, guideVisible)
+  - One-line welcome: "P1 ready: Auto Q, Nav, Path, Range, Mats — all ON"
 
 CHANGELOG (v1.2.5)
   - P1RangeRadar: nuclear visibility fix — no WHITE8X8 (missing in 3.3.5)
@@ -80,7 +88,7 @@ TROUBLESHOOTING
   Hide range bar:           /p1range
   Hide mats panel:          /p1guide
   Hide path panel:          /p1path
-  Toggle auto quests:       /p1auto or Auto Q button
+  Toggle all features:      /p1settings  ·  /p1settings all off
   Toggle nav only:          /p1nav
   Auto quest debug:         /p1quest
   Minimal addon list:       /p1minimal

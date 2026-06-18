@@ -8,6 +8,23 @@ local DB = P1AdventureGuideDB
 local panel, scroll, content, contentText
 local MAX_VISIBLE_LINES = 8
 
+local function SyncLoaderGuide(on)
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.guideVisible = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.guideVisible = on end
+end
+
+local function ReadGuideVisible()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.guideVisible ~= nil then
+        return PhaseOneLoaderDB.guideVisible
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.guideVisible ~= nil then
+        return PhaseOneDruidLoaderDB.guideVisible
+    end
+    return true
+end
+
+local guideVisible = ReadGuideVisible()
+
 local function GetBagItemId(bag, slot)
     local link = GetContainerItemLink(bag, slot)
     if not link then return nil end
@@ -263,12 +280,23 @@ local function BuildUI()
     BuildMatsContent()
 end
 
+function P1AdventureGuide_SetVisible(show)
+    if not panel then BuildUI() end
+    guideVisible = show and true or false
+    SyncLoaderGuide(guideVisible)
+    if guideVisible then panel:Show() else panel:Hide() end
+end
+
 local init = CreateFrame("Frame")
 init:RegisterEvent("PLAYER_LOGIN")
 init:RegisterEvent("BAG_UPDATE")
 init:RegisterEvent("SKILL_LINES_CHANGED")
-init:SetScript("OnEvent", function()
+init:SetScript("OnEvent", function(_, event)
     if not panel then BuildUI() end
+    if event == "PLAYER_LOGIN" then
+        guideVisible = ReadGuideVisible()
+        P1AdventureGuide_SetVisible(guideVisible)
+    end
     BuildMatsContent()
 end)
 
@@ -281,8 +309,15 @@ init:SetScript("OnUpdate", function(_, elapsed)
 end)
 
 SLASH_P1GUIDE1 = "/p1guide"
-SlashCmdList["P1GUIDE"] = function()
-    if panel then
-        if panel:IsShown() then panel:Hide() else panel:Show() end
+SlashCmdList["P1GUIDE"] = function(msg)
+    msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
+    if msg == "on" then
+        P1AdventureGuide_SetVisible(true)
+    elseif msg == "off" then
+        P1AdventureGuide_SetVisible(false)
+    else
+        if not panel then BuildUI() end
+        P1AdventureGuide_SetVisible(not panel:IsShown())
     end
+    print("|cff00ccffP1 Mats|r — " .. (guideVisible and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
 end

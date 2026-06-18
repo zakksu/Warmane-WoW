@@ -27,7 +27,24 @@ local SLOT_HUES = {
     { 0.75, 0.55, 1.0 },
 }
 
-local enabled = P1QuestNavDB.enabled ~= false
+local VERSION = "1.2.6"
+
+local function SyncLoaderNav(on)
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.navEnabled = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.navEnabled = on end
+end
+
+local function ReadNavEnabled()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.navEnabled ~= nil then
+        return PhaseOneLoaderDB.navEnabled
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.navEnabled ~= nil then
+        return PhaseOneDruidLoaderDB.navEnabled
+    end
+    return P1QuestNavDB.enabled ~= false
+end
+
+local enabled = ReadNavEnabled()
 local debugMode = false
 local lastRefresh = 0
 local lastRescan = 0
@@ -70,7 +87,7 @@ local function IsAutoQuestOn()
 end
 
 local function IsNavEnabled()
-    return enabled and IsAutoQuestOn()
+    return enabled
 end
 
 local function BlendColor(mode, slot)
@@ -804,6 +821,7 @@ end
 function P1QuestNav_SetEnabled(on)
     enabled = on and true or false
     P1QuestNavDB.enabled = enabled
+    SyncLoaderNav(enabled)
     if on then
         P1QuestNav_Refresh(true)
     else
@@ -814,7 +832,7 @@ end
 
 function P1QuestNav_GetStatus()
     return {
-        enabled = enabled and IsAutoQuestOn(),
+        enabled = enabled,
         navOn = enabled,
         autoOn = IsAutoQuestOn(),
         tracked = tracked,
@@ -833,7 +851,8 @@ eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 eventFrame:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_LOGIN" then
-        enabled = P1QuestNavDB.enabled ~= false
+        enabled = ReadNavEnabled()
+        P1QuestNavDB.enabled = enabled
         local elapsed = 0
         self:SetScript("OnUpdate", function(f, e)
             elapsed = elapsed + e
@@ -899,7 +918,7 @@ SlashCmdList["P1NAV"] = function(msg)
         P1QuestNav_SetEnabled(not enabled)
     end
     local s = P1QuestNav_GetStatus()
-    print("|cff00ccffP1 Nav|r v1.2.5 — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
+    print("|cff00ccffP1 Nav|r v" .. VERSION .. " — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
     print("  Tracked: " .. #s.tracked .. " ranked quests · dotted line to #1")
     print("  Click minimap pin to switch TomTom arrow · /p1nav debug for scores")
     print("  Optimal route: |cff00ff00/p1path|r — xp + gear ranked path panel")
