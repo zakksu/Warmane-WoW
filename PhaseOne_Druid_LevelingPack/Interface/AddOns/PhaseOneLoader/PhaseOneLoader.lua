@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.1.4-druid"
+local PACK_VERSION = "1.1.5-druid"
 local PACK_NAME = "Phase One Druid Pack"
 
 local WELCOME_LINES = {
@@ -218,6 +218,11 @@ local loader = CreateFrame("Frame")
 loader:RegisterEvent("PLAYER_LOGIN")
 loader:SetScript("OnEvent", function()
     EnsureSlash()
+
+    if db.lastSeenVersion and db.lastSeenVersion ~= PACK_VERSION then
+        print("|cff00ccff" .. PACK_NAME .. "|r updated to v" .. PACK_VERSION .. " — |cff00ff00/reload|r was enough.")
+    end
+    db.lastSeenVersion = PACK_VERSION
 
     local _, class = UnitClass("player")
     if class ~= "DRUID" then

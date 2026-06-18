@@ -1,9 +1,16 @@
-Phase One Warmane Leveling Packs — v1.1.4
+Phase One Warmane Leveling Packs — v1.1.5
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.5)
+  - Dev workflow: SYNC_AND_PLAY.bat (git pull + quick P1 sync + AddOns.txt merge → /reload)
+  - Saved WoW path: tools/wow-path.cfg + set-wow-path.bat (installers skip re-prompting)
+  - tools/addons-manifest.txt + write-addons-txt.ps1 auto-enable required addons
+  - PhaseOneLoader: "P1 updated — /reload was enough" on version bump
+  - Docs/DEV_WORKFLOW.md — symlink vs sync, gh auth, /p1minimal, Leatrix automate quests
 
 CHANGELOG (v1.1.4)
   - P1AutoQuest: auto TomTom arrow to nearest Questie objective (or turn-in NPC when done)

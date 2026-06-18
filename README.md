@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Leveling Packs
 
-**Latest release: v1.1.4** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.1.5** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
 
@@ -29,6 +29,8 @@ Shortcuts:
 
 Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `Interface/AddOns/`.
 
+**Dev / fast updates:** double-click **`SYNC_AND_PLAY.bat`** → `/reload` in game. See **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)**.
+
 ---
 
 ## Getting updates
@@ -43,7 +45,7 @@ Small fixes ship often — you can **keep playing** and update without a full re
 
 Phase One presets re-apply when the loader version changes; your other addon settings stay in saved variables.
 
-Details: **[Docs/INCREMENTAL_UPDATES.md](Docs/INCREMENTAL_UPDATES.md)**
+Details: **[Docs/INCREMENTAL_UPDATES.md](Docs/INCREMENTAL_UPDATES.md)** · dev loop: **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)**
 
 **Maintainers:** after committing fixes on `main`, double-click **`QUICK_UPDATE.bat`** to bump the patch version, rebuild zips, push, tag, and publish a GitHub release.
 
