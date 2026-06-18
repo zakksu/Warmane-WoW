@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Leveling Packs
 
-**Latest release: v1.1.5** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.1.6** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
 
@@ -17,19 +17,22 @@ Install **one pack** per character (don't mix loaders unless you know what you'r
 
 ## Install (easiest)
 
-**Double-click `INSTALL.bat` at the repo root** → choose Warlock (1) or Feral Druid (2) → confirm or paste your Warmane folder (must contain `Wow.exe`) → enable addons at character select → `/reload`.
+**Players: double-click `PLAY.bat` at the repo root** — it pulls updates, finds your Warmane folder (asks once), installs or syncs the right pack, enables addons, then tells you to `/reload`. No other steps.
 
-Shortcuts:
+First time only: paste your Warmane folder when prompted (must contain `Wow.exe`). Path is saved to `tools/wow-path.cfg`.
+
+Legacy installers (optional):
 
 | Goal | Double-click |
 |------|----------------|
-| Either pack (menu) | **`INSTALL.bat`** (repo root) |
+| One-click play + updates | **`PLAY.bat`** (repo root) |
+| Pick pack manually | `INSTALL.bat` (repo root) |
 | Warlock only | `INSTALL_WARLOCK.bat` or `PhaseOne_LevelingPack/INSTALL.bat` |
 | Feral Druid only | `INSTALL_DRUID.bat` or `PhaseOne_Druid_LevelingPack/INSTALL.bat` |
 
 Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `Interface/AddOns/`.
 
-**Dev / fast updates:** double-click **`SYNC_AND_PLAY.bat`** → `/reload` in game. See **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)**.
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** (`SYNC_AND_PLAY.bat` forwards to `PLAY.bat`).
 
 ---
 
@@ -38,10 +41,7 @@ Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `I
 Small fixes ship often — you can **keep playing** and update without a full reinstall.
 
 1. **Pull** the latest repo or download the newest [GitHub release](https://github.com/zakksu/Warmane-WoW/releases) zips.
-2. **Update addons** — either:
-   - Run **`INSTALL.bat`** again (same pack, same Warmane path — overwrites addon files), or
-   - Copy only the changed addon folders from `PhaseOne_*/Interface/AddOns/` into your Warmane `Interface/AddOns/`.
-3. In game, type **`/reload`**.
+2. **Update addons** — double-click **`PLAY.bat`** (or run it again after `git pull`), then **`/reload`** in game.
 
 Phase One presets re-apply when the loader version changes; your other addon settings stay in saved variables.
 

@@ -2,7 +2,7 @@
 ## Title: |cff00ccffPhase One Loader|r
 ## Notes: One-click setup helper for the Warmane Horde Warlock Leveling Pack.
 ## Author: zakksu
-## Version: 1.1.4
+## Version: 1.1.6
 ## SavedVariables: PhaseOneLoaderDB
 ## LoadOnDemand: 0
 ## DefaultState: enabled

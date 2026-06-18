@@ -1,9 +1,15 @@
-Phase One Warmane Leveling Packs — v1.1.5
+Phase One Warmane Leveling Packs — v1.1.6
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.6)
+  - PLAY.bat — one double-click: git pull, WoW path, auto pack detect, install/sync, AddOns.txt
+  - First run: full pack install; later runs: quick P1 addon sync
+  - SYNC_AND_PLAY.bat forwards to PLAY.bat (backwards compatible)
+  - PhaseOneLoader v1.1.6
 
 CHANGELOG (v1.1.5)
   - Dev workflow: SYNC_AND_PLAY.bat (git pull + quick P1 sync + AddOns.txt merge → /reload)

@@ -2,7 +2,9 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$WowPath,
-    [switch]$Full
+    [switch]$Full,
+    [ValidateSet("", "DRUID", "WARLOCK")]
+    [string]$Pack = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,7 +54,12 @@ function Detect-PackSources {
 }
 
 if ($Full) {
-    $packs = Detect-PackSources -TargetRoot $dest
+    if ($Pack) {
+        $packs = @($Pack)
+        Write-Host "Full sync forced pack: $Pack"
+    } else {
+        $packs = Detect-PackSources -TargetRoot $dest
+    }
     foreach ($pack in $packs) {
         $srcRoot = if ($pack -eq "DRUID") { $druidSrc } else { $warlockSrc }
         if (-not (Test-Path $srcRoot)) { continue }

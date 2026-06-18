@@ -76,7 +76,7 @@ echo.
 echo Auto on first login: Questie, Leatrix, P1 class HUD, P1 Adventure Guide
 echo !TIPS!
 echo.
-echo Daily dev updates: double-click SYNC_AND_PLAY.bat at repo root, then /reload in game.
+echo Daily dev updates: double-click PLAY.bat at repo root, then /reload in game.
 pause
 exit /b 0
 

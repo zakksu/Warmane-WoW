@@ -36,6 +36,6 @@ echo.
 echo Saved WoW path:
 echo   !NEWPATH!
 echo.
-echo Installers and SYNC_AND_PLAY.bat will use this path automatically.
+echo Installers and PLAY.bat will use this path automatically.
 pause
 exit /b 0
