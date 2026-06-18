@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Leveling Packs
 
-**Latest release: v1.1.0** (Jun 17, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.1.1** (Jun 17, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
 

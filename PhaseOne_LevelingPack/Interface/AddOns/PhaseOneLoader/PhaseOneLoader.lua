@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.1.0"
+local PACK_VERSION = "1.1.1"
 local PACK_NAME = "Phase One Warlock Pack"
 
 local WELCOME_LINES = {

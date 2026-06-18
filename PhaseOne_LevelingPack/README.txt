@@ -1,5 +1,5 @@
 ================================================================================
-  PHASE ONE — WARMANE WOTLK HORDE WARLOCK LEVELING PACK (v1.1.0)
+  PHASE ONE — WARMANE WOTLK HORDE WARLOCK LEVELING PACK (v1.1.1)
   Beginner install guide (plain text)
 ================================================================================
 
