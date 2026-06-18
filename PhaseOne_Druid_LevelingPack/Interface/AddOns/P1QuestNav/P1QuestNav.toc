@@ -5,7 +5,7 @@
 ## Version: 1.2.5
 ## LoadOnDemand: 0
 ## DefaultState: enabled
-## SavedVariables: P1QuestPathDB
+## SavedVariables: P1QuestNavDB, P1QuestPathDB
 ## Dependencies: Questie-335, TomTom, !Astrolabe
 ## LoadAfter: Questie-335, TomTom, PhaseOneLoader, P1AutoQuest
 
