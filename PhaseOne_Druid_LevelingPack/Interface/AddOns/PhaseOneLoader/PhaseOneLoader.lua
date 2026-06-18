@@ -12,7 +12,7 @@ local WELCOME_LINES = {
     "|cffaaaaaaCat (20+):|r |cff00ff00Mangle|r → |cff00ff00Rip|r (5 CP) → |cff00ff00Rake|r → |cff00ff00Shred|r",
     "|cffaaaaaaGlow icons|r = debuff missing or Tiger's Fury ready. Low HP = Rejuvenation reminder.",
     "|cffaaaaaaQuesting:|r Ctrl+click Questie icon for TomTom arrow.",
-    "|cffaaaaaaCommands:|r |cff00ff00/p1d|r tips | |cff00ff00/p1hud|r toggle HUD | |cff00ff00/questie|r | |cff00ff00/ltp|r",
+    "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs (click + to expand).",
 }
 
 local function PrintWelcome()

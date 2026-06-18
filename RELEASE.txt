@@ -4,6 +4,9 @@ Phase One Warmane Leveling Packs — v1.1.0
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
 
+NEW in v1.1: P1 Adventure Guide (next action, profs, mats, rare mobs)
+  Command: /p1guide  |  Click + on panel to expand tabs
+
 INSTALL (players)
   Run INSTALL.bat inside the pack folder → paste Warmane path → log in → /reload
 

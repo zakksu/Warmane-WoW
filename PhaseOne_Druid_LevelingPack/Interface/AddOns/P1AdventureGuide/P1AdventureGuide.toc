@@ -1,0 +1,10 @@
+## Interface: 30300
+## Title: |cff00ccffP1 Adventure Guide|r
+## Notes: Next best action, professions, crafting mats, rare mobs — Phase One leveling helper.
+## Author: zakksu
+## Version: 1.1.0
+## SavedVariables: P1AdventureGuideDB
+## OptionalDeps: P1FeralHUD, P1WarlockHUD
+
+Data.lua
+Core.lua

@@ -4,6 +4,7 @@
 
 REQUIRED — check all:
   [x] PhaseOneLoader
+  [x] P1AdventureGuide
   [x] P1WarlockHUD         <-- built-in DoT tracker (no import!)
   [x] Questie-335
   [x] TomTom

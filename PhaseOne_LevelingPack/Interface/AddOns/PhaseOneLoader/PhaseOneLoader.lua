@@ -12,7 +12,7 @@ local WELCOME_LINES = {
     "|cffaaaaaaDoTs:|r Glow = apply |cff9482c9Corruption|r, |cff9482c9Immolate|r, |cff9482c9Curse of Agony|r.",
     "|cffaaaaaaPet:|r |cff00ff00Summon Voidwalker|r (lvl 10+) tanks for you.",
     "|cffaaaaaaQuesting:|r Ctrl+click Questie icon for TomTom arrow.",
-    "|cffaaaaaaCommands:|r |cff00ff00/p1|r | |cff00ff00/p1whud|r | |cff00ff00/questie|r | |cff00ff00/ltp|r",
+    "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs.",
 }
 
 local function PrintWelcome()

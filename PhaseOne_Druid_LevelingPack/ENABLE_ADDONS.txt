@@ -5,6 +5,7 @@
 
 REQUIRED:
   [x] PhaseOneLoader
+  [x] P1AdventureGuide   <-- next action, profs, mats, rares
   [x] P1FeralHUD          <-- built-in rotation HUD (no import!)
   [x] Questie-335
   [x] TomTom
