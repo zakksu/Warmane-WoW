@@ -1,0 +1,18 @@
+Phase One Warmane Leveling Packs — v1.1.0
+==========================================
+
+Warlock pack:  PhaseOne_LevelingPack/
+Druid pack:    PhaseOne_Druid_LevelingPack/
+
+INSTALL (players)
+  Run INSTALL.bat inside the pack folder → paste Warmane path → log in → /reload
+
+BUILD (maintainers)
+  Run RELEASE.bat at repo root → creates .zip files
+
+AUTO ON FIRST LOGIN
+  Questie (±4 levels, proximity sort)
+  Leatrix (auto repair, sell greys)
+  P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper)
+
+GITHUB: https://github.com/zakksu/Warmane-WoW

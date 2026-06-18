@@ -1,0 +1,11 @@
+# Temp / build artifacts
+tools/wow-pack-build/
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

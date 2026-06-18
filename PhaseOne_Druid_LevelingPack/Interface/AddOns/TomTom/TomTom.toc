@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: TomTom
+## Notes: Lightweight waypoint arrow for Warmane 3.3.5a (Questie-compatible). Phase One pack build.
+## Author: Cladhaire (original) / Phase One Pack
+## Version: 3.3.5-p1
+## SavedVariables: TomTomDB
+## OptionalDeps: !Astrolabe
+## X-PhaseOne-Pack: true
+
+TomTom.lua
+Arrow.lua

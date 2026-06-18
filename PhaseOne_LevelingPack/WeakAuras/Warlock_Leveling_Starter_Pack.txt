@@ -1,0 +1,22 @@
+================================================================================
+  WARLOCK LEVELING STARTER PACK — IMPORT
+================================================================================
+
+For maximum compatibility on Warmane 3.3.5a, use the MANUAL setup guide:
+
+  → Open: Warlock_MANUAL_SETUP.txt (same folder)
+
+Automated import strings for WeakAuras WotLK vary by version. Manual setup
+takes ~5 minutes and is more reliable for new players.
+
+After creating auras manually, you can export your group:
+  /wa → select group → Export → save string for backup
+
+Spells referenced (Undead/Horde warlock leveling):
+  Corruption      — 172
+  Immolate        — 348
+  Curse of Agony  — 980
+  Shadow Bolt     — 686
+  Summon Voidwalker — 697
+
+================================================================================

@@ -1,0 +1,22 @@
+================================================================================
+  WEAKAURAS — PET FOCUS (import or manual)
+================================================================================
+
+MANUAL (recommended):
+  See Warlock_MANUAL_SETUP.txt section E.
+
+QUICK PET HEALTH BAR:
+  1. /wa → New → Progress Bar
+  2. Trigger → Unit → Pet → Health
+  3. Width 120, Height 14, anchor above player frame
+  4. Name: "P1 Pet Health"
+
+VOIDWALKER SUMMON REMINDER (out of combat, no pet):
+  1. /wa → New → Icon
+  2. Trigger → Custom → Events: PLAYER_REGEN_ENABLED, UNIT_PET
+  3. Custom:
+       return not UnitExists("pet") and not UnitAffectingCombat("player")
+  4. Icon: Summon Voidwalker (697)
+  5. Name: "P1 Summon Pet"
+
+Disable animations on all of the above.

@@ -1,0 +1,34 @@
+================================================================================
+  FERAL ROTATION HELPER — WeakAuras notes
+================================================================================
+
+LEVELING PRIORITY (Cat, single target):
+  1. Cat Form (always)
+  2. Mangle if debuff down
+  3. Rake if down
+  4. Build 5 combo points
+  5. Rip — keep uptime
+  6. Shred (behind) or Mangle filler
+  7. Tiger's Fury when energy < 30
+  8. Ferocious Bite if mob < 25% and Rip fresh
+
+MULTIPLE MOBS:
+  - Swipe (Cat) when trained, or tab-Rake
+  - Bear Form + Swipe (Bear) if overwhelmed (low level)
+
+CASTER (1–19):
+  Moonfire → Wrath → Wrath
+  Rejuvenation between pulls
+
+AURA IDEA — "USE RIP NOW":
+  Icon: Rip
+  Trigger: Combo Points >= 5 AND target does NOT have Rip
+  Glow bright red — press Rip!
+
+AURA IDEA — "MAINTAIN RAKE":
+  Icon: Rake
+  Trigger: Target missing Rake debuff (yours)
+
+Disable animations on all auras.
+
+================================================================================

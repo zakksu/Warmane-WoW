@@ -1,0 +1,27 @@
+================================================================================
+  ENABLE THESE ADDONS (Character Select → AddOns)
+================================================================================
+
+REQUIRED — check all:
+  [x] PhaseOneLoader
+  [x] P1WarlockHUD         <-- built-in DoT tracker (no import!)
+  [x] Questie-335
+  [x] TomTom
+  [x] !Astrolabe
+  [x] Leatrix_Plus
+  [x] WeakAuras
+
+OPTIONAL:
+  [ ] Bagnon
+  [ ] Auctionator
+
+ALWAYS CHECK:
+  [x] Load out of date AddOns
+
+TIP: Click "Enable All" then uncheck optional addons you don't need.
+
+After first install: /reload
+
+P1 Warlock HUD loads automatically. WeakAuras optional.
+
+================================================================================

@@ -1,0 +1,81 @@
+================================================================================
+  WEAKAURAS — MANUAL SETUP (Warlock Leveling — recommended for beginners)
+  Works with Bunny67 WeakAuras-WotLK on Warmane 3.3.5a
+================================================================================
+
+If import strings fail, follow these steps. Takes ~5 minutes.
+
+--------------------------------------------------------------------------------
+A) DISABLE ANIMATIONS (do this first — saves FPS)
+--------------------------------------------------------------------------------
+  1. /wa
+  2. Click the gear icon (WeakAuras options)
+  3. Find "Animations" or per-aura settings
+  4. Set Start/Main/Finish animations to "None" on all auras you create
+
+--------------------------------------------------------------------------------
+B) CORRUPTION TIMER (target debuff)
+--------------------------------------------------------------------------------
+  1. /wa → New → Icon
+  2. Trigger tab → Type: Aura → Debuff → Target
+  3. Spell: Corruption (or spell ID 172)
+  4. Only mine: checked
+  5. Display tab → Width/Height: 42
+  6. Position: center screen, slightly left (X: -80, Y: -120)
+  7. Name aura: "P1 Corruption"
+
+--------------------------------------------------------------------------------
+C) IMMOLATE TIMER
+--------------------------------------------------------------------------------
+  Same as Corruption but:
+  - Spell: Immolate (348)
+  - Position Y: -70
+  - Name: "P1 Immolate"
+
+--------------------------------------------------------------------------------
+D) CURSE OF AGONY TIMER
+--------------------------------------------------------------------------------
+  - Spell: Curse of Agony (980)
+  - Position Y: -20
+  - Name: "P1 Curse of Agony"
+
+--------------------------------------------------------------------------------
+E) PET FOCUS (Voidwalker reminder)
+--------------------------------------------------------------------------------
+  1. New → Icon
+  2. Trigger → Type: Custom → Event: Status → Power
+  3. Custom trigger (Lua):
+       return UnitExists("pet") and (UnitHealth("pet") / UnitHealthMax("pet")) < 0.35
+  4. Display → Icon: spell Summon Voidwalker (697) or pet icon
+  5. Position: bottom center (Y: 120)
+  6. Name: "P1 Pet Low HP"
+
+  Optional second aura: Trigger → Unit → Pet → Is Dead → show Summon Voidwalker icon
+
+--------------------------------------------------------------------------------
+F) SIMPLE ROTATION HELPER (Shadow Bolt glow when DoTs up)
+--------------------------------------------------------------------------------
+  1. New → Icon — Shadow Bolt (686)
+  2. Trigger → Custom:
+       local t = "target"
+       if not UnitExists(t) then return false end
+       local c = GetPlayerDebuff("target", "Corruption", nil, "PLAYER")
+       local i = GetPlayerDebuff("target", "Immolate", nil, "PLAYER")
+       return c and i
+  3. Display: desaturate when false, glow when true
+  4. Name: "P1 Cast Shadow Bolt"
+
+  Note: On 3.3.5 custom triggers vary; if errors occur, skip this aura.
+
+--------------------------------------------------------------------------------
+G) GROUP THEM (optional)
+--------------------------------------------------------------------------------
+  1. Select all P1 auras (Shift+click)
+  2. Group → name "P1 Warlock Leveling"
+
+--------------------------------------------------------------------------------
+DONE
+--------------------------------------------------------------------------------
+  Type /wa to toggle visibility. Keep only P1 auras loaded for performance.
+
+See PERFORMANCE.txt for more FPS tips.

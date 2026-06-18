@@ -1,0 +1,28 @@
+================================================================================
+  FERAL LEVELING STARTER PACK — IMPORT
+================================================================================
+
+For Warmane 3.3.5a, use the step-by-step manual guide (most reliable):
+
+  → WeakAuras\Feral_MANUAL_SETUP.txt
+
+Why manual? WeakAuras import strings differ by WA version. Manual setup
+takes ~8 minutes and teaches you how auras work.
+
+After setup, export your group for backup (/wa → Export).
+
+Key spell IDs (WotLK Feral):
+  Cat Form        768
+  Dash            1850
+  Rake            1822
+  Rip             1079
+  Shred           5221
+  Mangle (Cat)    33876
+  Tiger's Fury    5217
+  Berserk         50334
+  Rejuvenation    774
+  Regrowth        8936
+  Moonfire        8921
+  Wrath           5176
+
+================================================================================

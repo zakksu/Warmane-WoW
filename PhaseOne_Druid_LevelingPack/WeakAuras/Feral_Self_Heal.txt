@@ -1,0 +1,32 @@
+================================================================================
+  FERAL SELF-HEAL — WeakAuras setup
+================================================================================
+
+Druids level fast by staying alive between pulls.
+
+REJUVENATION REMINDER (between mobs)
+  New → Icon (Rejuvenation 774)
+  Trigger → Player → Health < 85%
+  AND NOT has Rejuvenation buff
+  Only out of combat (optional)
+  Name: P1 Rejuv
+
+LOW HEALTH — LEAVE CAT
+  New → Text: "HEAL!"
+  Trigger → Player Health < 40%
+  Show 3 seconds
+  Name: P1 Low HP
+
+REGROWTH (stationary heal)
+  Icon: Regrowth (8936)
+  Trigger → Health < 60%, not moving (optional)
+  Name: P1 Regrowth
+
+POTION REMINDER
+  New → Icon (Health potion item)
+  Trigger → Health < 35%, potion off cooldown (inventory)
+  Name: P1 Potion
+
+Remember: shift out of Cat to cast heals, then back to Cat.
+
+================================================================================

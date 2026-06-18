@@ -1,0 +1,23 @@
+WeakAuras performance — Feral Druid on Warmane Icecrown
+=========================================================
+
+1. ALL animations OFF (Start / Main / Finish = None).
+
+2. Max ~10 auras for Phase One (energy, CP, Rip, Rake, Mangle, 2 CDs, heal).
+
+3. Avoid "every frame" custom triggers — use aura/cooldown triggers instead.
+
+4. Leatrix Plus (already preset):
+   - Hide error messages
+   - Faster looting
+
+5. Icecrown lag spikes in cities:
+   - Disable Bagnon + Auctionator outside AH trips
+   - Questie: reduce icon density on world map
+
+6. Monitor:
+   /console scriptErrors 1
+
+7. Cat Form is FPS-friendly vs caster particle effects — stay in cat 20+!
+
+Target: Questie is heaviest addon (~50–80MB). Keep WA lean.

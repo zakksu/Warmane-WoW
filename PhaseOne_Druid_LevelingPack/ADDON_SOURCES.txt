@@ -1,0 +1,20 @@
+# Addon sources — Phase One Druid Pack
+
+Same third-party versions as the Warlock pack. Refresh via tools/download-addons.ps1
+(copy into PhaseOne_Druid_LevelingPack/Interface/AddOns).
+
+| Folder | Source |
+|--------|--------|
+| Questie-335 | https://github.com/widxwer/Questie/tree/335 |
+| WeakAuras* | https://github.com/Bunny67/WeakAuras-WotLK |
+| Leatrix_Plus | https://github.com/Sattva-108/Leatrix_Plus |
+| Bagnon* | https://github.com/RichSteini/Bagnon-3.3.5 |
+| Auctionator | https://github.com/alchem1ster/WotLK-Auctionator |
+| !Astrolabe | https://github.com/Trimitor/WDM-addons |
+| TomTom | Phase One lightweight build |
+| PhaseOneLoader | Custom — Druid/Icecrown presets |
+
+*WeakAuras and Bagnon install as multiple folders at AddOns root.
+
+To sync addons from Warlock pack (fast local copy):
+  tools/sync-druid-addons.ps1

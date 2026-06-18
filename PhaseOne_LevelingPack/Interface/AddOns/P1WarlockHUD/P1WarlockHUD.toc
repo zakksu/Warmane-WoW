@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: |cff9482c9P1 Warlock HUD|r
+## Notes: Phase One built-in Warlock DoT tracker. No WeakAuras import needed.
+## Author: zakksu
+## Version: 1.0.0
+## SavedVariables: P1WarlockHUDB
+
+Core.lua

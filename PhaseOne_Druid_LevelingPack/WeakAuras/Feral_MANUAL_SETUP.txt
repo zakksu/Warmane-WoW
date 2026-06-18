@@ -1,0 +1,107 @@
+================================================================================
+  WEAKAURAS — FERAL DRUID MANUAL SETUP (recommended)
+  Bunny67 WeakAuras-WotLK · Warmane 3.3.5a
+================================================================================
+
+Do this FIRST: In /wa options, set all animations to NONE (saves FPS).
+
+--------------------------------------------------------------------------------
+1) COMBO POINTS (text or icons)
+--------------------------------------------------------------------------------
+  New → Text (or 5 small Icons)
+  Trigger → Status → Power → Combo Points
+  Display: show 1–5 combo points near center-bottom
+  Position: X 0, Y -80
+  Name: P1 Combo Points
+
+  Simple text version:
+    Trigger → Custom → Events: UNIT_POWER
+    Custom (if supported): return GetComboPoints("player", "target")
+
+--------------------------------------------------------------------------------
+2) ENERGY BAR
+--------------------------------------------------------------------------------
+  New → Progress Bar
+  Trigger → Status → Power → Energy (player)
+  Width 180, Height 16
+  Position: center, Y -100
+  Show ticks optional (Leatrix can show energy ticks too)
+  Name: P1 Energy
+
+--------------------------------------------------------------------------------
+3) RIP — keep on target (priority debuff)
+--------------------------------------------------------------------------------
+  New → Icon
+  Trigger → Aura → Debuff → Target → Rip (spell 1079)
+  Only mine: ON
+  Glow when debuff MISSING (invert / show when not active)
+  Position: X -100, Y -60
+  Name: P1 Rip
+
+--------------------------------------------------------------------------------
+4) RAKE
+--------------------------------------------------------------------------------
+  Same as Rip but spell Rake (1822)
+  Position: X -50, Y -60
+  Name: P1 Rake
+
+--------------------------------------------------------------------------------
+5) MANGLE (CAT)
+--------------------------------------------------------------------------------
+  Spell: Mangle (Cat) — 33876 (WotLK) or 33917 depending rank
+  Show when debuff missing on target
+  Position: X 0, Y -60
+  Name: P1 Mangle
+
+--------------------------------------------------------------------------------
+6) TIGER'S FURY (cooldown ready)
+--------------------------------------------------------------------------------
+  New → Icon
+  Trigger → Spell → Cooldown Ready → Tiger's Fury (5217)
+  Desaturate when on cooldown
+  Position: X 50, Y -60
+  Name: P1 Tiger's Fury
+
+--------------------------------------------------------------------------------
+7) DASH (cooldown)
+--------------------------------------------------------------------------------
+  Spell: Dash (1850)
+  Position: X 100, Y -60
+  Name: P1 Dash
+
+--------------------------------------------------------------------------------
+8) BERSERK (high level — optional)
+--------------------------------------------------------------------------------
+  Spell: Berserk (50334) — train when available
+  Position: X 150, Y -60
+  Name: P1 Berserk
+
+--------------------------------------------------------------------------------
+9) SELF-HEAL REMINDER (low HP, not in cat)
+--------------------------------------------------------------------------------
+  New → Icon — Rejuvenation (774)
+  Trigger → Custom → Health < 50%, not in Cat Form
+  Or: Unit → Player → Health < 50%
+  Position: bottom right
+  Name: P1 Heal Me
+
+--------------------------------------------------------------------------------
+10) CAT FORM REMINDER (not in form, in combat)
+--------------------------------------------------------------------------------
+  New → Icon — Cat Form (768)
+  Trigger → Custom: in combat, not Cat Form, level >= 20
+  Name: P1 Cat Form
+
+--------------------------------------------------------------------------------
+GROUP
+--------------------------------------------------------------------------------
+  Select all P1 auras → Group → "P1 Feral Leveling"
+
+Export your group for backup: /wa → Export
+
+See also:
+  Feral_Rotation_Helper.txt
+  Feral_Self_Heal.txt
+  PERFORMANCE.txt
+
+================================================================================

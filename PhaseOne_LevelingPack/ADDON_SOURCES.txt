@@ -1,0 +1,16 @@
+# Addon sources (Phase One pack)
+
+Bundled versions downloaded for Warmane 3.3.5a (Interface 30300).
+
+| Folder | Source |
+|--------|--------|
+| Questie-335 | https://github.com/widxwer/Questie/tree/335 |
+| WeakAuras | https://github.com/Bunny67/WeakAuras-WotLK |
+| Leatrix_Plus | https://github.com/Sattva-108/Leatrix_Plus |
+| Bagnon | https://github.com/RichSteini/Bagnon-3.3.5 |
+| Auctionator | https://github.com/alchem1ster/WotLK-Auctionator |
+| !Astrolabe | https://github.com/Trimitor/WDM-addons (Trimitor fix) |
+| TomTom | Phase One lightweight build (Questie-compatible API) |
+| PhaseOneLoader | Custom — this repo |
+
+To refresh addons, re-run `tools/download-addons.ps1` (or replace folders manually).

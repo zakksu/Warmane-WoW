@@ -1,0 +1,130 @@
+================================================================================
+  HORDE FERAL DRUID — ICECROWN LEVELING GUIDE (Warmane 3.3.5a)
+================================================================================
+
+RACE / STARTING ZONE (Horde)
+  Tauren     → Mulgore (easy, tanky — great for new players)
+  Troll      → Durotar
+  Night Elf  → Not Horde (skip on Icecrown Horde)
+
+Recommended for beginners: Tauren Druid in Mulgore.
+
+================================================================================
+LEVELING BY PHASE
+================================================================================
+
+LEVELS 1–9 (Caster phase)
+  - Moonfire (keep up) → Wrath spam
+  - Rejuvenation if taking damage
+  - Use staff / 2H mace for spell damage
+  - Bear Form only if very squishy and no heals
+
+LEVEL 10–19
+  - Still mostly caster — faster kills on single mobs
+  - Train Cat Form quest at level 10 (class quest)
+  - Start practicing Cat when you have energy basics
+
+LEVEL 20+ (Cat Form — main leveling spec)
+  - Stay in Cat Form almost always
+  - Open: Dash (optional) → Ravage (from stealth) OR Mangle
+  - Maintain: Rip (5 combo points), Rake
+  - Filler: Shred (behind target) or Mangle
+  - Tiger's Fury when energy low (burst window)
+
+LEVEL 40+ / OUTLAND
+  - Feral gets very strong — Rip + Savage Roar (if talented)
+  - Berserk on elites / tough pulls (high cooldown)
+
+================================================================================
+SIMPLE CAT ROTATION (single mob)
+================================================================================
+  1. Cat Form
+  2. (Optional) Prowl → Ravage if from behind
+  3. Mangle (if debuff down) — applies bleed debuff
+  4. Rake (if down)
+  5. Build to 5 combo points
+  6. Rip (keep it up!)
+  7. Shred / Mangle as filler
+  8. Tiger's Fury on cooldown when energy starved
+
+  Mob dying soon? Use Ferocious Bite instead of Rip refresh.
+
+================================================================================
+SELF-HEALING (stay alive while leveling)
+================================================================================
+  - Rejuvenation while running between mobs (instant, hot)
+  - Regrowth if stationary and hurt
+  - Lifebloom (if trained) — efficient hot
+  - Potions + First Aid bandages always in bags
+  - Bear Form + Frenzied Regeneration (emergency)
+  - Innervate on yourself when oom healing
+
+  You CANNOT heal well in Cat Form — leave form briefly if needed.
+
+================================================================================
+MOVEMENT & UTILITY
+================================================================================
+  - Dash          — gap close or escape
+  - Prowl         — skip mobs, open with Ravage
+  - Mark of the Wild — buff yourself every 30 min
+  - Thorns        — optional extra damage
+  - Aquatic Form  — water quests in Barrens/Stranglethorn
+
+================================================================================
+TALENT TIPS (leveling)
+================================================================================
+  Level 10–60: Focus Feral Combat tree
+    - Feral Swiftness, Feral Charge (Cat), Savage Fury
+    - Predatory Strikes, Primal Fury (combo point QoL)
+    - Leader of the Pack when available (self heal aura)
+
+  Avoid deep Resto until you have dual spec at 40 (WotLK).
+
+================================================================================
+HORDE QUEST ROUTE SUMMARY (1–30)
+================================================================================
+
+1–10   Mulgore (Tauren) or Durotar (Troll) — complete every nearby quest
+10     Class quests: Bear + Cat form (Mulgore: Turak Ridge)
+10–15  Barrens (Crossroads) — huge quest hub, great for Druids
+15–20  Stonetalon / Barrens south / Ashenvale (Horde side)
+20–25  Thousand Needles (after Barrens) OR Hillsbrad (Horde)
+25–30  Ashenvale / Southern Barrens / Arathi (Horde paths)
+
+Icecrown server: follow Questie icons — it knows Warmane data.
+Ctrl+click for TomTom arrow.
+
+================================================================================
+ICECROWN SERVER NOTES
+================================================================================
+  - x1 rates on Icecrown — questing is primary XP
+  - Group for elite quests; you bring battle res (Rebirth) at high level
+  - AH in Orgrimmar — Auctionator addon helps pricing
+  - /join world for LFG chatter on Warmane
+
+================================================================================
+ADDON COMMANDS
+================================================================================
+  /p1d         Druid pack tips
+  /questie     Quest settings
+  /tomtom      Waypoint arrow
+  /ltp         Leatrix Plus
+  /wa          WeakAuras
+  /reload      Reload UI
+
+================================================================================
+KEYBIND IDEAS
+================================================================================
+  1 — Mangle (Cat)
+  2 — Shred
+  3 — Rip
+  4 — Rake
+  5 — Tiger's Fury
+  6 — Dash
+  F1 — Cat Form
+  F2 — Bear Form (emergency)
+  F3 — Rejuvenation
+
+================================================================================
+FOR THE HORDE — FAST LEVELS!
+================================================================================

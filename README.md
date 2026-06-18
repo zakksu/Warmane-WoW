@@ -1,0 +1,112 @@
+# Warmane WotLK — Phase One Leveling Packs
+
+Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
+
+## Choose your pack
+
+| Pack | Class | Folder | Zip |
+|------|-------|--------|-----|
+| **Warlock** | Horde Warlock | `PhaseOne_LevelingPack/` | `PhaseOne_LevelingPack.zip` |
+| **Feral Druid** | Horde Feral Druid | `PhaseOne_Druid_LevelingPack/` | `PhaseOne_Druid_LevelingPack.zip` |
+
+Install **one pack** per character (don't mix loaders unless you know what you're doing).
+
+---
+
+## Feral Druid — quick install (Icecrown)
+
+1. Copy `PhaseOne_Druid_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
+   - Or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
+2. Character select → **AddOns** → enable all → **Load out of date AddOns**
+3. Log in on your **Druid** → `/reload`
+4. **Done** — Questie, Leatrix, and **P1 Feral HUD** configure automatically (no WeakAuras import needed)
+5. `/p1d` for tips · `/p1hud` to toggle the HUD
+
+Optional extra WeakAuras: `WeakAuras/Feral_MANUAL_SETUP.txt`
+
+Full guide: **[PhaseOne_Druid_LevelingPack/README.txt](PhaseOne_Druid_LevelingPack/README.txt)**
+
+---
+
+## Warlock — quick install
+
+1. Copy `PhaseOne_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
+   - Or run `PhaseOne_LevelingPack/INSTALL.bat`
+2. Same addon enable steps as above
+3. `/reload` on first login — **auto-configures** Questie, Leatrix, P1 Warlock HUD
+4. `/p1` for tips · `/p1whud` to toggle HUD
+
+Optional WeakAuras: `PhaseOne_LevelingPack/WeakAuras/Warlock_MANUAL_SETUP.txt`
+
+Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.txt)**
+
+---
+
+## What's in every pack (core)
+
+| Addon | Role |
+|-------|------|
+| **Questie-335** | Quest helper ([widxwer/Questie](https://github.com/widxwer/Questie) @ 335) |
+| **TomTom** + **!Astrolabe** | Waypoint arrow for Questie |
+| **Leatrix_Plus** | Auto-repair, auto-sell greys, QoL |
+| **WeakAuras** | Bunny67 [WotLK port](https://github.com/Bunny67/WeakAuras-WotLK) |
+| **P1FeralHUD** | Built-in energy/CP/debuff HUD (no import) |
+| **PhaseOneLoader** | Auto presets + welcome |
+| *Bagnon* / *Auctionator* | Optional |
+
+**Target:** 5–6 core addons + 2 optional.
+
+---
+
+## Pre-configured (first login — no manual setup)
+
+- **Questie:** ±4 levels, sort by proximity, hide completed in tracker
+- **Leatrix Plus:** Auto-repair, auto-sell junk, faster loot, FPS-friendly options
+- **P1 Feral HUD:** Energy, combo points, Rip/Rake/Mangle alerts — appears automatically
+
+WeakAuras is included but **optional** (for advanced customization).
+
+---
+
+## Feral Druid beginner highlights
+
+- **1–19:** Moonfire + Wrath; learn heals between pulls
+- **20+:** Cat Form leveling — Mangle → Rip (5 CP) → Rake → Shred
+- **Self-heal:** Rejuvenation on the run; leave Cat to cast if low
+- **Movement:** Dash to engage/escape; Prowl + Ravage when safe
+- **Horde route:** Mulgore/Durotar → Barrens → Stonetalon → Thousand Needles
+
+Details: `PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt`
+
+---
+
+## Performance (Warmane)
+
+```text
+/console scriptErrors 1
+/console maxfps 60
+```
+
+Disable WA animations. Turn off optional addons in cities if FPS drops.
+
+---
+
+## Build / release zips
+
+```powershell
+.\RELEASE.bat
+# or
+.\tools\build-all.ps1
+```
+
+Creates `PhaseOne_LevelingPack.zip` and `PhaseOne_Druid_LevelingPack.zip` (not in git — run locally).
+
+---
+
+## Credits
+
+Questie (widxwer), Leatrix Plus (Sattva-108 backport), WeakAuras (Bunny67), Bagnon, Auctionator, Astrolabe (Trimitor). Pack layout & loaders: this repo.
+
+## License
+
+Third-party addons keep their licenses. Pack docs/loaders: MIT.

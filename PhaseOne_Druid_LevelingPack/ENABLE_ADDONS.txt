@@ -1,0 +1,25 @@
+================================================================================
+  ENABLE THESE ADDONS — Horde Feral Druid Pack
+  Character Select → AddOns
+================================================================================
+
+REQUIRED:
+  [x] PhaseOneLoader
+  [x] P1FeralHUD          <-- built-in rotation HUD (no import!)
+  [x] Questie-335
+  [x] TomTom
+  [x] !Astrolabe
+  [x] Leatrix_Plus
+  [x] WeakAuras
+  [x] WeakAurasOptions
+
+OPTIONAL:
+  [ ] Bagnon (+ Bagnon_Config, etc.)
+  [ ] Auctionator
+
+ALWAYS:
+  [x] Load out of date AddOns
+
+After login: /reload  then  /p1d
+
+================================================================================

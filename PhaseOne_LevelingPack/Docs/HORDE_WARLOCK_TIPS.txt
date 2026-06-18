@@ -1,0 +1,85 @@
+================================================================================
+  HORDE WARLOCK — QUICK START (Warmane WotLK 3.3.5a)
+================================================================================
+
+RACE / STARTING ZONE
+  Undead → Tirisfal Glades (recommended for easy leveling)
+  Orc/Troll → Durotar
+
+================================================================================
+LEVEL 1–10 BASICS
+================================================================================
+
+PET (most important!)
+  - Level 1: Summon Imp (temporary)
+  - Level 10: Summon Voidwalker — YOUR LEVELING PET (tank for you)
+  - Keep pet on "Defensive" or "Passive" + attack command
+  - Use .pet attack or click pet action bar
+
+CORE SPELLS (priority)
+  1. Corruption       — apply first (instant, ticks while you run)
+  2. Curse of Agony   — good on tougher mobs
+  3. Immolate         — keep up on single targets
+  4. Shadow Bolt      — filler while DoTs tick
+  5. Drain Soul       — execute under ~25% for shard (level 10+)
+
+SURVIVAL
+  - Fear              — CC one mob, run or recover
+  - Healthstone       — free heal (Create Healthstone)
+  - Drain Life        — heal when low (locks you in place)
+  - Use Voidwalker Sacrifice / Consume Shadows if talented
+
+================================================================================
+SIMPLE ROTATION (single mob)
+================================================================================
+  1. Send pet to attack
+  2. Corruption → Curse of Agony → Immolate
+  3. Shadow Bolt until dead
+  4. Drain Soul on low HP mobs for soul shard
+
+  Multiple mobs: Fear one, focus DoTs on another, let pet tank.
+
+================================================================================
+QUESTING FLOW (HORDE 1–30 OVERVIEW)
+================================================================================
+
+1–10  Tirisfal / Durotar starting zone → complete all yellow quests nearby
+10    Voidwalker quest (Undead: Brill area / check Questie!)
+10–15 Barrens (Crossroads) OR Silverpine — follow Questie arrows
+15–20 Stonetalon / Barrens south
+20–25 Hillsbrad / Ashenvale (Horde routes)
+25–30 Thousand Needles / Southern Barrens
+
+TIP: Always pick quests on your map with Questie. Ctrl+click icon for arrow.
+
+Official-style guide (external):
+  https://www.wowhead.com/wotlk/guide/classes/warlock/dps-overview-pve
+
+Warmane forum tips:
+  https://forum.warmane.com/
+
+================================================================================
+ADDON COMMANDS CHEAT SHEET
+================================================================================
+  /p1          Phase One welcome + tips
+  /questie     Quest helper settings
+  /tomtom      Waypoint arrow
+  /ltp         Leatrix Plus (auto sell/repair)
+  /wa          WeakAuras import/config
+  /reload      Reload UI after changes
+
+================================================================================
+KEYBIND SUGGESTIONS
+================================================================================
+  1 — Corruption
+  2 — Immolate
+  3 — Curse of Agony
+  4 — Shadow Bolt
+  5 — Fear
+  6 — Drain Life
+  F1 — Pet Attack
+  F2 — Summon Voidwalker
+
+================================================================================
+GOOD LUCK — FOR THE HORDE!
+================================================================================

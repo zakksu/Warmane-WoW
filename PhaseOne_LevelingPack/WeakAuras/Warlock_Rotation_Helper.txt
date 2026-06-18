@@ -1,0 +1,26 @@
+================================================================================
+  WEAKAURAS — ROTATION HELPER (leveling 1–40)
+================================================================================
+
+PRIORITY (single target):
+  1. Corruption (instant — apply while moving)
+  2. Curse of Agony (if mob will live ~12+ sec)
+  3. Immolate
+  4. Shadow Bolt (filler)
+  5. Drain Soul (< 25% HP, for shard)
+
+MANUAL AURA — "NEXT SPELL" TEXT:
+  1. /wa → New → Text
+  2. Trigger → Custom → On Update (throttle 0.2s)
+  3. Use simple logic in custom trigger or skip if new to WA
+  4. Display text examples:
+       "Apply Corruption"
+       "Maintain DoTs"
+       "Shadow Bolt"
+
+MINIMAL APPROACH (no custom Lua):
+  Create 3 icon auras (Corruption, Immolate, Curse) that GLOW when NOT active on target.
+  - Trigger: Aura missing on target
+  - Glow = reminder to apply
+
+See Warlock_MANUAL_SETUP.txt sections B–F.

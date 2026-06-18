@@ -1,0 +1,28 @@
+WeakAuras performance on Warmane (3.3.5a private server)
+=========================================================
+
+1. Disable animations on every aura (Start/Main/Finish = None).
+
+2. Limit active auras to Phase One pack only (5–8 displays max).
+
+3. Avoid "on update" custom triggers unless throttled (0.2s+).
+
+4. In WeakAuras options, disable any "show off-screen" debug features.
+
+5. Combined with Leatrix Plus:
+   - Hide error messages (already preset)
+   - Faster looting enabled
+
+6. If FPS still low in Orgrimmar / Undercity:
+   - Disable Bagnon + Auctionator (optional addons)
+   - Questie → reduce icon limit / disable world map icons temporarily
+   - Video → shadows off, spell density low
+
+7. Monitor errors:
+   /console scriptErrors 1
+
+8. Check FPS:
+   Video → Show FPS, or Leatrix Plus FPS option if enabled
+
+Target RAM: Questie is the heaviest addon in this pack (~50–80MB).
+WeakAuras with 5 simple icons should stay under ~10MB extra.
