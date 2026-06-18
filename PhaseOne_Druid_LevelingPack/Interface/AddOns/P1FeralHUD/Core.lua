@@ -73,6 +73,23 @@ local function CreateIcon(parent, spellId, x, label)
     return btn
 end
 
+local function CreateAutoQuestButton(parent)
+    local btn = CreateFrame("Button", nil, parent)
+    btn:SetSize(44, 14)
+    btn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -4, -2)
+    local txt = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    txt:SetPoint("CENTER")
+    txt:SetText("Auto Q")
+    btn.text = txt
+    btn:SetScript("OnClick", function()
+        if P1_AutoQuest_Toggle then P1_AutoQuest_Toggle() end
+    end)
+    P1AutoQuestButtons = P1AutoQuestButtons or {}
+    P1AutoQuestButtons[#P1AutoQuestButtons + 1] = btn
+    if P1_AutoQuest_RefreshButtons then P1_AutoQuest_RefreshButtons() end
+    return btn
+end
+
 local function BuildUI()
     frame = CreateFrame("Frame", "P1FeralHUDFrame", UIParent)
     frame:SetSize(220, 100)
@@ -90,6 +107,8 @@ local function BuildUI()
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     title:SetPoint("TOP", frame, "TOP", 0, -2)
     title:SetText("|cff00ccffPhase One|r Feral HUD")
+
+    CreateAutoQuestButton(frame)
 
     energyBar = CreateFrame("StatusBar", nil, frame)
     energyBar:SetSize(180, 14)

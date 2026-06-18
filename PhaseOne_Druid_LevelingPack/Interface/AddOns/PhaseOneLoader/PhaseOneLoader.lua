@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.1.2-druid"
+local PACK_VERSION = "1.1.3-druid"
 local PACK_NAME = "Phase One Druid Pack"
 
 local WELCOME_LINES = {
@@ -13,7 +13,49 @@ local WELCOME_LINES = {
     "|cffaaaaaaGlow icons|r = debuff missing or Tiger's Fury ready. Low HP = Rejuvenation reminder.",
     "|cffaaaaaaQuesting:|r Ctrl+click Questie icon for TomTom arrow.",
     "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs (click + to expand).",
+    "|cffaaaaaaAuto quests:|r |cff00ff00/p1auto|r or |cff00ff00Auto Q|r on HUD — toggle accept/turn-in.",
 }
+
+_G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
+
+local function IsAutoQuestEnabled()
+    if db.autoQuestEnabled ~= nil then return db.autoQuestEnabled end
+    return true
+end
+
+local function ApplyAutoQuestToQuestie(enabled)
+    if not Questie or not Questie.db or not Questie.db.profile then return false end
+    local p = Questie.db.profile
+    p.autoaccept = enabled
+    p.autocomplete = enabled
+    if enabled then p.autoModifier = "disabled" end
+    return true
+end
+
+function P1_AutoQuest_RefreshButtons()
+    local on = IsAutoQuestEnabled()
+    for _, btn in ipairs(P1AutoQuestButtons) do
+        if btn.text then
+            if on then btn.text:SetTextColor(0.2, 1, 0.2)
+            else btn.text:SetTextColor(0.45, 0.45, 0.45) end
+        end
+    end
+end
+
+local function SetAutoQuestEnabled(enabled)
+    db.autoQuestEnabled = enabled
+    ApplyAutoQuestToQuestie(enabled)
+    P1_AutoQuest_RefreshButtons()
+    if enabled then
+        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — Questie auto-accept and auto-complete.")
+    else
+        print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — accept and turn in quests manually.")
+    end
+end
+
+function P1_AutoQuest_Toggle()
+    SetAutoQuestEnabled(not IsAutoQuestEnabled())
+end
 
 local function PrintWelcome()
     for _, line in ipairs(WELCOME_LINES) do
@@ -43,8 +85,9 @@ local function ApplyQuestiePresets()
     p.enableObjectives = true
     p.hideIconsOnContinents = false
     p.nameplateEnabled = false
-    p.autoaccept = true
-    p.autocomplete = true
+    p.autoaccept = IsAutoQuestEnabled()
+    p.autocomplete = IsAutoQuestEnabled()
+    p.autoModifier = "disabled"
 
     if Questie.db.char then
         Questie.db.char.complete = Questie.db.char.complete or {}
@@ -113,6 +156,12 @@ local function EnsureSlash()
         print("|cff00ccff" .. PACK_NAME .. "|r v" .. PACK_VERSION)
     end
 
+    SLASH_P1AUTO1 = "/p1auto"
+    SLASH_P1AUTO2 = "/p1qauto"
+    SlashCmdList["P1AUTO"] = function()
+        P1_AutoQuest_Toggle()
+    end
+
     SLASH_P1FIX1 = "/p1fix"
     SlashCmdList["P1FIX"] = function()
         if TomTom and TomTom.activeWaypoint then
@@ -153,6 +202,10 @@ loader:SetScript("OnEvent", function()
     end
 
     RetryPresets(1)
+    Delay(2, function()
+        ApplyAutoQuestToQuestie(IsAutoQuestEnabled())
+        P1_AutoQuest_RefreshButtons()
+    end)
 
     if not db.welcomed or db.presetsApplied == PACK_VERSION then
         Delay(3, function()

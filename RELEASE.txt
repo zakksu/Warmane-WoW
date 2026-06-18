@@ -1,9 +1,13 @@
-Phase One Warmane Leveling Packs — v1.1.2
+Phase One Warmane Leveling Packs — v1.1.3
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.3)
+  - Questie auto-accept/complete: preset sets Auto Modifier to Disabled (fixes Control blocking automation)
+  - /p1auto or /p1qauto — toggle auto quest accept/turn-in; "Auto Q" button on class HUD (green=on, grey=off)
 
 CHANGELOG (v1.1.2)
   - Questie: auto-accept and auto-complete quests (presets re-applied on upgrade)
@@ -22,14 +26,14 @@ BUILD (maintainers)
   Run RELEASE.bat at repo root → creates .zip files
 
 AUTO ON FIRST LOGIN
-  Questie (±4 levels, proximity sort)
+  Questie (±4 levels, proximity sort, auto accept/turn-in)
   Leatrix (auto repair, sell greys)
-  P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper)
+  P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper + Auto Q toggle)
   P1 Adventure Guide (/p1guide)
 
 TROUBLESHOOTING
   Stuck WA icon or glow?  /p1fix
   Hide Adventure Guide:   /p1guide
+  Toggle auto quests:      /p1auto
 
 GITHUB: https://github.com/zakksu/Warmane-WoW
-
