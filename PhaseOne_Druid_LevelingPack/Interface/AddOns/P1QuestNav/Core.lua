@@ -27,7 +27,7 @@ local SLOT_HUES = {
     { 0.75, 0.55, 1.0 },
 }
 
-local VERSION = "1.2.6"
+local VERSION = "1.2.7"
 
 local function SyncLoaderNav(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.navEnabled = on end
@@ -57,6 +57,7 @@ local pinFrames = {}
 local legendLines = {}
 local legendDots = {}
 local worldBadges = {}
+local nextLineFrame, nextLineText
 
 local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, QuestXP, HBD
 local LoadQuestieModules
@@ -104,6 +105,27 @@ local function TruncateName(name, maxLen)
     if not name then return "?" end
     if #name <= maxLen then return name end
     return string.sub(name, 1, maxLen - 1) .. "…"
+end
+
+local function GetDirectionLabel(entry)
+    local hbd = GetHBD()
+    if not hbd or not entry or not entry.spawn or not entry.zone then
+        return entry and entry.dist and string.format("%dy", entry.dist) or ""
+    end
+    local px, py = hbd:GetPlayerWorldPosition()
+    if not px then return string.format("%dy", entry.dist or 0) end
+    local uiMapId = entry.zone
+    if ZoneDB and ZoneDB.GetUiMapIdByAreaId then
+        uiMapId = ZoneDB:GetUiMapIdByAreaId(entry.zone) or entry.zone
+    end
+    local dx, dy = hbd:GetWorldCoordinatesFromZone(entry.spawn[1] / 100, entry.spawn[2] / 100, uiMapId)
+    if not dx then return string.format("%dy", entry.dist or 0) end
+    local angle = math.atan2(dy - py, dx - px)
+    local deg = math.deg(angle)
+    if deg < 0 then deg = deg + 360 end
+    local dirs = { "E", "NE", "N", "NW", "W", "SW", "S", "SE" }
+    local idx = math.floor((deg + 22.5) / 45) % 8 + 1
+    return string.format("%dy %s", entry.dist or 0, dirs[idx])
 end
 
 LoadQuestieModules = function()
@@ -562,6 +584,33 @@ local function HideAllVisuals()
     for _, d in ipairs(worldDots) do d:Hide() end
     for _, badge in pairs(worldBadges) do badge:Hide() end
     if P1QuestNavLegend then P1QuestNavLegend:Hide() end
+    if nextLineFrame then nextLineFrame:Hide() end
+end
+
+local function UpdateNextLine()
+    if not nextLineFrame then
+        nextLineFrame = CreateFrame("Frame", "P1QuestNavNext", UIParent)
+        nextLineFrame:SetFrameStrata("MEDIUM")
+        nextLineFrame:SetSize(340, 22)
+        nextLineText = nextLineFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        nextLineText:SetFont("Fonts\\FRIZQT__.TTF", 13, "OUTLINE")
+        nextLineText:SetPoint("CENTER", nextLineFrame, "CENTER", 0, 0)
+        nextLineText:SetJustifyH("CENTER")
+    end
+    nextLineFrame:ClearAllPoints()
+    local anchor = GetMinimapParent()
+    nextLineFrame:SetPoint("TOP", anchor, "BOTTOM", 0, -4)
+
+    local t = tracked[1]
+    if not IsNavEnabled() or not t then
+        nextLineFrame:Hide()
+        return
+    end
+    local dir = GetDirectionLabel(t)
+    local xpTag = t.xp and t.xp > 0 and string.format(" [%dxp]", t.xp) or ""
+    nextLineText:SetText(string.format("|cff00ccffNEXT:|r %s — %s%s",
+        TruncateName(t.questName, 26), dir, xpTag))
+    nextLineFrame:Show()
 end
 
 local function AnchorLegend()
@@ -794,6 +843,7 @@ function P1QuestNav_Refresh(force)
     tracked = CollectTrackedQuests()
     UpdatePins()
     UpdateLegend()
+    UpdateNextLine()
     UpdateWorldBadges()
 
     if tracked[1] then
@@ -848,6 +898,8 @@ eventFrame:RegisterEvent("QUEST_LOG_UPDATE")
 eventFrame:RegisterEvent("QUEST_ACCEPTED")
 eventFrame:RegisterEvent("QUEST_COMPLETE")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eventFrame:RegisterEvent("ZONE_CHANGED")
+eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 eventFrame:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_LOGIN" then
@@ -865,6 +917,14 @@ eventFrame:SetScript("OnEvent", function(self, event)
     end
     if event == "QUEST_ACCEPTED" or event == "QUEST_LOG_UPDATE" or event == "QUEST_COMPLETE" then
         availCache = nil
+        if event == "QUEST_COMPLETE" and IsNavEnabled() then
+            P1QuestNav_Refresh(true)
+        end
+    end
+    if event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" then
+        availCache = nil
+        if IsNavEnabled() then P1QuestNav_Refresh(true) end
+        return
     end
     if event == "PLAYER_ENTERING_WORLD" then
         local t = 0

@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: |cff00ccffP1 Range Display|r
+## Notes: Target distance number HUD — melee/spell range colors. Phase One pack.
+## Author: zakksu
+## Version: 1.2.7
+## LoadOnDemand: 0
+## DefaultState: enabled
+## SavedVariables: P1RangeDisplayDB
+## LoadAfter: PhaseOneLoader
+
+Core.lua

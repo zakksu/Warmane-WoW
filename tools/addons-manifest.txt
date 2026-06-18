@@ -4,7 +4,8 @@
 PhaseOneLoader: 1
 P1AutoQuest: 1
 P1QuestNav: 1
-P1RangeRadar: 1
+P1RangeDisplay: 1
+P1DamageText: 1
 P1AdventureGuide: 1
 Questie-335: 1
 TomTom: 1

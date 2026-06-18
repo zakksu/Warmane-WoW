@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: |cff00ccffP1 Damage Text|r
+## Notes: Floating combat damage numbers — crit/DoT colors. Phase One pack.
+## Author: zakksu
+## Version: 1.2.7
+## LoadOnDemand: 0
+## DefaultState: enabled
+## SavedVariables: P1DamageTextDB
+## LoadAfter: PhaseOneLoader
+
+Core.lua

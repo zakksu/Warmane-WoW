@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v1.2.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.2.7** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, waypoint arrow, idle walk, and crafting mat hints. **No class HUD, Leatrix, or WeakAuras** in the default install.
 
@@ -13,7 +13,7 @@ Full details: **[Docs/MINIMAL_PACK.md](Docs/MINIMAL_PACK.md)**
 | **Warlock** | Horde Warlock | `PhaseOne_LevelingPack/` | `PhaseOne_LevelingPack.zip` |
 | **Feral Druid** | Horde Feral Druid | `PhaseOne_Druid_LevelingPack/` | `PhaseOne_Druid_LevelingPack.zip` |
 
-Both packs install the **same 6 addons**; only PhaseOneLoader welcome text differs.
+Both packs install the **same 9 quest addons**; only PhaseOneLoader welcome text differs.
 
 ---
 
@@ -34,15 +34,18 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 
 ---
 
-## What's installed (6 addons)
+## What's installed (9 addons)
 
 | Addon | Role |
 |-------|------|
-| **PhaseOneLoader** | Questie presets, `/p1auto`, `/p1minimal`, `/p1fix` |
-| **P1AutoQuest** | Auto waypoint + idle walk + **Auto Q** button (top-right) |
-| **P1AdventureGuide** | Crafting mats only — `/p1guide` |
-| **Questie-335** | Quest tracking + auto accept/complete |
-| **TomTom** + **!Astrolabe** | Waypoint arrow + ClickToMove walk |
+| **PhaseOneLoader** | Questie presets, smart defaults, `/p1settings`, `/p1fix` |
+| **P1AutoQuest** | Auto accept/turn-in + **Auto Q** button (top-right) |
+| **P1QuestNav** | NEXT line, ranked pins, TomTom arrow to #1 — `/p1nav` |
+| **P1RangeDisplay** | Target distance number — `/p1range` |
+| **P1DamageText** | Floating combat damage — `/p1dmg` |
+| **P1AdventureGuide** | Crafting mats + AH tips — `/p1guide` |
+| **Questie-335** | Quest tracking + map icons |
+| **TomTom** + **!Astrolabe** | Waypoint arrow + minimap coords |
 
 **Not installed:** P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras, Bagnon, Auctionator (PLAY.bat moves these to `AddOns/_disabled/`).
 
@@ -52,7 +55,12 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 
 | Command | Action |
 |---------|--------|
-| `/p1auto` | Toggle Auto Q (accept/turn-in + arrow + idle walk) |
+| `/p1auto` | Toggle Auto Q (accept/turn-in + arrows) |
+| `/p1nav` | Toggle quest nav + NEXT line |
+| `/p1range` | Toggle target distance number |
+| `/p1dmg` | Toggle floating damage numbers |
+| `/p1path` | Toggle optimal quest route panel |
+| `/p1settings` | Feature table — all on/off |
 | `/p1guide` | Show/hide crafting mats panel |
 | `/p1quest` | Debug auto-quest status |
 | `/p1minimal` | Addon checklist |

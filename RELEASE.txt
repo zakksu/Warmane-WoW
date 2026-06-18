@@ -1,9 +1,20 @@
-Phase One Warmane Leveling Packs — v1.2.6
+Phase One Warmane Leveling Packs — v1.2.7
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.7)
+  - P1RangeDisplay replaces P1RangeRadar — clean distance number HUD ([ 28 yd ])
+  - CheckInteractDistance tiers + IsSpellInRange — green in, red out, yellow partial
+  - /p1range toggle + debug (arc/bar code removed)
+  - P1DamageText (9th addon): floating combat numbers — white hit, yellow crit, orange DoT
+  - COMBAT_LOG + chat fallback · /p1dmg toggle · /p1dmg target|center position
+  - P1QuestNav: NEXT line under minimap — always shows #1 quest + direction + xp
+  - Auto TomTom to path #1 on login, quest complete, zone change
+  - v1.2.7 onboarding — 3 chat lines on first login after update
+  - PhaseOneLoader: damageTextEnabled default ON · /p1settings shows Damage row
 
 CHANGELOG (v1.2.6)
   - Smart defaults: all recommended features ON at login (no manual toggles)
@@ -59,8 +70,8 @@ CHANGELOG (v1.2.1)
   - Questie frame + tracking fallbacks when DB coords missing
 
 CHANGELOG (v1.2.0)
-  - Quest-only pack: 8 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeRadar,
-    P1AdventureGuide, Questie-335, TomTom, !Astrolabe)
+  - Quest-only pack: 9 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeDisplay,
+    P1DamageText, P1AdventureGuide, Questie-335, TomTom, !Astrolabe)
   - Removed from default install: P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras
   - PLAY.bat: minimal sync + cleanup-wow-addons.ps1 (moves conflicts to _disabled/)
   - Auto Q button moved to P1AutoQuest (top-right) — works without class HUD
@@ -73,24 +84,28 @@ INSTALL (players)
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
-  P1QuestNav (exp/min ranked pins + quest list + dotted line + TomTom arrow to #1)
+  P1QuestNav (NEXT line + exp/min pins + dotted line + TomTom arrow to #1)
   P1QuestPath (optimal route panel — xp + gear, /p1path)
-  P1RangeRadar (HUD range bar above action bars — default ON, /p1range test to verify)
+  P1RangeDisplay (target distance number — default ON, /p1range debug)
+  P1DamageText (floating damage numbers — default ON, /p1dmg)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
   P1 Adventure Guide — crafting mats + AH tips (/p1guide)
 
 TROUBLESHOOTING
-  Range bar invisible?       /p1range test — should flash red/green/yellow 3s
-  No map icons?             /p1questie  then open world map
-  No quest pins?            /p1nav debug — check ranked list + scores
-  No optimal path?          /p1path refresh — needs Questie loaded
-  Stuck TomTom arrow?       /p1fix
-  Hide range bar:           /p1range
-  Hide mats panel:          /p1guide
-  Hide path panel:          /p1path
-  Toggle all features:      /p1settings  ·  /p1settings all off
-  Toggle nav only:          /p1nav
-  Auto quest debug:         /p1quest
-  Minimal addon list:       /p1minimal
+  No distance number?          /p1range debug — check target + interact tiers
+  No damage numbers?           /p1dmg — toggle ON; hit a mob to test
+  No NEXT line?                /p1nav — ensure ON; needs Questie quest data
+  No map icons?                /p1questie  then open world map
+  No quest pins?               /p1nav debug — check ranked list + scores
+  No optimal path?             /p1path refresh — needs Questie loaded
+  Stuck TomTom arrow?          /p1fix
+  Hide range display:          /p1range
+  Hide damage text:             /p1dmg
+  Hide mats panel:             /p1guide
+  Hide path panel:              /p1path
+  Toggle all features:          /p1settings  ·  /p1settings all off
+  Toggle nav only:              /p1nav
+  Auto quest debug:             /p1quest
+  Minimal addon list:           /p1minimal
 
 GITHUB: https://github.com/zakksu/Warmane-WoW

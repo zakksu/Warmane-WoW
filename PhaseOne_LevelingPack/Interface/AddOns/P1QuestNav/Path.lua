@@ -4,7 +4,7 @@ P1QuestPathDB = P1QuestPathDB or { enabled = true }
 
 local MAX_PATH = 5
 local REFRESH_INTERVAL = 30
-local VERSION = "1.2.6"
+local VERSION = "1.2.7"
 
 local function SyncLoaderPath(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.pathEnabled = on end
