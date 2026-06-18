@@ -68,7 +68,12 @@ function TomTom_CreateArrow()
         end
 
         local pc, pz, px, py = ast:GetCurrentPlayerPosition()
-        if not pc then return end
+        if not pc then
+            self.title:SetText(wp.title or "Waypoint")
+            self.distance:SetText("")
+            self:Show()
+            return
+        end
 
         local wc, wz = wp.c or pc, wp.z or pz
         local wx, wy = wp.x, wp.y

@@ -30,6 +30,14 @@ function TomTom:AddWaypoint(mapId, x, y, options)
     x = NormalizeCoord(x)
     y = NormalizeCoord(y)
 
+    if QuestieCompat and QuestieCompat.TomTom_AddWaypoint and QuestieCompat.UiMapData and QuestieCompat.UiMapData[mapId] then
+        local uid = QuestieCompat.TomTom_AddWaypoint(options.title or options.desc or "Waypoint", mapId, x * 100, y * 100)
+        if uid and options.crazy ~= false then
+            self:SetActiveWaypoint(uid)
+        end
+        return uid
+    end
+
     self.uidCounter = self.uidCounter + 1
     local uid = self.uidCounter
 
@@ -103,7 +111,11 @@ end
 function TomTom:SetActiveWaypoint(uid)
     if self.waypoints[uid] then
         self.activeWaypoint = uid
-        if self.arrow then self.arrow:Show() end
+        if self.arrow then
+            self.arrow:SetFrameStrata("HIGH")
+            self.arrow:SetFrameLevel(200)
+            self.arrow:Show()
+        end
     end
 end
 

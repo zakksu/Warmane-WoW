@@ -222,6 +222,19 @@ function QuestieCompat.TomTom_AddWaypoint(title, zone, x, y)
     return TomTom:AddZWaypoint(QuestieCompat.Round(CZ%1 * 10), math.floor(CZ), x, y, title)
 end
 
+function QuestieCompat.AreaIdToCZ(areaId)
+    if not areaId or not QuestieCompat.UiMapData then return nil, nil end
+    local uiMapId = areaId
+    if ZoneDB and ZoneDB.GetUiMapIdByAreaId then
+        uiMapId = ZoneDB:GetUiMapIdByAreaId(areaId) or areaId
+    end
+    local data = QuestieCompat.UiMapData[uiMapId]
+    if not data or not data.mapID then return nil, nil end
+    local CZ = mapIdToCZ[data.mapID]
+    if not CZ then return nil, nil end
+    return math.floor(CZ), QuestieCompat.Round(CZ % 1 * 10)
+end
+
 -- This function will do its utmost to retrieve some sort of valid position
 -- for the player, including changing the current map zoom (if needed)
 -- https://wowpedia.fandom.com/wiki/API_C_Map.GetPlayerMapPosition?oldid=2167175

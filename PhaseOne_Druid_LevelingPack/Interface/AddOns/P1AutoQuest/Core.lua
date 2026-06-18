@@ -1,6 +1,7 @@
--- P1AutoQuest — Questie auto arrow + idle click-to-move (Warmane 3.3.5a)
--- Phases: available pickup → objectives → turn-in. Aggressive addon-API automation.
+-- P1AutoQuest — Questie auto accept/turn-in + target assist (Warmane 3.3.5a)
+-- Visual navigation (arrows, dotted line) handled by P1QuestNav.
 
+local autoWalk = false
 local IDLE_SECONDS = 1
 local RESCAN_INTERVAL = 2
 local MOVE_INTERVAL = 1.5
@@ -492,7 +493,10 @@ function P1AutoQuest_Refresh(force)
         TryQuestGiverInteract()
         return false
     end
-    local uid = SetTomTomWaypoint(target.title, target.zone, target.spawn[1], target.spawn[2])
+    local uid
+    if not P1QuestNav_Refresh then
+        uid = SetTomTomWaypoint(target.title, target.zone, target.spawn[1], target.spawn[2])
+    end
     status.enabled = IsAutoQuestOn()
     status.questId = target.questId
     status.questName = target.questName
@@ -504,12 +508,16 @@ function P1AutoQuest_Refresh(force)
     status.coordY = target.spawn[2]
     status.zoneId = target.zone
     status.lastRefresh = now
-    if not uid then
+    if P1QuestNav_Refresh then
+        status.whyNotMoving = "nav arrows active (see minimap)"
+    elseif not uid then
         status.whyNotMoving = "TomTom waypoint failed"
-    elseif not status.astrolabeLoaded then
+    elseif autoWalk and not status.astrolabeLoaded then
         status.whyNotMoving = "Astrolabe missing (no auto-walk)"
-    else
+    elseif autoWalk then
         status.whyNotMoving = "waiting idle " .. IDLE_SECONDS .. "s"
+    else
+        status.whyNotMoving = "auto-walk off — use minimap arrows"
     end
     return true
 end
@@ -593,6 +601,7 @@ local function UpdateStuckDetection(pc, pz, px, py)
 end
 
 local function TryAutoMove()
+    if not autoWalk then return end
     status.enabled = IsAutoQuestOn()
     if not status.enabled then
         status.whyNotMoving = "Auto Q off"
@@ -787,7 +796,7 @@ SlashCmdList["P1QUEST"] = function()
     P1AutoQuest_Refresh(true)
     local s = P1AutoQuest_GetStatus()
     local on = s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
-    print("|cff00ccffP1 Auto Quest|r v1.2.1 — " .. on)
+    print("|cff00ccffP1 Auto Quest|r v1.2.2 — " .. on)
     print("  Questie: " .. (s.questieLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  TomTom:  " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Astrolabe: " .. (s.astrolabeLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
@@ -804,7 +813,7 @@ SlashCmdList["P1QUEST"] = function()
     end
     print("  Distance: " .. string.format("%.0f", s.dist or 0) .. " yd")
     print("  Waypoint: " .. (s.waypoint and "set" or "|cffff0000none|r"))
-    print("  Auto-move: " .. (s.autoMove and "|cff00ff00active|r" or "idle/waiting"))
-    print("  Why not moving: " .. (s.whyNotMoving or "|cff00ff00ok|r"))
-    print("  |cffaaaaaaScope:|r pickup + objectives + turn-in; auto-target/interact within range")
+    print("  Auto-walk: " .. (autoWalk and (s.autoMove and "|cff00ff00active|r" or "idle/waiting") or "|cffaaaaaaOFF (use P1 Nav)|r"))
+    print("  Status: " .. (s.whyNotMoving or "|cff00ff00ok|r"))
+    print("  |cffaaaaaaScope:|r accept/turn-in + target assist; nav via |cff00ff00/p1nav|r")
 end

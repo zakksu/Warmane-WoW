@@ -19,6 +19,7 @@ if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | 
 $minimalFolders = @(
     "PhaseOneLoader",
     "P1AutoQuest",
+    "P1QuestNav",
     "P1AdventureGuide",
     "Questie-335",
     "TomTom",

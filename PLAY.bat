@@ -50,6 +50,8 @@ if /I "%~1"=="/FULL" set "SYNC_FLAG=-Full"
 if /I "%~1"=="FULL" set "SYNC_FLAG=-Full"
 if not exist "!ADDONS!\PhaseOneLoader" (
   echo First run - installing quest pack ^(!PACK!^)...
+) else if not exist "!ADDONS!\P1QuestNav" (
+  echo P1QuestNav missing - syncing quest pack ^(!PACK!^)...
 ) else if not exist "!ADDONS!\Questie-335" (
   echo Questie-335 missing - syncing quest pack ^(!PACK!^)...
 ) else if not exist "!ADDONS!\TomTom" (
@@ -88,7 +90,7 @@ echo ========================================
 echo  Done! Log in and type /reload
 echo ========================================
 echo.
-echo Quest pack: Questie + Auto Q + Mats guide only.
+echo Quest pack: Questie + Auto Q + Nav arrows + Mats guide only.
 echo Press any key to close (auto in 3s)...
 timeout /t 3 /nobreak >nul
 pause >nul

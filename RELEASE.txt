@@ -1,9 +1,19 @@
-Phase One Warmane Leveling Packs — v1.2.1
+Phase One Warmane Leveling Packs — v1.2.2
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.2)
+  - P1QuestNav: multi-quest visual navigation (up to 5 numbered minimap pins)
+  - Dotted path on minimap + world map to #1 priority target
+  - Color-coded by quest type (available/objective/turn-in) + slot hue
+  - Click minimap pin to set TomTom crazy arrow; /p1nav toggle + debug
+  - ClickToMove auto-walk disabled by default (broken on many private clients)
+  - TomTom arrow fix: QuestieCompat waypoint routing + always show on set
+  - QuestieCompat.AreaIdToCZ for correct Astrolabe minimap placement
+  - /p1auto now: accept/turn-in + quest arrows (not idle walk)
 
 CHANGELOG (v1.2.1)
   - Questie map POI fix: force enabled/map/minimap icons, WotLK map data, correct level filter
@@ -14,7 +24,7 @@ CHANGELOG (v1.2.1)
   - Questie frame + tracking fallbacks when DB coords missing
 
 CHANGELOG (v1.2.0)
-  - Quest-only pack: 6 addons (PhaseOneLoader, P1AutoQuest, P1AdventureGuide,
+  - Quest-only pack: 7 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide,
     Questie-335, TomTom, !Astrolabe)
   - Removed from default install: P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras
   - PLAY.bat: minimal sync + cleanup-wow-addons.ps1 (moves conflicts to _disabled/)
@@ -28,14 +38,17 @@ INSTALL (players)
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
-  P1AutoQuest (TomTom arrow + idle walk when Auto Q on)
+  P1QuestNav (numbered minimap arrows + dotted line + TomTom arrow to #1)
+  P1AutoQuest (accept/turn-in assist when Auto Q on)
   P1 Adventure Guide — crafting mats only (/p1guide)
 
 TROUBLESHOOTING
   No map icons?             /p1questie  then open world map
+  No quest arrows?          /p1nav debug — check tracked count
   Stuck TomTom arrow?       /p1fix
   Hide mats panel:          /p1guide
   Toggle auto quests:       /p1auto or Auto Q button
+  Toggle nav only:          /p1nav
   Auto quest debug:         /p1quest
   Minimal addon list:       /p1minimal
 

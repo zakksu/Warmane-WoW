@@ -3,15 +3,16 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.1"
+local PACK_VERSION = "1.2.2"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINES = {
     "|cff00ccff[" .. PACK_NAME .. "]|r Welcome!",
-    "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + TomTom arrow + idle walk.",
+    "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + numbered quest arrows.",
     "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
+    "|cffaaaaaaNav:|r numbered minimap pins + dotted line to #1 · |cff00ff00/p1nav|r · click pin for TomTom arrow.",
     "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + when to stock up.",
-    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1questie|r icons · |cff00ff00/p1minimal|r checklist.",
+    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1nav debug|r · |cff00ff00/p1questie|r · |cff00ff00/p1minimal|r.",
 }
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
@@ -48,9 +49,10 @@ local function SetAutoQuestEnabled(enabled)
     db.autoQuestEnabled = enabled
     ApplyAutoQuestToQuestie(enabled)
     if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(enabled) end
+    if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(enabled) end
     P1_AutoQuest_RefreshButtons()
     if enabled then
-        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — accept/turn-in, TomTom arrow, idle walk.")
+        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — accept/turn-in + quest arrows.")
     else
         print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — manual questing.")
     end
@@ -68,7 +70,7 @@ end
 
 local function PrintMinimalAddons()
     print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
-    print("  [x] PhaseOneLoader, P1AutoQuest, P1AdventureGuide")
+    print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide")
     print("  [x] Questie-335, TomTom, !Astrolabe")
     print("  [x] Load out of date AddOns")
     print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
@@ -240,7 +242,9 @@ loader:SetScript("OnEvent", function()
     Delay(2, function()
         ApplyAutoQuestToQuestie(IsAutoQuestEnabled())
         if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(IsAutoQuestEnabled()) end
+        if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(IsAutoQuestEnabled()) end
         if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
+        if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
         P1_AutoQuest_RefreshButtons()
     end)
     Delay(5, function() ForceQuestieIconRefresh() end)

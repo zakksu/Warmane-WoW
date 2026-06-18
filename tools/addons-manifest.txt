@@ -3,6 +3,7 @@
 
 PhaseOneLoader: 1
 P1AutoQuest: 1
+P1QuestNav: 1
 P1AdventureGuide: 1
 Questie-335: 1
 TomTom: 1
