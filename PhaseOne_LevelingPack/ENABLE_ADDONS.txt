@@ -4,13 +4,14 @@
 
 REQUIRED — check all:
   [x] PhaseOneLoader
-  [x] P1AdventureGuide
+  [x] P1AdventureGuide   <-- next action, profs, mats, rares
   [x] P1WarlockHUD         <-- built-in DoT tracker (no import!)
   [x] Questie-335
   [x] TomTom
   [x] !Astrolabe
   [x] Leatrix_Plus
-  [x] WeakAuras
+  [ ] WeakAuras              <-- OPTIONAL (P1 Warlock HUD replaces this)
+  [ ] WeakAurasOptions       <-- only if WeakAuras enabled
 
 OPTIONAL:
   [ ] Bagnon

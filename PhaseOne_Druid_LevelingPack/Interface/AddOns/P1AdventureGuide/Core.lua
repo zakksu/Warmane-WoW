@@ -33,8 +33,8 @@ end
 local function GetProfessions()
     local list = {}
     for i = 1, GetNumSkillLines() do
-        local name, _, _, rank, _, _, maxRank = GetSkillInfo(i)
-        if name and maxRank and maxRank > 0 and name ~= "Weapon Skills" and name ~= "Armor Skills" then
+        local name, isHeader, _, rank, _, _, maxRank = GetSkillLineInfo(i)
+        if name and not isHeader and maxRank and maxRank > 0 and name ~= "Weapon Skills" and name ~= "Armor Skills" then
             if not name:find("Languages") and name ~= "Riding" then
                 list[#list + 1] = { name = name, rank = rank or 0, max = maxRank or 0 }
             end

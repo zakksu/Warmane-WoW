@@ -108,14 +108,16 @@ SlashCmdList["P1FIX"] = function()
         TomTom.activeWaypoint = nil
         if TomTom.arrow then TomTom.arrow:Hide() end
     end
-    if WeakAuras and WeakAuras.Toggle and WeakAuras.IsPaused and not WeakAuras.IsPaused() then
+    if WeakAuras and WeakAuras.Toggle and (not WeakAuras.IsPaused or not WeakAuras.IsPaused()) then
         WeakAuras.Toggle()
-        print("|cff00ccffP1 Fix:|r WeakAuras paused. /p1fix again to un-pause.")
+        print("|cff00ccffP1 Fix:|r WeakAuras paused (stuck glows hidden). /p1fix again to un-pause.")
     elseif WeakAuras and WeakAuras.Toggle then
         WeakAuras.Toggle()
         print("|cff00ccffP1 Fix:|r WeakAuras un-paused.")
     end
-    print("|cff00ccffP1 Fix:|r Delete stuck aura: |cff00ff00/wa|r → select it → Delete.")
+    if _G.P1WarlockHUDFrame then _G.P1WarlockHUDFrame:Show() end
+    print("|cff00ccffP1 Fix:|r To delete stuck aura forever: |cff00ff00/wa|r → find it → Delete.")
+    print("|cffaaaaaaTip:|r You don't need WeakAuras — P1 Warlock HUD handles DoT alerts.")
 end
 
 local loader = CreateFrame("Frame")

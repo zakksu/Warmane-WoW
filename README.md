@@ -1,5 +1,7 @@
 # Warmane WotLK — Phase One Leveling Packs
 
+**Latest release: v1.1.0** (Jun 17, 2026) — see [RELEASE.txt](RELEASE.txt)
+
 Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
 
 ## Choose your pack
@@ -19,12 +21,13 @@ Install **one pack** per character (don't mix loaders unless you know what you'r
    - Or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
 2. Character select → **AddOns** → enable all → **Load out of date AddOns**
 3. Log in on your **Druid** → `/reload`
-4. **Done** — Questie, Leatrix, and **P1 Feral HUD** configure automatically (no WeakAuras import needed)
-5. `/p1d` for tips · `/p1hud` to toggle the HUD
+4. **Done** — Questie, Leatrix, **P1 Feral HUD**, and **P1 Adventure Guide** configure automatically (no WeakAuras import needed)
+5. `/p1d` for tips · `/p1hud` to toggle the HUD · `/p1guide` for the Adventure Guide
 
 Optional extra WeakAuras: `WeakAuras/Feral_MANUAL_SETUP.txt`
 
-Full guide: **[PhaseOne_Druid_LevelingPack/README.txt](PhaseOne_Druid_LevelingPack/README.txt)**
+Full guide: **[PhaseOne_Druid_LevelingPack/README.txt](PhaseOne_Druid_LevelingPack/README.txt)**  
+Class tips: **[HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt)**
 
 ---
 
@@ -33,12 +36,13 @@ Full guide: **[PhaseOne_Druid_LevelingPack/README.txt](PhaseOne_Druid_LevelingPa
 1. Copy `PhaseOne_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
    - Or run `PhaseOne_LevelingPack/INSTALL.bat`
 2. Same addon enable steps as above
-3. `/reload` on first login — **auto-configures** Questie, Leatrix, P1 Warlock HUD
-4. `/p1` for tips · `/p1whud` to toggle HUD
+3. `/reload` on first login — **auto-configures** Questie, Leatrix, P1 Warlock HUD, P1 Adventure Guide
+4. `/p1` for tips · `/p1whud` to toggle HUD · `/p1guide` for the Adventure Guide
 
 Optional WeakAuras: `PhaseOne_LevelingPack/WeakAuras/Warlock_MANUAL_SETUP.txt`
 
-Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.txt)**
+Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.txt)**  
+Class tips: **[HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt)**
 
 ---
 
@@ -49,12 +53,13 @@ Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.tx
 | **Questie-335** | Quest helper ([widxwer/Questie](https://github.com/widxwer/Questie) @ 335) |
 | **TomTom** + **!Astrolabe** | Waypoint arrow for Questie |
 | **Leatrix_Plus** | Auto-repair, auto-sell greys, QoL |
-| **WeakAuras** | Bunny67 [WotLK port](https://github.com/Bunny67/WeakAuras-WotLK) |
-| **P1FeralHUD** | Built-in energy/CP/debuff HUD (no import) |
+| **WeakAuras** | Bunny67 [WotLK port](https://github.com/Bunny67/WeakAuras-WotLK) — **optional** |
+| **P1FeralHUD** / **P1WarlockHUD** | Built-in rotation/DoT HUD (no import) |
+| **P1AdventureGuide** | Next action, profs, mats, zone rares — `/p1guide` |
 | **PhaseOneLoader** | Auto presets + welcome |
 | *Bagnon* / *Auctionator* | Optional |
 
-**Target:** 5–6 core addons + 2 optional.
+**Target:** 5–6 core addons + 2 optional. WeakAuras is bundled but not required — P1 HUDs cover the basics.
 
 ---
 
@@ -62,11 +67,11 @@ Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.tx
 
 - **Questie:** ±4 levels, sort by proximity, hide completed in tracker
 - **Leatrix Plus:** Auto-repair, auto-sell junk, faster loot, FPS-friendly options
-- **P1 Feral HUD:** Energy, combo points, Rip/Rake/Mangle alerts — appears automatically
+- **P1 Feral HUD / P1 Warlock HUD:** Energy/CP or DoT alerts — appears automatically
 - **P1 Adventure Guide:** Next best action, professions, mat counts, zone rares — `/p1guide`  
   Preview and tab details: **[Docs/ADVENTURE_GUIDE.md](Docs/ADVENTURE_GUIDE.md)**
 
-WeakAuras is included but **optional** (for advanced customization). Stuck icon/glow? `/p1fix`
+**WeakAuras is optional** (for advanced customization). Stuck icon or glow on screen? Type **`/p1fix`**.
 
 ---
 
@@ -78,7 +83,18 @@ WeakAuras is included but **optional** (for advanced customization). Stuck icon/
 - **Movement:** Dash to engage/escape; Prowl + Ravage when safe
 - **Horde route:** Mulgore/Durotar → Barrens → Stonetalon → Thousand Needles
 
-Details: `PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt`
+Details: [PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt)
+
+---
+
+## Warlock beginner highlights
+
+- **1–10:** Corruption + Wand; Immolate when mana allows
+- **10+:** Drain Tank with Siphon Life + Corruption; Life Tap between pulls
+- **Pets:** Voidwalker for safety; Felhunter when comfortable
+- **Horde route:** Durotar → Barrens → Stonetalon → Thousand Needles
+
+Details: [PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt)
 
 ---
 

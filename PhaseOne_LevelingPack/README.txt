@@ -9,11 +9,13 @@ WHAT YOU GET (lightweight — 8 addons)
     TomTom          Waypoint arrow (works with Questie)
     !Astrolabe      Map library (required by TomTom)
     Leatrix_Plus    QoL: auto-repair, auto-sell greys, faster loot
-    WeakAuras       Aura framework (Bunny67 WotLK build)
     PhaseOneLoader  Welcome + presets on first login
     P1WarlockHUD    DoT tracker (Corruption/Immolate/CoA) — no import!
+    P1AdventureGuide  Next action, profs, mats, rare mobs (/p1guide)
 
   [Optional — enable only if you want them]
+    WeakAuras       Aura framework (Bunny67 WotLK build) — not required
+    WeakAurasOptions  Only if WeakAuras enabled
     Bagnon          Combined bags (search/sort)
     Auctionator     Simple auction house helper
 
@@ -56,11 +58,14 @@ STEP 3 — ENABLE ADDONS AT LOGIN
   3. Check: "Load out of date AddOns"  <-- REQUIRED
   4. Enable these (check each box):
        PhaseOneLoader
+       P1AdventureGuide
+       P1WarlockHUD
        Questie-335
        TomTom
        !Astrolabe
        Leatrix_Plus
-       WeakAuras
+       WeakAuras       (optional — P1 Warlock HUD replaces this)
+       WeakAurasOptions (optional — only if WeakAuras enabled)
        Bagnon          (optional)
        Auctionator     (optional)
   5. Click OK and log in
@@ -76,7 +81,7 @@ STEP 4 — RELOAD UI
   You should see a welcome message from Phase One Pack.
 
 ================================================================================
-STEP 5 — IMPORT WEAKAURAS (Warlock helpers)
+STEP 5 — IMPORT WEAKAURAS (optional — skip if using P1 Warlock HUD)
 ================================================================================
   1. Type: /wa
   2. Click "Import"
@@ -156,6 +161,11 @@ TROUBLESHOOTING
   Lua errors?
     /console scriptErrors 1
     Screenshot error and check GitHub issues
+
+  Stuck icon/glow on screen?
+    /p1fix  (pauses WeakAuras + clears TomTom arrow)
+    /wa → select the aura → Delete
+    Or disable WeakAuras at character select (P1 Warlock HUD is enough)
 
 ================================================================================
 GITHUB: https://github.com/zakksu/Warmane-WoW
