@@ -1,9 +1,14 @@
-Phase One Warmane Leveling Packs — v1.3.0
+Phase One Warmane Leveling Packs — v1.3.1
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.3.1)
+  - BIS / BUILD: real Horde druid item names + quest sources (lvl 10-40)
+  - Named upgrades: Staff of Nobles, Crescent Staff, Horn of the Beast, Pole of the Ages
+  - GATHER AH tips refined when mats low
 
 CHANGELOG (v1.3.0)
   - MAJOR PIVOT: range + damage HUD removed (P1RangeDisplay, P1DamageText)

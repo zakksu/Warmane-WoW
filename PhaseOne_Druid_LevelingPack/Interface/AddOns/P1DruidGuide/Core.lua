@@ -7,7 +7,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.3.0"
+local VERSION = "1.3.1"
 local panel, headerText, bodyText, resizeGrip
 local guideVisible = true
 
@@ -279,8 +279,9 @@ local function BuildBisLines(playerLevel, lines)
         local equipped = GetEquippedIlvl(slot.equipSlot)
         local color = BisStatusColor(equipped, slot.minIlvl)
         local ilvlTag = slot.equipSlot and string.format(" (eq %d)", equipped) or ""
-        table.insert(lines, string.format("  %s%s:|r %s%s |cff666666[%s]|r",
-            color, slot.key, slot.suggest, ilvlTag, slot.source or ""))
+        local nameTag = slot.itemName and (" — " .. slot.itemName) or ""
+        table.insert(lines, string.format("  %s%s:|r %s%s%s |cff666666[%s]|r",
+            color, slot.key, slot.suggest, nameTag, ilvlTag, slot.source or ""))
     end
 end
 

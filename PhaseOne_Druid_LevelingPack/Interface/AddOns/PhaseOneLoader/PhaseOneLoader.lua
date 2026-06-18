@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.3.0-druid"
+local PACK_VERSION = "1.3.1-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
 local WELCOME_LINE = "|cff00ccffP1 Druid Guide ready|r — |cff00ff00/p1guide|r toggle · |cff00ff00/p1settings|r"
