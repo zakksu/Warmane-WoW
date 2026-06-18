@@ -26,7 +26,7 @@ These stay in the repo for optional manual use but **PLAY.bat does not copy them
 
 1. `git pull origin main`
 2. `sync-addons.ps1` — copies only the 6 folders above (use `PLAY.bat FULL` for dev full mirror)
-3. `cleanup-wow-addons.ps1` — disables non-manifest addons
+3. `cleanup-wow-addons.ps1` — moves manifest-OFF addons (HUD, Leatrix, WeakAuras, Bagnon, etc.) to `_disabled/`
 4. `write-addons-txt.ps1` — enables the 6 addons in `WTF/Account/*/AddOns.txt`
 
 Then log in and type **`/reload`**.
