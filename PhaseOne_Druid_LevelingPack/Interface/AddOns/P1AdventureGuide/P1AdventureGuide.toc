@@ -2,7 +2,7 @@
 ## Title: |cff00ccffP1 Adventure Guide|r
 ## Notes: Crafting mats with consumable credit and level milestones — Phase One helper.
 ## Author: zakksu
-## Version: 1.2.4
+## Version: 1.2.5
 ## SavedVariables: P1AdventureGuideDB
 ## OptionalDeps: P1FeralHUD, P1WarlockHUD
 

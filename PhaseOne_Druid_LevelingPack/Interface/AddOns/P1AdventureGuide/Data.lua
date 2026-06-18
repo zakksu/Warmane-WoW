@@ -85,3 +85,22 @@ P1AG.PROF_TIPS = {
     ["First Aid"] = "Turn linen into bandages — free heals.",
     ["Tailoring"] = "Linen bags sell well on Icecrown AH.",
 }
+
+-- Auction House speed-up tips (Horde druid leveling, lvl 11+)
+P1AG.AH_TIPS = {
+    { levelMin = 11, levelMax = 20, itemId = 2589, itemName = "Linen Cloth",
+      tip = "Buy: Linen stacks if <20 total healing", skipIfHave = 20,
+      checkBandages = true },
+    { levelMin = 11, levelMax = 20, itemId = 118, itemName = "Minor Healing Potion",
+      tip = "Buy: Minor Healing Potion — sustain between pulls", goal = 10 },
+    { levelMin = 15, levelMax = 30, itemId = 2592, itemName = "Wool Cloth",
+      tip = "Buy: Wool Cloth stacks for FA 75+", goal = 40 },
+    { levelMin = 11, levelMax = 25, itemName = "BoE +Agi weapon",
+      tip = "Buy: BoE +Agi 2H Mace ilvl 15-20 (~5g) — big dps boost",
+      searchHint = "Agility", equipSlot = 16, minIlvl = 15, maxIlvl = 22, isGeneric = true },
+    { levelMin = 25, levelMax = 35, itemId = 2459, itemName = "Swiftness Potion",
+      tip = "Buy: Swiftness Potion for long travel legs", goal = 5 },
+    { levelMin = 11, levelMax = 30, itemName = "Overpriced greens",
+      tip = "Skip: overpriced greens >10g — quest rewards are enough",
+      alwaysShow = true, skipOnly = true },
+}

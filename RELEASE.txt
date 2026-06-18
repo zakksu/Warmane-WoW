@@ -1,9 +1,17 @@
-Phase One Warmane Leveling Packs — v1.2.4
+Phase One Warmane Leveling Packs — v1.2.5
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.5)
+  - P1RangeRadar: nuclear visibility fix — no WHITE8X8 (missing in 3.3.5)
+  - 200x40 HUD bar at bottom center (offset 120px) using UI-StatusBar + FontString arc
+  - 2s "P1 Range loaded" splash on login; /p1range test flashes red/green/yellow 3s
+  - P1QuestPath: optimal quest route panel (/p1path) — xp, gear upgrades, chain bonus
+  - Scores available + active quests; click line for TomTom; refreshes every 30s
+  - P1AdventureGuide: AH TIPS section (lvl 11+) — linen, potions, BoE +Agi, swiftness
 
 CHANGELOG (v1.2.4)
   - P1RangeRadar: visible 2D HUD arc above action bars (TOOLTIP strata, no SetRotation)
@@ -58,16 +66,20 @@ INSTALL (players)
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
   P1QuestNav (exp/min ranked pins + quest list + dotted line + TomTom arrow to #1)
-  P1RangeRadar (2D HUD range arc above action bars — default ON)
+  P1QuestPath (optimal route panel — xp + gear, /p1path)
+  P1RangeRadar (HUD range bar above action bars — default ON, /p1range test to verify)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
-  P1 Adventure Guide — crafting mats only (/p1guide)
+  P1 Adventure Guide — crafting mats + AH tips (/p1guide)
 
 TROUBLESHOOTING
+  Range bar invisible?       /p1range test — should flash red/green/yellow 3s
   No map icons?             /p1questie  then open world map
   No quest pins?            /p1nav debug — check ranked list + scores
+  No optimal path?          /p1path refresh — needs Questie loaded
   Stuck TomTom arrow?       /p1fix
-  Hide range arc:           /p1range
+  Hide range bar:           /p1range
   Hide mats panel:          /p1guide
+  Hide path panel:          /p1path
   Toggle auto quests:       /p1auto or Auto Q button
   Toggle nav only:          /p1nav
   Auto quest debug:         /p1quest

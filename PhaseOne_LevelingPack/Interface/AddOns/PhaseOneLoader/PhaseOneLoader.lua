@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.3"
+local PACK_VERSION = "1.2.5"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINES = {
@@ -11,8 +11,9 @@ local WELCOME_LINES = {
     "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + numbered quest arrows.",
     "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
     "|cffaaaaaaNav:|r exp/min ranked pins 1-5 + list left of minimap · |cff00ff00/p1nav|r · click pin for TomTom.",
-    "|cffaaaaaaRange:|r melee/spell arc under char · |cff00ff00/p1range|r toggle (green=in, yellow=spell out, red=melee out).",
-    "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + when to stock up.",
+    "|cffaaaaaaRange:|r HUD bar above action bars · |cff00ff00/p1range|r · |cff00ff00/p1range test|r to verify.",
+    "|cffaaaaaaPath:|r optimal quest route (xp + gear) · |cff00ff00/p1path|r below mats panel.",
+    "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + AH tips lvl 11+.",
     "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1nav debug|r · |cff00ff00/p1questie|r · |cff00ff00/p1minimal|r.",
 }
 

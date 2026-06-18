@@ -899,7 +899,19 @@ SlashCmdList["P1NAV"] = function(msg)
         P1QuestNav_SetEnabled(not enabled)
     end
     local s = P1QuestNav_GetStatus()
-    print("|cff00ccffP1 Nav|r v1.2.3 — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
+    print("|cff00ccffP1 Nav|r v1.2.5 — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
     print("  Tracked: " .. #s.tracked .. " ranked quests · dotted line to #1")
     print("  Click minimap pin to switch TomTom arrow · /p1nav debug for scores")
+    print("  Optimal route: |cff00ff00/p1path|r — xp + gear ranked path panel")
 end
+
+P1QuestNav_API = {
+    LoadQuestie = LoadQuestieModules,
+    FindAvailable = FindAvailableQuestTargets,
+    FindActive = FindActiveQuestTargets,
+    ScoreQuest = ScoreQuest,
+    SetWaypoint = SetTomTomWaypoint,
+    GetHBD = GetHBD,
+    GetQuestXP = GetQuestXP,
+    AreaIdToCZ = AreaIdToCZ,
+}

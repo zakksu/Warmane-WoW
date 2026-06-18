@@ -158,6 +158,49 @@ local function BuildMatWatchLines(playerLevel, lines)
     end
 end
 
+local function GetEquippedIlvl(slot)
+    local link = GetInventoryItemLink("player", slot)
+    if not link then return 0 end
+    local _, _, _, level = GetItemInfo(link)
+    return level or 0
+end
+
+local function BuildAHTipsLines(playerLevel, lines)
+    local bandMin = math.max(11, playerLevel)
+    local bandMax = playerLevel + 10
+    table.insert(lines, "|cff00ccffAH TIPS|r (lvl " .. bandMin .. "-" .. bandMax .. ")")
+
+    local shown = 0
+    for _, tip in ipairs(P1AG.AH_TIPS) do
+        if playerLevel >= tip.levelMin and playerLevel <= tip.levelMax + 5 then
+            if tip.levelMax >= bandMin and tip.levelMin <= bandMax then
+                local gray = false
+                if tip.itemId and tip.equipSlot then
+                    gray = GetEquippedIlvl(tip.equipSlot) >= (tip.maxIlvl or 99)
+                elseif tip.itemId and tip.goal then
+                    gray = CountItemInBags(tip.itemId) >= tip.goal
+                elseif tip.checkBandages then
+                    local tier = PickFaTier(playerLevel, GetFirstAidSkill())
+                    if tier then
+                        local total = CountItemInBags(tier.clothId) + CountBandageCredit(tier.bandageIds)
+                        gray = total >= (tip.skipIfHave or 20)
+                    end
+                elseif tip.isGeneric and tip.equipSlot then
+                    gray = GetEquippedIlvl(tip.equipSlot) >= (tip.maxIlvl or 22)
+                end
+
+                local prefix = tip.skipOnly and "  |cff888888" or (gray and "  |cff666666" or "  |cffffffff")
+                local suffix = gray and " (have better)|r" or "|r"
+                table.insert(lines, prefix .. "• " .. tip.tip .. suffix)
+                shown = shown + 1
+            end
+        end
+    end
+    if shown == 0 then
+        table.insert(lines, "  |cff888888No AH tips for this level yet|r")
+    end
+end
+
 local function BuildMatsContent()
     if not contentText then return end
     local lvl = UnitLevel("player")
@@ -169,6 +212,10 @@ local function BuildMatsContent()
     table.insert(lines, "")
     table.insert(lines, "|cff00ccffOTHER MATS|r")
     BuildMatWatchLines(lvl, lines)
+    if lvl >= 11 then
+        table.insert(lines, "")
+        BuildAHTipsLines(lvl, lines)
+    end
 
     contentText:SetText(table.concat(lines, "\n"))
     if content then

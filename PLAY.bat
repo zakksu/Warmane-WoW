@@ -92,7 +92,7 @@ echo ========================================
 echo  Done! Log in and type /reload
 echo ========================================
 echo.
-echo Quest pack: Questie + Auto Q + Nav + Range radar + Mats guide.
+echo Quest pack: Questie + Auto Q + Nav + Path + Range radar + Mats guide.
 echo Press any key to close (auto in 3s)...
 timeout /t 3 /nobreak >nul
 pause >nul
