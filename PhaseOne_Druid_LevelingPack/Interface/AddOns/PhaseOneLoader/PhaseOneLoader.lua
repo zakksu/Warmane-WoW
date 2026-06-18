@@ -43,6 +43,8 @@ local function ApplyQuestiePresets()
     p.enableObjectives = true
     p.hideIconsOnContinents = false
     p.nameplateEnabled = false
+    p.autoaccept = true
+    p.autocomplete = true
 
     if Questie.db.char then
         Questie.db.char.complete = Questie.db.char.complete or {}

@@ -109,6 +109,9 @@ STEP 6 — QUESTIE + TOMTOM QUICK USE
     - Tracker sorted by distance
     - Completed quests hidden in tracker
 
+  Quest auto-accept/turn-in is via Questie (/questie → Auto tab), not Leatrix
+  Automate quests (unreliable on 3.3.5).
+
 ================================================================================
 STEP 7 — LEATRIX PLUS
 ================================================================================

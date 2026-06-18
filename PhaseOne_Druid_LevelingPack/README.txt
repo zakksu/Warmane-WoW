@@ -68,6 +68,9 @@ STEP 5 — PLAY (no extra setup required!)
     - Leatrix (auto repair, auto sell greys, faster loot)
     - P1 Feral HUD (energy bar, combo points, Rip/Rake/Mangle alerts)
 
+  Quest auto-accept/turn-in is via Questie (/questie → Auto tab), not Leatrix
+  Automate quests (unreliable on 3.3.5).
+
   You will see a welcome message and the HUD near bottom-center.
   Drag the HUD to move it. /p1hud toggles it.
 
