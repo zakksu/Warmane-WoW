@@ -1,5 +1,5 @@
 -- P1QuestNav — visual multi-quest navigation (Warmane 3.3.5a)
--- Minimap numbered arrows, dotted path to #1, TomTom crazy arrow on click / priority refresh.
+-- Numbered minimap pins, exp/min ranking, dotted path to #1, TomTom arrow.
 
 P1QuestNavDB = P1QuestNavDB or { enabled = true }
 
@@ -7,8 +7,11 @@ local MAX_TRACKED = 5
 local REFRESH_INTERVAL = 1.5
 local REFRESH_THROTTLE = 0.35
 local AVAIL_CACHE_TTL = 3
-local DOT_COUNT = 14
-local LINE_DOT_SIZE = 4
+local DOT_COUNT = 12
+local LINE_DOT_SIZE = 6
+local PIN_SIZE = 28
+local RUN_SPEED = 7
+local KILL_SEC_PER_OBJ = 30
 
 local MODE_COLORS = {
     available = { 1.0, 0.92, 0.15 },
@@ -35,8 +38,10 @@ local minimapDots = {}
 local worldDots = {}
 local pinFrames = {}
 local legendLines = {}
+local legendDots = {}
+local worldBadges = {}
 
-local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, HBD
+local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, QuestXP, HBD
 local LoadQuestieModules
 
 local function GetAstrolabe()
@@ -74,6 +79,10 @@ local function BlendColor(mode, slot)
     return (mc[1] + sc[1]) * 0.5, (mc[2] + sc[2]) * 0.5, (mc[3] + sc[3]) * 0.5
 end
 
+local function ColorHex(r, g, b)
+    return string.format("|cff%02x%02x%02x", math.floor(r * 255), math.floor(g * 255), math.floor(b * 255))
+end
+
 local function TruncateName(name, maxLen)
     if not name then return "?" end
     if #name <= maxLen then return name end
@@ -94,6 +103,10 @@ LoadQuestieModules = function()
         ok, ZoneDB = pcall(function() return QuestieLoader:ImportModule("ZoneDB") end)
         if not ok then ZoneDB = nil end
     end
+    if not QuestXP then
+        ok, QuestXP = pcall(function() return QuestieLoader:ImportModule("QuestXP") end)
+        if not ok then QuestXP = nil end
+    end
     QuestieCompat = _G.QuestieCompat
     GetHBD()
     return Questie and Questie.db and Questie.db.profile
@@ -102,14 +115,93 @@ end
 local function AreaIdToCZ(areaId)
     if not areaId then return nil, nil end
     if QuestieCompat and QuestieCompat.AreaIdToCZ then
-        return QuestieCompat.AreaIdToCZ(areaId)
+        local c, z = QuestieCompat.AreaIdToCZ(areaId)
+        if c then return c, z end
     end
-    if not ZoneDB or not QuestieCompat or not QuestieCompat.UiMapData then return nil, nil end
-    local uiMapId = ZoneDB:GetUiMapIdByAreaId(areaId)
-    if not uiMapId then return nil, nil end
-    local data = QuestieCompat.UiMapData[uiMapId]
-    if not data or not data.mapID then return nil, nil end
+    local ast = GetAstrolabe()
+    if ast and ast.GetCurrentPlayerPosition then
+        local c, z = ast:GetCurrentPlayerPosition()
+        if c and c >= 0 then return c, z end
+    end
     return nil, nil
+end
+
+local function GetQuestXP(questId)
+    if QuestXP and QuestXP.GetQuestLogRewardXP then
+        local xp = QuestXP:GetQuestLogRewardXP(questId, true)
+        if xp and xp > 0 then return xp end
+    end
+    if QuestieDB and QuestieDB.QueryQuestSingle then
+        local lvl = QuestieDB.QueryQuestSingle(questId, "questLevel") or 1
+        if QuestXP and QuestXP.db and QuestXP.db[questId] then
+            return QuestXP:GetQuestLogRewardXP(questId, true)
+        end
+    end
+    for i = 1, GetNumQuestLogEntries() do
+        local _, _, _, _, _, _, _, qid = GetQuestLogTitle(i)
+        if qid == questId then
+            SelectQuestLogEntry(i)
+            local xp = GetQuestLogRewardXP()
+            if xp and xp > 0 then return xp end
+            break
+        end
+    end
+    return 0
+end
+
+local function GetQuestProgress(questId)
+    for i = 1, GetNumQuestLogEntries() do
+        local title, _, _, _, _, complete, _, qid = GetQuestLogTitle(i)
+        if qid == questId then
+            SelectQuestLogEntry(i)
+            local num = GetNumQuestLeaderBoards()
+            if num == 0 then
+                if complete == 1 or complete == -1 then return "done", 0 end
+                return "?", 1
+            end
+            local remaining = 0
+            local parts = {}
+            for j = 1, num do
+                local text, _, finished = GetQuestLogLeaderBoard(j)
+                if finished then
+                    parts[#parts + 1] = text or "?"
+                else
+                    remaining = remaining + 1
+                    local cur, need = string.match(text or "", "(%d+)/(%d+)")
+                    if cur and need then
+                        parts[#parts + 1] = cur .. "/" .. need
+                    else
+                        parts[#parts + 1] = text or "?"
+                    end
+                end
+            end
+            return table.concat(parts, ", "), remaining
+        end
+    end
+    return "", 2
+end
+
+local function ScoreQuest(entry)
+    local xp = GetQuestXP(entry.questId)
+    if entry.mode == "available" and xp == 0 then
+        local lvl = QuestieDB and QuestieDB.QueryQuestSingle(entry.questId, "questLevel") or 5
+        xp = math.max(50, lvl * 40)
+    end
+    local dist = entry.dist or 500
+    local travelTime = dist / RUN_SPEED
+    local prog, remaining = GetQuestProgress(entry.questId)
+    if entry.mode == "available" then remaining = 2 end
+    if entry.mode == "turn-in" then remaining = 0 end
+    local killTime = remaining * KILL_SEC_PER_OBJ
+    local totalTime = math.max(15, travelTime + killTime)
+    local score = xp / totalTime
+    entry.xp = xp
+    entry.progress = prog
+    entry.remainingObjs = remaining
+    entry.travelTime = travelTime
+    entry.killTime = killTime
+    entry.score = score
+    return score
 end
 
 local function ConsiderStarterSpawns(spawns, areaId, name, playerX, playerY, playerI, best)
@@ -306,7 +398,10 @@ local function CollectTrackedQuests()
     if #list == 0 and not HasIncompleteActiveQuest() then
         list = FindAvailableQuestTargets()
     end
-    table.sort(list, function(a, b) return (a.dist or 999999) < (b.dist or 999999) end)
+    for _, entry in ipairs(list) do
+        ScoreQuest(entry)
+    end
+    table.sort(list, function(a, b) return (a.score or 0) > (b.score or 0) end)
     local out = {}
     for i = 1, math.min(MAX_TRACKED, #list) do
         out[i] = list[i]
@@ -345,20 +440,32 @@ local function SetTomTomWaypoint(target)
     return uid
 end
 
+local function GetMinimapParent()
+    return MinimapCluster or Minimap
+end
+
 local function EnsurePinFrames()
+    local parent = Minimap
     for i = 1, MAX_TRACKED do
         if not pinFrames[i] then
-            local pin = CreateFrame("Button", "P1QuestNavPin" .. i, Minimap)
-            pin:SetSize(22, 22)
-            pin:SetFrameStrata("TOOLTIP")
+            local pin = CreateFrame("Button", "P1QuestNavPin" .. i, parent)
+            pin:SetSize(PIN_SIZE, PIN_SIZE)
+            pin:SetFrameStrata("FULLSCREEN_DIALOG")
+            pin:SetFrameLevel(parent:GetFrameLevel() + 30 + i)
             pin.slot = i
             local bg = pin:CreateTexture(nil, "BACKGROUND")
-            bg:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-            bg:SetSize(22, 22)
+            bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+            bg:SetSize(PIN_SIZE - 4, PIN_SIZE - 4)
             bg:SetPoint("CENTER")
             pin.bg = bg
-            local num = pin:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-            num:SetPoint("CENTER", 0, 1)
+            local ring = pin:CreateTexture(nil, "BORDER")
+            ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+            ring:SetSize(PIN_SIZE + 2, PIN_SIZE + 2)
+            ring:SetPoint("CENTER")
+            pin.ring = ring
+            local num = pin:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            num:SetPoint("CENTER", 0, 0)
+            num:SetFontObject("GameFontNormal")
             pin.numText = num
             pin:SetScript("OnEnter", function(self)
                 local t = tracked[self.slot]
@@ -367,6 +474,7 @@ local function EnsurePinFrames()
                     GameTooltip:SetText(t.slot .. ". " .. (t.questName or "?"), 1, 1, 1)
                     GameTooltip:AddLine(t.title or "", 0.8, 0.8, 0.8)
                     if t.dist then GameTooltip:AddLine(string.format("%.0f yd", t.dist), 0.6, 0.9, 1) end
+                    if t.xp then GameTooltip:AddLine(string.format("%d xp · score %.1f", t.xp, t.score or 0), 0.9, 0.85, 0.4) end
                     GameTooltip:AddLine("Click: TomTom arrow", 0.5, 1, 0.5)
                     GameTooltip:Show()
                 end
@@ -381,10 +489,34 @@ local function EnsurePinFrames()
     end
 end
 
+local function PlacePinOnEdge(pin, target)
+    local ast = GetAstrolabe()
+    if not ast or not target or not target.spawn then
+        pin:Hide()
+        return false
+    end
+    local pc, pz, px, py = ast:GetCurrentPlayerPosition()
+    if not pc then pin:Hide(); return false end
+    local wc, wz = AreaIdToCZ(target.zone)
+    if not wc then wc, wz = pc, pz end
+    local wx, wy = target.spawn[1] / 100, target.spawn[2] / 100
+    if ast.TranslateWorldMapPosition then
+        wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
+    end
+    local angle = math.atan2(wx - px, -(wy - py))
+    local radius = (Minimap:GetWidth() / 2) - 14
+    pin:ClearAllPoints()
+    pin:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * radius, -math.cos(angle) * radius)
+    pin:Show()
+    pin.onEdge = true
+    return true
+end
+
 local function EnsureMinimapDots()
     if #minimapDots >= DOT_COUNT then return end
     for i = #minimapDots + 1, DOT_COUNT do
         local t = Minimap:CreateTexture(nil, "OVERLAY")
+        t:SetDrawLayer("OVERLAY", 7)
         t:SetTexture("Interface\\Buttons\\WHITE8X8")
         t:SetSize(LINE_DOT_SIZE, LINE_DOT_SIZE)
         t:Hide()
@@ -397,7 +529,7 @@ local function EnsureWorldDots()
     for i = #worldDots + 1, DOT_COUNT do
         local t = WorldMapFrame:CreateTexture(nil, "OVERLAY")
         t:SetTexture("Interface\\Buttons\\WHITE8X8")
-        t:SetSize(LINE_DOT_SIZE + 1, LINE_DOT_SIZE + 1)
+        t:SetSize(LINE_DOT_SIZE + 2, LINE_DOT_SIZE + 2)
         t:Hide()
         worldDots[i] = t
     end
@@ -411,47 +543,73 @@ local function HideAllVisuals()
     end
     for _, d in ipairs(minimapDots) do d:Hide() end
     for _, d in ipairs(worldDots) do d:Hide() end
+    for _, badge in pairs(worldBadges) do badge:Hide() end
     if P1QuestNavLegend then P1QuestNavLegend:Hide() end
+end
+
+local function AnchorLegend()
+    if not P1QuestNavLegend then return end
+    P1QuestNavLegend:ClearAllPoints()
+    local anchor = GetMinimapParent()
+    if Questie_BaseFrame and Questie_BaseFrame:IsShown() then
+        P1QuestNavLegend:SetPoint("TOPRIGHT", Questie_BaseFrame, "TOPLEFT", -6, 0)
+    else
+        P1QuestNavLegend:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMLEFT", -4, 4)
+    end
 end
 
 local function UpdateLegend()
     if not P1QuestNavLegend then
         local f = CreateFrame("Frame", "P1QuestNavLegend", UIParent)
-        f:SetSize(220, MAX_TRACKED * 14 + 8)
-        f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 12, 130)
+        f:SetSize(260, MAX_TRACKED * 18 + 12)
+        f:SetFrameStrata("MEDIUM")
         f:SetBackdrop({
             bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
             tile = true, tileSize = 16, edgeSize = 10,
-            insets = { left = 3, right = 3, top = 3, bottom = 3 },
+            insets = { left = 4, right = 4, top = 4, bottom = 4 },
         })
-        f:SetBackdropColor(0.05, 0.05, 0.08, 0.75)
-        f:SetBackdropBorderColor(0.25, 0.55, 0.75, 0.6)
+        f:SetBackdropColor(0.04, 0.04, 0.07, 0.82)
+        f:SetBackdropBorderColor(0.25, 0.55, 0.75, 0.65)
+        local hdr = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        hdr:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -6)
+        hdr:SetText("|cff00ccffP1 Nav|r — exp/min priority")
         for i = 1, MAX_TRACKED do
+            local dot = f:CreateTexture(nil, "ARTWORK")
+            dot:SetTexture("Interface\\Buttons\\WHITE8X8")
+            dot:SetSize(10, 10)
+            dot:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -22 - (i - 1) * 18)
+            legendDots[i] = dot
             local line = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            line:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -6 - (i - 1) * 14)
+            line:SetPoint("LEFT", dot, "RIGHT", 6, 0)
             line:SetJustifyH("LEFT")
-            line:SetWidth(200)
+            line:SetWidth(220)
             legendLines[i] = line
         end
     end
+    AnchorLegend()
     local shown = 0
     for i = 1, MAX_TRACKED do
         local t = tracked[i]
         local line = legendLines[i]
-        if t and line then
+        local dot = legendDots[i]
+        if t and line and dot then
             local r, g, b = BlendColor(t.mode, t.slot)
-            line:SetText(string.format("|cff%02x%02x%02x%d|r %s",
-                math.floor(r * 255), math.floor(g * 255), math.floor(b * 255),
-                t.slot, TruncateName(t.questName, 26)))
+            dot:SetVertexColor(r, g, b)
+            dot:Show()
+            local prog = t.progress and t.progress ~= "" and (" (" .. t.progress .. ")") or ""
+            local xpTag = t.xp and t.xp > 0 and string.format(" [%dxp]", t.xp) or ""
+            line:SetText(string.format("%s%d.|r %s%s%s",
+                ColorHex(r, g, b), t.slot, TruncateName(t.questName, 22), prog, xpTag))
             line:Show()
             shown = shown + 1
-        elseif line then
-            line:Hide()
+        else
+            if line then line:Hide() end
+            if dot then dot:Hide() end
         end
     end
     if shown > 0 then
-        P1QuestNavLegend:SetHeight(shown * 14 + 10)
+        P1QuestNavLegend:SetHeight(shown * 18 + 28)
         P1QuestNavLegend:Show()
     else
         P1QuestNavLegend:Hide()
@@ -484,7 +642,7 @@ local function UpdateMinimapLine(target)
         local dist = radius * frac
         dot:ClearAllPoints()
         dot:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * dist, -math.cos(angle) * dist)
-        dot:SetVertexColor(r, g, b, 0.55 + frac * 0.35)
+        dot:SetVertexColor(r, g, b, 0.65 + frac * 0.35)
         dot:Show()
     end
 end
@@ -520,33 +678,85 @@ local function UpdateWorldMapLine(target)
         local y = nPy + (nWy - nPy) * frac
         dot:ClearAllPoints()
         dot:SetPoint("CENTER", WorldMapButton, "TOPLEFT", x * w, -y * h)
-        dot:SetVertexColor(r, g, b, 0.5 + frac * 0.4)
+        dot:SetVertexColor(r, g, b, 0.55 + frac * 0.45)
         dot:Show()
+    end
+end
+
+local function EnsureWorldBadge(key)
+    if not worldBadges[key] then
+        local badge = CreateFrame("Frame", nil, WorldMapButton)
+        badge:SetSize(16, 16)
+        badge:SetFrameStrata("FULLSCREEN_DIALOG")
+        badge:SetFrameLevel(WorldMapButton:GetFrameLevel() + 20)
+        local bg = badge:CreateTexture(nil, "BACKGROUND")
+        bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+        bg:SetAllPoints()
+        badge.bg = bg
+        local txt = badge:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        txt:SetPoint("CENTER")
+        badge.txt = txt
+        worldBadges[key] = badge
+    end
+    return worldBadges[key]
+end
+
+local function UpdateWorldBadges()
+    for _, badge in pairs(worldBadges) do badge:Hide() end
+    if not LoadQuestieModules() or not QuestieMap or not QuestieMap.questIdFrames then return end
+    for _, t in ipairs(tracked) do
+        local frames = QuestieMap.questIdFrames[t.questId]
+        if frames then
+            for idx, frameName in pairs(frames) do
+                local frame = _G[frameName]
+                if frame and frame:IsShown() and frame.GetCenter then
+                    local key = t.questId .. ":" .. tostring(idx)
+                    local badge = EnsureWorldBadge(key)
+                    local r, g, b = BlendColor(t.mode, t.slot)
+                    badge.bg:SetVertexColor(r, g, b, 0.9)
+                    badge.txt:SetText(tostring(t.slot))
+                    badge.txt:SetTextColor(0, 0, 0)
+                    badge:ClearAllPoints()
+                    badge:SetPoint("CENTER", frame, "TOPRIGHT", 4, 4)
+                    badge:Show()
+                end
+            end
+        end
     end
 end
 
 local function UpdatePins()
     EnsurePinFrames()
     local ast = GetAstrolabe()
-    if not ast then return end
     for i = 1, MAX_TRACKED do
         local pin = pinFrames[i]
         local t = tracked[i]
         if t and t.spawn and t.zone then
-            local wc, wz = AreaIdToCZ(t.zone)
-            if wc then
-                local r, g, b = BlendColor(t.mode, i)
-                pin.numText:SetText(tostring(i))
-                pin.numText:SetTextColor(r, g, b)
-                pin.bg:SetVertexColor(r, g, b)
-                local xPos, yPos = t.spawn[1] / 100, t.spawn[2] / 100
-                ast:PlaceIconOnMinimap(pin, wc, wz, xPos, yPos)
-            else
-                ast:RemoveIconFromMinimap(pin)
-                pin:Hide()
+            local r, g, b = BlendColor(t.mode, i)
+            pin.numText:SetText(tostring(i))
+            pin.numText:SetTextColor(0.05, 0.05, 0.05)
+            pin.bg:SetVertexColor(r, g, b, 0.95)
+            pin.ring:SetVertexColor(1, 1, 1, 0.85)
+            local placed = false
+            if ast then
+                local wc, wz = AreaIdToCZ(t.zone)
+                if wc then
+                    local xPos, yPos = t.spawn[1] / 100, t.spawn[2] / 100
+                    local result = ast:PlaceIconOnMinimap(pin, wc, wz, xPos, yPos)
+                    if result ~= -1 then
+                        pin:SetFrameLevel(Minimap:GetFrameLevel() + 30 + i)
+                        pin:Show()
+                        pin.onEdge = false
+                        placed = true
+                    end
+                end
+            end
+            if not placed then
+                if ast then ast:RemoveIconFromMinimap(pin) end
+                PlacePinOnEdge(pin, t)
             end
         else
-            ast:RemoveIconFromMinimap(pin)
+            if ast then ast:RemoveIconFromMinimap(pin) end
             pin:Hide()
         end
     end
@@ -567,6 +777,7 @@ function P1QuestNav_Refresh(force)
     tracked = CollectTrackedQuests()
     UpdatePins()
     UpdateLegend()
+    UpdateWorldBadges()
 
     if tracked[1] then
         UpdateMinimapLine(tracked[1])
@@ -578,9 +789,14 @@ function P1QuestNav_Refresh(force)
     end
 
     if debugMode then
-        print("|cff00ccffP1 Nav|r tracked: " .. #tracked)
+        print("|cff00ccffP1 Nav|r ranked quests (exp/min):")
         for i, t in ipairs(tracked) do
-            print(string.format("  %d. %s (%.0f yd, %s)", i, t.questName or "?", t.dist or 0, t.mode or "?"))
+            print(string.format("  %d. %s — %d xp, %.0f yd, score %.2f (travel %.0fs + kill %.0fs)",
+                i, t.questName or "?", t.xp or 0, t.dist or 0, t.score or 0,
+                t.travelTime or 0, t.killTime or 0))
+        end
+        if #tracked == 0 then
+            print("  (none — check Questie tracker / map icons)")
         end
     end
 end
@@ -655,8 +871,17 @@ tickFrame:SetScript("OnUpdate", function()
     end
 end)
 
+if Minimap then
+    Minimap:HookScript("OnShow", function()
+        if IsNavEnabled() then P1QuestNav_Refresh(false) end
+    end)
+end
+
 WorldMapFrame:HookScript("OnShow", function()
-    if IsNavEnabled() and tracked[1] then UpdateWorldMapLine(tracked[1]) end
+    if IsNavEnabled() then
+        if tracked[1] then UpdateWorldMapLine(tracked[1]) end
+        UpdateWorldBadges()
+    end
 end)
 
 SLASH_P1NAV1 = "/p1nav"
@@ -674,7 +899,7 @@ SlashCmdList["P1NAV"] = function(msg)
         P1QuestNav_SetEnabled(not enabled)
     end
     local s = P1QuestNav_GetStatus()
-    print("|cff00ccffP1 Nav|r v1.2.2 — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
-    print("  Tracked: " .. #s.tracked .. " quest arrows · dotted line to #1")
-    print("  Click minimap pin to switch TomTom arrow")
+    print("|cff00ccffP1 Nav|r v1.2.3 — " .. (s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
+    print("  Tracked: " .. #s.tracked .. " ranked quests · dotted line to #1")
+    print("  Click minimap pin to switch TomTom arrow · /p1nav debug for scores")
 end

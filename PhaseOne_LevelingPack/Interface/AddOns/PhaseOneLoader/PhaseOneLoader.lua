@@ -3,14 +3,15 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.2"
+local PACK_VERSION = "1.2.3"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINES = {
     "|cff00ccff[" .. PACK_NAME .. "]|r Welcome!",
     "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + numbered quest arrows.",
     "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
-    "|cffaaaaaaNav:|r numbered minimap pins + dotted line to #1 · |cff00ff00/p1nav|r · click pin for TomTom arrow.",
+    "|cffaaaaaaNav:|r exp/min ranked pins 1-5 + list left of minimap · |cff00ff00/p1nav|r · click pin for TomTom.",
+    "|cffaaaaaaRange:|r melee/spell arc under char · |cff00ff00/p1range|r toggle (green=in, yellow=spell out, red=melee out).",
     "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + when to stock up.",
     "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1nav debug|r · |cff00ff00/p1questie|r · |cff00ff00/p1minimal|r.",
 }
@@ -70,7 +71,7 @@ end
 
 local function PrintMinimalAddons()
     print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
-    print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide")
+    print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeRadar, P1AdventureGuide")
     print("  [x] Questie-335, TomTom, !Astrolabe")
     print("  [x] Load out of date AddOns")
     print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")

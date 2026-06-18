@@ -20,6 +20,7 @@ $minimalFolders = @(
     "PhaseOneLoader",
     "P1AutoQuest",
     "P1QuestNav",
+    "P1RangeRadar",
     "P1AdventureGuide",
     "Questie-335",
     "TomTom",

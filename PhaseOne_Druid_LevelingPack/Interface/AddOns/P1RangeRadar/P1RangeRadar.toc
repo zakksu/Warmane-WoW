@@ -1,0 +1,10 @@
+## Interface: 30300
+## Title: |cff00ccffP1 Range Radar|r
+## Notes: Semi-circle range arc under character — melee/spell colors. Phase One pack.
+## Author: zakksu
+## Version: 1.2.3
+## LoadOnDemand: 0
+## DefaultState: enabled
+## LoadAfter: PhaseOneLoader
+
+Core.lua

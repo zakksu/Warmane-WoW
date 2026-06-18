@@ -1,9 +1,20 @@
-Phase One Warmane Leveling Packs — v1.2.2
+Phase One Warmane Leveling Packs — v1.2.3
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.3)
+  - P1QuestNav: fix numbered minimap pins (higher frame level + edge fallback)
+  - Exp/min ranking: xp / (travel + kill time) sorts slots 1-5
+  - Quest list UI: colored dots, progress, xp — docked left of minimap / Questie tracker
+  - World map: numbered badges on tracked Questie POIs
+  - Thicker dotted path to #1 on minimap
+  - /p1nav debug prints ranked list with scores
+  - P1RangeRadar (8th addon): semi-circle range arc under character
+  - /p1range toggle — green in range, yellow spell out, red melee out
+  - Cat form uses Mangle melee range; caster uses Wrath (class-aware)
 
 CHANGELOG (v1.2.2)
   - P1QuestNav: multi-quest visual navigation (up to 5 numbered minimap pins)
@@ -24,8 +35,8 @@ CHANGELOG (v1.2.1)
   - Questie frame + tracking fallbacks when DB coords missing
 
 CHANGELOG (v1.2.0)
-  - Quest-only pack: 7 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide,
-    Questie-335, TomTom, !Astrolabe)
+  - Quest-only pack: 8 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeRadar,
+    P1AdventureGuide, Questie-335, TomTom, !Astrolabe)
   - Removed from default install: P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras
   - PLAY.bat: minimal sync + cleanup-wow-addons.ps1 (moves conflicts to _disabled/)
   - Auto Q button moved to P1AutoQuest (top-right) — works without class HUD
@@ -38,14 +49,16 @@ INSTALL (players)
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
-  P1QuestNav (numbered minimap arrows + dotted line + TomTom arrow to #1)
+  P1QuestNav (exp/min ranked pins + quest list + dotted line + TomTom arrow to #1)
+  P1RangeRadar (range arc under character — default ON)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
   P1 Adventure Guide — crafting mats only (/p1guide)
 
 TROUBLESHOOTING
   No map icons?             /p1questie  then open world map
-  No quest arrows?          /p1nav debug — check tracked count
+  No quest pins?            /p1nav debug — check ranked list + scores
   Stuck TomTom arrow?       /p1fix
+  Hide range arc:           /p1range
   Hide mats panel:          /p1guide
   Toggle auto quests:       /p1auto or Auto Q button
   Toggle nav only:          /p1nav
