@@ -4,7 +4,7 @@ P1QuestPathDB = P1QuestPathDB or { enabled = true }
 
 local MAX_PATH = 5
 local REFRESH_INTERVAL = 30
-local VERSION = "1.2.7"
+local VERSION = "1.3.0"
 
 local function SyncLoaderPath(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.pathEnabled = on end
@@ -282,11 +282,30 @@ local function EnsurePanel()
     end
 end
 
+local function UseIntegratedGuide()
+    return P1DruidGuideFrame and P1DruidGuideFrame:IsShown()
+end
+
+function P1QuestPath_GetTop(n)
+    if not pathEnabled then return {} end
+    if not LoadModules() then return {} end
+    pathEntries = CollectPathQuests()
+    local out = {}
+    for i = 1, math.min(n or 3, #pathEntries) do
+        out[i] = pathEntries[i]
+    end
+    return out
+end
+
 local function AnchorPanel()
     if not panel then return end
     panel:ClearAllPoints()
-    if P1AdventureGuideFrame and P1AdventureGuideFrame:IsShown() then
-        panel:SetPoint("TOPLEFT", P1AdventureGuideFrame, "BOTTOMLEFT", 0, -6)
+    if UseIntegratedGuide() then
+        panel:Hide()
+        return
+    end
+    if P1DruidGuideFrame and P1DruidGuideFrame:IsShown() then
+        panel:SetPoint("TOPLEFT", P1DruidGuideFrame, "BOTTOMLEFT", 0, -6)
     elseif P1QuestNavLegend and P1QuestNavLegend:IsShown() then
         panel:SetPoint("TOPLEFT", P1QuestNavLegend, "BOTTOMLEFT", 0, -6)
     else
@@ -331,6 +350,12 @@ function P1QuestPath_Refresh(force)
         elseif line then
             line:Hide()
         end
+    end
+
+    if UseIntegratedGuide() then
+        if panel then panel:Hide() end
+        if P1DruidGuide_Refresh then P1DruidGuide_Refresh() end
+        return
     end
 
     if shown > 0 then

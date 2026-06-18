@@ -587,7 +587,15 @@ local function HideAllVisuals()
     if nextLineFrame then nextLineFrame:Hide() end
 end
 
+function P1QuestNav_GetPrimary()
+    return tracked[1]
+end
+
 local function UpdateNextLine()
+    if P1DruidGuideFrame and P1DruidGuideFrame:IsShown() then
+        if nextLineFrame then nextLineFrame:Hide() end
+        return
+    end
     if not nextLineFrame then
         nextLineFrame = CreateFrame("Frame", "P1QuestNavNext", UIParent)
         nextLineFrame:SetFrameStrata("MEDIUM")

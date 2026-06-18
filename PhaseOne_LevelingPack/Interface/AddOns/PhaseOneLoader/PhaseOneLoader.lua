@@ -3,10 +3,10 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.7"
+local PACK_VERSION = "1.3.0"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
-local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Path, Range, Dmg, Mats — all ON. |cff00ff00/p1settings|r"
+local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Path, Mats — all ON. |cff00ff00/p1settings|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -69,7 +69,7 @@ end
 
 local function PrintMinimalAddons()
     print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
-    print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeDisplay, P1DamageText, P1AdventureGuide")
+    print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide")
     print("  [x] Questie-335, TomTom, !Astrolabe")
     print("  [x] Load out of date AddOns")
     print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
@@ -85,8 +85,6 @@ local function PrintSettings()
     print("  Auto Q:  " .. Yn(IsFeatureOn("autoQuestEnabled")) .. "  — /p1auto")
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path")
-    print("  Range:   " .. Yn(IsFeatureOn("rangeEnabled")) .. "  — /p1range")
-    print("  Damage:  " .. Yn(IsFeatureOn("damageTextEnabled")) .. "  — /p1dmg")
     print("  Mats:    " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
     print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
@@ -96,8 +94,6 @@ local function SetAllFeatures(on)
     db.autoQuestEnabled = on
     db.navEnabled = on
     db.pathEnabled = on
-    db.rangeEnabled = on
-    db.damageTextEnabled = on
     db.guideVisible = on
     ApplyFeatureDefaults(1)
     print("|cff00ccffP1 Settings:|r all features " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
@@ -189,9 +185,6 @@ function ApplyFeatureDefaults(attempt)
     SetAutoQuestEnabled(IsFeatureOn("autoQuestEnabled"), true)
     if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(IsFeatureOn("navEnabled")) end
     if P1QuestPath_SetEnabled then P1QuestPath_SetEnabled(IsFeatureOn("pathEnabled")) end
-    if P1RangeDisplay_SetEnabled then P1RangeDisplay_SetEnabled(IsFeatureOn("rangeEnabled"))
-    elseif P1RangeRadar_SetEnabled then P1RangeRadar_SetEnabled(IsFeatureOn("rangeEnabled")) end
-    if P1DamageText_SetEnabled then P1DamageText_SetEnabled(IsFeatureOn("damageTextEnabled")) end
     if P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
     ApplyQuestiePresets()
     if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
@@ -201,8 +194,6 @@ function ApplyFeatureDefaults(attempt)
     local needRetry = false
     if IsFeatureOn("navEnabled") and not P1QuestNav_SetEnabled then needRetry = true end
     if IsFeatureOn("pathEnabled") and not P1QuestPath_SetEnabled then needRetry = true end
-    if IsFeatureOn("rangeEnabled") and not P1RangeDisplay_SetEnabled and not P1RangeRadar_SetEnabled then needRetry = true end
-    if IsFeatureOn("damageTextEnabled") and not P1DamageText_SetEnabled then needRetry = true end
     if IsFeatureOn("guideVisible") and not P1AdventureGuide_SetVisible then needRetry = true end
     if needRetry and attempt < 6 then
         Delay(attempt == 1 and 2 or 1, function() ApplyFeatureDefaults(attempt + 1) end)

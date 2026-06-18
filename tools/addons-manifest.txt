@@ -4,13 +4,15 @@
 PhaseOneLoader: 1
 P1AutoQuest: 1
 P1QuestNav: 1
-P1RangeDisplay: 1
-P1DamageText: 1
+P1DruidGuide: 1
 P1AdventureGuide: 1
 Questie-335: 1
 TomTom: 1
 !Astrolabe: 1
 
+P1RangeDisplay: 0
+P1RangeRadar: 0
+P1DamageText: 0
 P1FeralHUD: 0
 P1WarlockHUD: 0
 Leatrix_Plus: 0

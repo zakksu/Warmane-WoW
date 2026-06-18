@@ -6,8 +6,8 @@
 REQUIRED (only these 7):
   [x] PhaseOneLoader
   [x] P1AutoQuest          auto accept/turn-in + target assist
-  [x] P1QuestNav           numbered arrows + dotted path + TomTom arrow
-  [x] P1AdventureGuide     crafting mats panel (/p1guide)
+  [x] P1QuestNav           numbered pins + dotted path + TomTom arrow
+  [x] P1DruidGuide         unified druid overlay (/p1guide)
   [x] Questie-335
   [x] TomTom
   [x] !Astrolabe
@@ -16,14 +16,14 @@ ALWAYS:
   [x] Load out of date AddOns
 
 NOT INSTALLED (PLAY.bat moves these to AddOns/_disabled/):
-  P1WarlockHUD, P1FeralHUD, Leatrix_Plus, WeakAuras*, Bagnon*, Auctionator
+  P1RangeDisplay, P1DamageText, P1WarlockHUD, P1FeralHUD, Leatrix_Plus, WeakAuras*, Bagnon*, Auctionator
 
 COMMANDS:
-  /p1auto or Auto Q button (top-right) — toggle auto quests + nav
-  /p1nav — toggle quest arrows / dotted line
-  /p1guide — show/hide mats panel
-  /p1quest — debug status
-  /p1minimal — in-game checklist
+  /p1 or /p1guide — toggle druid guide (NEXT, MATS, GATHER, BIS)
+  /p1guide reset  — reset position/size
+  /p1nav          — toggle quest pins
+  /p1auto         — toggle auto quests
+  /p1settings     — feature toggles
 
 After PLAY.bat: log in → /reload
 

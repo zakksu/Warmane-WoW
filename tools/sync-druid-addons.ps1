@@ -9,7 +9,7 @@ if (-not (Test-Path $src)) {
 }
 
 New-Item -ItemType Directory -Force -Path $dst | Out-Null
-$skip = @("PhaseOneLoader", "P1FeralHUD", "P1AdventureGuide")
+$skip = @("PhaseOneLoader", "P1FeralHUD", "P1DruidGuide")
 
 Get-ChildItem -LiteralPath $src -Directory | Where-Object { $skip -notcontains $_.Name } | ForEach-Object {
     $target = Join-Path $dst $_.Name

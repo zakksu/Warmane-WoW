@@ -1,111 +1,47 @@
-Phase One Warmane Leveling Packs — v1.2.7
+Phase One Warmane Leveling Packs — v1.3.0
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
 
+CHANGELOG (v1.3.0)
+  - MAJOR PIVOT: range + damage HUD removed (P1RangeDisplay, P1DamageText)
+  - P1DruidGuide (druid pack): unified overlay — NEXT, MATS, GATHER, BIS / BUILD
+  - Draggable title bar, resizable corner, /p1guide scale · /p1guide reset
+  - P1QuestPath folded into guide NEXT section (standalone /p1path panel hidden when guide on)
+  - P1QuestNav NEXT line moved to guide header; minimap numbered pins kept
+  - Questie presets: all map icons ON, objectives ON (herb/ore quest nodes visible)
+  - Pack shrinks to 7 addons: Loader, AutoQuest, QuestNav, DruidGuide, Questie, TomTom, Astrolabe
+  - Welcome: "P1 Druid Guide ready — /p1guide"
+
 CHANGELOG (v1.2.7)
   - P1RangeDisplay replaces P1RangeRadar — clean distance number HUD ([ 28 yd ])
-  - CheckInteractDistance tiers + IsSpellInRange — green in, red out, yellow partial
-  - /p1range toggle + debug (arc/bar code removed)
-  - P1DamageText (9th addon): floating combat numbers — white hit, yellow crit, orange DoT
-  - COMBAT_LOG + chat fallback · /p1dmg toggle · /p1dmg target|center position
-  - P1QuestNav: NEXT line under minimap — always shows #1 quest + direction + xp
-  - Auto TomTom to path #1 on login, quest complete, zone change
-  - v1.2.7 onboarding — 3 chat lines on first login after update
-  - PhaseOneLoader: damageTextEnabled default ON · /p1settings shows Damage row
-
-CHANGELOG (v1.2.6)
-  - Smart defaults: all recommended features ON at login (no manual toggles)
-  - PhaseOneLoader applies Auto Q, Nav, Path, Range, Mats + Questie presets on login
-  - New /p1settings — feature table; /p1settings all on|off for power users
-  - Nav decoupled from Auto Q — /p1nav works independently
-  - Toggles persist in PhaseOneLoaderDB (navEnabled, pathEnabled, rangeEnabled, guideVisible)
-  - One-line welcome: "P1 ready: Auto Q, Nav, Path, Range, Mats — all ON"
-
-CHANGELOG (v1.2.5)
-  - P1RangeRadar: nuclear visibility fix — no WHITE8X8 (missing in 3.3.5)
-  - 200x40 HUD bar at bottom center (offset 120px) using UI-StatusBar + FontString arc
-  - 2s "P1 Range loaded" splash on login; /p1range test flashes red/green/yellow 3s
-  - P1QuestPath: optimal quest route panel (/p1path) — xp, gear upgrades, chain bonus
-  - Scores available + active quests; click line for TomTom; refreshes every 30s
-  - P1AdventureGuide: AH TIPS section (lvl 11+) — linen, potions, BoE +Agi, swiftness
-
-CHANGELOG (v1.2.4)
-  - P1RangeRadar: visible 2D HUD arc above action bars (TOOLTIP strata, no SetRotation)
-  - Thick semi-circle dots (~120px wide) — blue idle, green in range, yellow/red out
-  - Shows without target; /p1range debug prints spell + range state
-  - P1AdventureGuide: First Aid consumable credit (cloth + bandages = total)
-  - Tiered mat goals lvl 1-15 / 15-30 / 30-40; FA skill line progress
-  - Scrollable mats panel, color-coded green/yellow/red milestones
-
-CHANGELOG (v1.2.3)
-  - P1QuestNav: fix numbered minimap pins (higher frame level + edge fallback)
-  - Exp/min ranking: xp / (travel + kill time) sorts slots 1-5
-  - Quest list UI: colored dots, progress, xp — docked left of minimap / Questie tracker
-  - World map: numbered badges on tracked Questie POIs
-  - Thicker dotted path to #1 on minimap
-  - /p1nav debug prints ranked list with scores
-  - P1RangeRadar (8th addon): semi-circle range arc under character
-  - /p1range toggle — green in range, yellow spell out, red melee out
-  - Cat form uses Mangle melee range; caster uses Wrath (class-aware)
-
-CHANGELOG (v1.2.2)
-  - P1QuestNav: multi-quest visual navigation (up to 5 numbered minimap pins)
-  - Dotted path on minimap + world map to #1 priority target
-  - Color-coded by quest type (available/objective/turn-in) + slot hue
-  - Click minimap pin to set TomTom crazy arrow; /p1nav toggle + debug
-  - ClickToMove auto-walk disabled by default (broken on many private clients)
-  - TomTom arrow fix: QuestieCompat waypoint routing + always show on set
-  - QuestieCompat.AreaIdToCZ for correct Astrolabe minimap placement
-  - /p1auto now: accept/turn-in + quest arrows (not idle walk)
-
-CHANGELOG (v1.2.1)
-  - Questie map POI fix: force enabled/map/minimap icons, WotLK map data, correct level filter
-  - Refresh via AvailableQuests.CalculateAndDrawAll (RefreshQuestIcon did not exist)
-  - /p1questie — debug Questie icon flags + frame count + force refresh
-  - P1AutoQuest v1.2.1: 1s idle timer, 2s rescan, auto-target (30y) + interact (8y)
-  - Stuck detection (10s), TomTom arrow always shown, immediate refresh after accept
-  - Questie frame + tracking fallbacks when DB coords missing
-
-CHANGELOG (v1.2.0)
-  - Quest-only pack: 9 addons (PhaseOneLoader, P1AutoQuest, P1QuestNav, P1RangeDisplay,
-    P1DamageText, P1AdventureGuide, Questie-335, TomTom, !Astrolabe)
-  - Removed from default install: P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras
-  - PLAY.bat: minimal sync + cleanup-wow-addons.ps1 (moves conflicts to _disabled/)
-  - Auto Q button moved to P1AutoQuest (top-right) — works without class HUD
-  - P1AdventureGuide: Mats tab only, level-based stock-up hints
-  - PhaseOneLoader: Questie presets only; quest-focused welcome + /p1minimal
-  - Docs/MINIMAL_PACK.md — what's installed and why
+  - P1DamageText (9th addon): floating combat numbers
+  - P1QuestNav: NEXT line under minimap
 
 INSTALL (players)
   Double-click PLAY.bat at repo root → /reload in game
 
 AUTO ON FIRST LOGIN
-  Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
-  P1QuestNav (NEXT line + exp/min pins + dotted line + TomTom arrow to #1)
-  P1QuestPath (optimal route panel — xp + gear, /p1path)
-  P1RangeDisplay (target distance number — default ON, /p1range debug)
-  P1DamageText (floating damage numbers — default ON, /p1dmg)
+  Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons + objectives)
+  P1QuestNav (numbered minimap pins + dotted line + TomTom arrow to #1)
+  P1QuestPath logic (xp + gear ranked NEXT in guide — /p1path still toggles data)
+  P1 Druid Guide — NEXT / MATS / GATHER / BIS overlay (/p1 or /p1guide)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
-  P1 Adventure Guide — crafting mats + AH tips (/p1guide)
 
 TROUBLESHOOTING
-  No distance number?          /p1range debug — check target + interact tiers
-  No damage numbers?           /p1dmg — toggle ON; hit a mob to test
-  No NEXT line?                /p1nav — ensure ON; needs Questie quest data
-  No map icons?                /p1questie  then open world map
-  No quest pins?               /p1nav debug — check ranked list + scores
-  No optimal path?             /p1path refresh — needs Questie loaded
-  Stuck TomTom arrow?          /p1fix
-  Hide range display:          /p1range
-  Hide damage text:             /p1dmg
-  Hide mats panel:             /p1guide
-  Hide path panel:              /p1path
-  Toggle all features:          /p1settings  ·  /p1settings all off
-  Toggle nav only:              /p1nav
-  Auto quest debug:             /p1quest
-  Minimal addon list:           /p1minimal
+  No guide?                   /p1guide — ensure ON; drag title bar to reposition
+  No NEXT quests?               /p1path refresh — needs Questie loaded
+  No map icons?                 /p1questie  then open world map
+  No quest pins?                /p1nav debug — check ranked list + scores
+  Old range/damage addons?      PLAY.bat moves them to _disabled/
 
-GITHUB: https://github.com/zakksu/Warmane-WoW
+COMMANDS
+  /p1guide or /p1     Toggle druid guide overlay
+  /p1guide reset      Reset position and size
+  /p1guide scale 0.8  Scale overlay
+  /p1settings         Feature toggles (Auto Q, Nav, Path, Guide)
+  /p1nav              Toggle minimap pins + TomTom
+  /p1path             Toggle path scoring (feeds guide NEXT section)
+  /p1auto             Toggle auto accept/turn-in
