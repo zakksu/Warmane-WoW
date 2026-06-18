@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.1.3-druid"
+local PACK_VERSION = "1.1.4-druid"
 local PACK_NAME = "Phase One Druid Pack"
 
 local WELCOME_LINES = {
@@ -11,9 +11,9 @@ local WELCOME_LINES = {
     "|cffaaaaaaReady to go:|r Questie + Leatrix presets applied. |cff00ff00P1 Feral HUD|r is on screen (drag to move).",
     "|cffaaaaaaCat (20+):|r |cff00ff00Mangle|r → |cff00ff00Rip|r (5 CP) → |cff00ff00Rake|r → |cff00ff00Shred|r",
     "|cffaaaaaaGlow icons|r = debuff missing or Tiger's Fury ready. Low HP = Rejuvenation reminder.",
-    "|cffaaaaaaQuesting:|r Ctrl+click Questie icon for TomTom arrow.",
+    "|cffaaaaaaQuesting:|r Auto Q = accept/turn-in + arrow + idle walk. |cff00ff00/p1quest|r debug.",
     "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs (click + to expand).",
-    "|cffaaaaaaAuto quests:|r |cff00ff00/p1auto|r or |cff00ff00Auto Q|r on HUD — toggle accept/turn-in.",
+    "|cffaaaaaaAuto quests:|r |cff00ff00/p1auto|r or |cff00ff00Auto Q|r — accept, arrow, gentle walk when idle.",
 }
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
@@ -42,14 +42,19 @@ function P1_AutoQuest_RefreshButtons()
     end
 end
 
+function P1_IsAutoQuestEnabled()
+    return IsAutoQuestEnabled()
+end
+
 local function SetAutoQuestEnabled(enabled)
     db.autoQuestEnabled = enabled
     ApplyAutoQuestToQuestie(enabled)
+    if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(enabled) end
     P1_AutoQuest_RefreshButtons()
     if enabled then
-        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — Questie auto-accept and auto-complete.")
+        print("|cff00ccffP1 Auto Q:|r |cff00ff00ON|r — accept/turn-in, TomTom arrow, idle walk.")
     else
-        print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — accept and turn in quests manually.")
+        print("|cff00ccffP1 Auto Q:|r |cffaaaaaaOFF|r — manual questing.")
     end
 end
 
@@ -61,6 +66,18 @@ local function PrintWelcome()
     for _, line in ipairs(WELCOME_LINES) do
         DEFAULT_CHAT_FRAME:AddMessage(line)
     end
+end
+
+local function PrintMinimalAddons()
+    print("|cff00ccffP1 Minimal setup|r — at Character Select → AddOns, |cffff0000uncheck|r:")
+    print("  [ ] WeakAuras          (P1 Feral HUD replaces this)")
+    print("  [ ] WeakAurasOptions   (only needed if WeakAuras enabled)")
+    print("|cffaaaaaaOptional — uncheck if you don't use them:|r")
+    print("  [ ] Bagnon (+ Bagnon_Config, etc.)")
+    print("  [ ] Auctionator")
+    print("|cffaaaaaaKeep enabled:|r PhaseOneLoader, P1AutoQuest, P1AdventureGuide, P1FeralHUD,")
+    print("  Questie-335, TomTom, !Astrolabe, Leatrix_Plus, Load out of date AddOns")
+    print("|cffff0000Never|r enable Leatrix \"Automate quests\" or \"Automate gossip\" with Questie — use |cff00ff00/p1auto|r instead.")
 end
 
 local function ApplyQuestiePresets()
@@ -115,6 +132,8 @@ local function ApplyLeatrixPresets()
     LeaPlusDB["EnhanceQuestLog"] = "On"
     LeaPlusDB["ShowCooldowns"] = "On"
     LeaPlusDB["DurabilityStatus"] = "On"
+    LeaPlusDB["AutomateQuests"] = "Off"
+    LeaPlusDB["AutomateGossip"] = "Off"
 
     if LeaPlusLC then
         for k, v in pairs(LeaPlusDB) do
@@ -179,6 +198,11 @@ local function EnsureSlash()
         print("|cff00ccffP1 Fix:|r To delete stuck aura forever: |cff00ff00/wa|r → find it → Delete.")
         print("|cffaaaaaaTip:|r You don't need WeakAuras — P1 Feral HUD handles combat alerts.")
     end
+
+    SLASH_P1MINIMAL1 = "/p1minimal"
+    SlashCmdList["P1MINIMAL"] = function()
+        PrintMinimalAddons()
+    end
 end
 
 local function RetryPresets(attempt)
@@ -204,6 +228,8 @@ loader:SetScript("OnEvent", function()
     RetryPresets(1)
     Delay(2, function()
         ApplyAutoQuestToQuestie(IsAutoQuestEnabled())
+        if P1AutoQuest_SetEnabled then P1AutoQuest_SetEnabled(IsAutoQuestEnabled()) end
+        if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
         P1_AutoQuest_RefreshButtons()
     end)
 

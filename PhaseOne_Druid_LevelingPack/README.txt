@@ -68,8 +68,8 @@ STEP 5 — PLAY (no extra setup required!)
     - Leatrix (auto repair, auto sell greys, faster loot)
     - P1 Feral HUD (energy bar, combo points, Rip/Rake/Mangle alerts)
 
-  Quest auto-accept/turn-in is via Questie (/questie → Auto tab), not Leatrix
-  Automate quests (unreliable on 3.3.5).
+  Quest auto-accept/turn-in + arrow + idle walk: /p1auto or HUD "Auto Q" button.
+  See STEP 6 below. Not full autopilot on 3.3.5.
 
   You will see a welcome message and the HUD near bottom-center.
   Drag the HUD to move it. /p1hud toggles it.
@@ -78,12 +78,16 @@ STEP 5 — PLAY (no extra setup required!)
     /wa → WeakAuras\Feral_MANUAL_SETUP.txt
 
 ================================================================================
-STEP 6 — QUESTING ON ICECROWN
+STEP 6 — QUESTING + AUTO Q
 ================================================================================
-  - Questie shows nearby quests (±4 levels, sorted by distance)
-  - Ctrl + Left-click quest icon → TomTom arrow
-  - /questie for settings
-  - /ltp for Leatrix (auto repair/sell at vendors)
+  Auto Q (/p1auto or HUD "Auto Q" button, green=on):
+    - Questie auto-accept and auto-turn-in at NPCs
+    - TomTom arrow auto-points to nearest objective (turn-in when done)
+    - After 3s idle, gentle click-to-move toward arrow (stops in combat/input)
+    - /p1quest — debug status
+
+  NOT full autopilot — you still fight, loot, and handle tricky paths.
+  Manual: Ctrl + Left-click any Questie icon for a custom arrow.
 
   Horde leveling route summary: Docs\HORDE_FERAL_DRUID_TIPS.txt
 

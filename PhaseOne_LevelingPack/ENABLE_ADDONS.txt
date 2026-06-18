@@ -4,13 +4,14 @@
 
 REQUIRED — check all:
   [x] PhaseOneLoader
-  [x] P1AdventureGuide   <-- next action, profs, mats, rares
+  [x] P1AutoQuest          <-- REQUIRED: auto arrow + idle walk (with Auto Q)
+  [x] P1AdventureGuide     <-- next action, profs, mats, rares
   [x] P1WarlockHUD         <-- built-in DoT tracker (no import!)
   [x] Questie-335
   [x] TomTom
   [x] !Astrolabe
   [x] Leatrix_Plus
-  [ ] WeakAuras              <-- OPTIONAL (P1 Warlock HUD replaces this)
+  [ ] WeakAuras              <-- OPTIONAL — uncheck! (P1 Warlock HUD replaces this)
   [ ] WeakAurasOptions       <-- only if WeakAuras enabled
 
 OPTIONAL:
@@ -20,7 +21,12 @@ OPTIONAL:
 ALWAYS CHECK:
   [x] Load out of date AddOns
 
-TIP: Click "Enable All" then uncheck optional addons you don't need.
+CONFLICTS:
+  Never enable Leatrix "Automate quests" or "Automate gossip" with Questie.
+  Phase One turns these OFF on login — use /p1auto (Auto Q) for quest automation.
+  Type /p1minimal in-game for a quick checklist.
+
+TIP: Click "Enable All" then uncheck WeakAuras (+ WeakAurasOptions) and other optional addons.
 
 After first install: /reload
 

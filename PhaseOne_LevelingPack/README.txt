@@ -10,6 +10,7 @@ WHAT YOU GET (lightweight — 8 addons)
     !Astrolabe      Map library (required by TomTom)
     Leatrix_Plus    QoL: auto-repair, auto-sell greys, faster loot
     PhaseOneLoader  Welcome + presets on first login
+    P1AutoQuest     Auto arrow + idle walk (with Auto Q toggle)
     P1WarlockHUD    DoT tracker (Corruption/Immolate/CoA) — no import!
     P1AdventureGuide  Next action, profs, mats, rare mobs (/p1guide)
 
@@ -97,20 +98,24 @@ STEP 5 — IMPORT WEAKAURAS (optional — skip if using P1 Warlock HUD)
     WeakAuras\Warlock_Rotation_Helper.txt
 
 ================================================================================
-STEP 6 — QUESTIE + TOMTOM QUICK USE
+STEP 6 — QUESTIE + TOMTOM + AUTO Q
 ================================================================================
-  - Quest icons appear on map/minimap
-  - Ctrl + Left-click a quest icon → TomTom arrow points there
-  - Type /questie for options
-  - Type /tomtom to toggle arrow info
+  Auto Q (/p1auto or HUD button, green=on):
+    - Questie auto-accept and auto-turn-in at NPCs
+    - TomTom arrow auto-points to nearest active objective
+    - When all objectives done, arrow points to turn-in NPC
+    - After 3s idle (not in combat), character walks toward arrow gently
+    - Stops on combat, casting, or manual movement
+    - /p1quest — debug status
+
+  NOT full autopilot — you still fight, loot, and navigate tricky areas.
+  Manual override: Ctrl+click any Questie icon to set arrow yourself.
 
   Questie presets applied on first login:
     - Show quests within ±4 levels
     - Tracker sorted by distance
     - Completed quests hidden in tracker
-
-  Quest auto-accept/turn-in is via Questie (/questie → Auto tab), not Leatrix
-  Automate quests (unreliable on 3.3.5).
+    - Auto Modifier = Disabled (so Ctrl doesn't block automation)
 
 ================================================================================
 STEP 7 — LEATRIX PLUS

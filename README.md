@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Leveling Packs
 
-**Latest release: v1.1.3** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.1.4** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
 
@@ -99,7 +99,8 @@ Class tips: **[HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_
 
 ## Pre-configured (first login — no manual setup)
 
-- **Questie:** ±4 levels, sort by proximity, hide completed in tracker
+- **Questie:** ±4 levels, sort by proximity, hide completed in tracker, auto accept/turn-in
+- **P1AutoQuest:** Auto TomTom arrow to nearest objective + gentle idle walk when Auto Q is on (`/p1auto`, `/p1quest` debug). Not full autopilot.
 - **Leatrix Plus:** Auto-repair, auto-sell junk, faster loot, FPS-friendly options
 - **P1 Feral HUD / P1 Warlock HUD:** Energy/CP or DoT alerts — appears automatically
 - **P1 Adventure Guide:** Next best action, professions, mat counts, zone rares — `/p1guide`  

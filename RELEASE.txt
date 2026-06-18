@@ -1,9 +1,16 @@
-Phase One Warmane Leveling Packs — v1.1.3
+Phase One Warmane Leveling Packs — v1.1.4
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.4)
+  - P1AutoQuest: auto TomTom arrow to nearest Questie objective (or turn-in NPC when done)
+  - Gentle idle click-to-move toward arrow when Auto Q ON and idle 3s+ (stops in combat / on input)
+  - /p1quest — debug status; /p1auto toggles Questie accept/turn-in + arrow + walk
+  - Addon conflict fixes: Leatrix Automate quests/gossip forced Off (use Questie + P1AutoQuest)
+  - P1AutoQuest bundled in both Warlock and Druid packs; /p1minimal char-select checklist
 
 CHANGELOG (v1.1.3)
   - Questie auto-accept/complete: preset sets Auto Modifier to Disabled (fixes Control blocking automation)
@@ -27,6 +34,7 @@ BUILD (maintainers)
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in)
+  P1AutoQuest (TomTom arrow + idle walk when Auto Q on)
   Leatrix (auto repair, sell greys)
   P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper + Auto Q toggle)
   P1 Adventure Guide (/p1guide)
@@ -35,5 +43,7 @@ TROUBLESHOOTING
   Stuck WA icon or glow?  /p1fix
   Hide Adventure Guide:   /p1guide
   Toggle auto quests:      /p1auto
+  Auto quest debug:        /p1quest
+  Minimal addon list:      /p1minimal
 
 GITHUB: https://github.com/zakksu/Warmane-WoW
