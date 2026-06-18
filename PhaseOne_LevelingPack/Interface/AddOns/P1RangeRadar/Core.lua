@@ -1,11 +1,13 @@
--- P1RangeRadar — melee/spell range arc HUD (Warmane 3.3.5a)
+-- P1RangeRadar — 2D HUD range arc at screen bottom (Warmane 3.3.5a)
 
 P1RangeRadarDB = P1RangeRadarDB or { enabled = true }
 
-local UPDATE_INTERVAL = 0.1
-local SEGMENTS = 13
-local ARC_RADIUS = 70
-local ARC_Y = -72
+local UPDATE_INTERVAL = 0.08
+local SEGMENTS = 19
+local ARC_RADIUS = 58
+local ARC_WIDTH = 120
+local DOT_SIZE = 11
+local BOTTOM_OFFSET = 118
 
 local SPELL_BY_CLASS = {
     DRUID = { caster = 5176, melee = 33876 },
@@ -24,6 +26,11 @@ local enabled = P1RangeRadarDB.enabled ~= false
 local segments = {}
 local frame
 local lastUpdate = 0
+local lastDebug = {}
+
+local function Trim(s)
+    return (s or ""):match("^%s*(.-)%s*$") or ""
+end
 
 local function GetRangeSpell()
     local _, class = UnitClass("player")
@@ -35,30 +42,37 @@ local function GetRangeSpell()
     return spells.caster, "caster"
 end
 
-local function GetArcColor(spellId, mode)
-    if not UnitExists("target") or UnitIsDead("target") or not UnitCanAttack("player", "target") then
-        return 0.55, 0.55, 0.55, 0.35
-    end
-    if mode == "melee" then
+local function GetRangeState(spellId, mode)
+    if UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") then
         local inRange = IsSpellInRange(spellId, "target")
-        if inRange == 1 then return 0.15, 0.95, 0.2, 0.75 end
-        return 0.95, 0.15, 0.15, 0.7
+        if inRange == 1 then return "in", inRange end
+        if mode == "melee" then return "out", inRange end
+        if inRange == 0 then return "partial", inRange end
+        return "unknown", inRange
     end
-    local inRange = IsSpellInRange(spellId, "target")
-    if inRange == 1 then return 0.15, 0.95, 0.2, 0.75 end
-    if inRange == 0 then return 0.95, 0.85, 0.1, 0.7 end
-    return 0.55, 0.55, 0.55, 0.35
+    return "idle", nil
+end
+
+local function GetArcColor(state)
+    if state == "in" then return 0.1, 0.95, 0.15, 0.92 end
+    if state == "partial" then return 0.98, 0.82, 0.05, 0.9 end
+    if state == "out" then return 0.95, 0.12, 0.12, 0.9 end
+    return 0.45, 0.75, 0.95, 0.65
 end
 
 local function EnsureFrame()
     if frame then return end
     frame = CreateFrame("Frame", "P1RangeRadarFrame", UIParent)
-    frame:SetFrameStrata("LOW")
-    frame:SetAllPoints()
+    frame:SetFrameStrata("TOOLTIP")
+    frame:SetFrameLevel(90)
+    frame:SetSize(ARC_WIDTH + 20, ARC_RADIUS + DOT_SIZE + 8)
+    frame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, BOTTOM_OFFSET)
+    frame:Show()
+
     for i = 1, SEGMENTS do
-        local seg = frame:CreateTexture(nil, "ARTWORK")
+        local seg = frame:CreateTexture(nil, "OVERLAY")
         seg:SetTexture("Interface\\Buttons\\WHITE8X8")
-        seg:SetSize(5, 22)
+        seg:SetSize(DOT_SIZE, DOT_SIZE)
         seg:Hide()
         segments[i] = seg
     end
@@ -67,23 +81,33 @@ end
 local function UpdateArc()
     if not enabled then
         for _, seg in ipairs(segments) do seg:Hide() end
+        if frame then frame:Hide() end
         return
     end
+    EnsureFrame()
+    frame:Show()
+
     local spellId, mode = GetRangeSpell()
-    local r, g, b, a = GetArcColor(spellId, mode)
+    local state = GetRangeState(spellId, mode)
+    local r, g, b, a = GetArcColor(state)
+    lastDebug = {
+        enabled = enabled,
+        spellId = spellId,
+        mode = mode,
+        state = state,
+        target = UnitExists("target") and UnitName("target") or nil,
+    }
+
     local spread = math.pi
-    local base = -math.pi / 2
+    local base = math.pi / 2
     for i, seg in ipairs(segments) do
         local t = (i - 1) / (SEGMENTS - 1)
-        local angle = base - spread / 2 + spread * t
-        local x = math.cos(angle) * ARC_RADIUS
-        local y = math.sin(angle) * ARC_RADIUS + ARC_Y
+        local angle = base + spread * t
+        local x = math.cos(angle) * ARC_RADIUS + (ARC_WIDTH + 20) / 2
+        local y = math.sin(angle) * ARC_RADIUS + DOT_SIZE / 2
         seg:SetVertexColor(r, g, b, a)
         seg:ClearAllPoints()
-        seg:SetPoint("CENTER", UIParent, "CENTER", x, y)
-        if seg.SetRotation then
-            seg:SetRotation(angle + math.pi / 2)
-        end
+        seg:SetPoint("CENTER", frame, "BOTTOMLEFT", x, y)
         seg:Show()
     end
 end
@@ -92,11 +116,20 @@ function P1RangeRadar_SetEnabled(on)
     enabled = on and true or false
     P1RangeRadarDB.enabled = enabled
     EnsureFrame()
-    if not enabled then
-        for _, seg in ipairs(segments) do seg:Hide() end
-    else
-        UpdateArc()
-    end
+    UpdateArc()
+end
+
+function P1RangeRadar_DebugPrint()
+    local spellId, mode = GetRangeSpell()
+    local state, raw = GetRangeState(spellId, mode)
+    local spellName = GetSpellInfo and GetSpellInfo(spellId) or tostring(spellId)
+    print("|cff00ccffP1 Range|r v1.2.4 debug")
+    print("  enabled: " .. (enabled and "|cff00ff00yes|r" or "|cffff4444no|r"))
+    print("  mode: " .. mode .. "  spell: " .. (spellName or "?") .. " (" .. spellId .. ")")
+    print("  target: " .. (UnitExists("target") and (UnitName("target") or "?") or "|cff888888none|r"))
+    print("  range: " .. state .. (raw ~= nil and ("  IsSpellInRange=" .. tostring(raw)) or "  (no hostile target)"))
+    print("  frame: " .. (frame and frame:IsShown() and "|cff00ff00visible|r" or "|cffff4444hidden|r")
+        .. "  segments: " .. SEGMENTS .. "  offset: " .. BOTTOM_OFFSET .. "px")
 end
 
 local tick = CreateFrame("Frame")
@@ -105,7 +138,6 @@ tick:SetScript("OnUpdate", function(_, elapsed)
     if lastUpdate < UPDATE_INTERVAL then return end
     lastUpdate = 0
     if not enabled then return end
-    EnsureFrame()
     UpdateArc()
 end)
 
@@ -114,16 +146,22 @@ login:RegisterEvent("PLAYER_LOGIN")
 login:SetScript("OnEvent", function()
     enabled = P1RangeRadarDB.enabled ~= false
     EnsureFrame()
+    UpdateArc()
 end)
 
 SLASH_P1RANGE1 = "/p1range"
 SlashCmdList["P1RANGE"] = function(msg)
-    msg = string.lower(strtrim and strtrim(msg) or (msg or ""):match("^%s*(.-)%s*$") or "")
+    msg = string.lower(Trim(msg))
+    if msg == "debug" then
+        P1RangeRadar_DebugPrint()
+        return
+    end
     if msg == "on" or msg == "off" then
         P1RangeRadar_SetEnabled(msg == "on")
-    else
+    elseif msg == "" then
         P1RangeRadar_SetEnabled(not enabled)
     end
-    print("|cff00ccffP1 Range|r v1.2.3 — " .. (enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
-    print("  Arc: |cff00ff00green|r in range · |cffffee00yellow|r spell out · |cffff3333red|r melee out")
+    print("|cff00ccffP1 Range|r v1.2.4 — " .. (enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
+    print("  /p1range debug — spell, target, range state")
+    print("  Arc: |cff00ff00green|r in · |cffffee00yellow|r spell out · |cffff3333red|r melee out · |cff66bbffblue|r idle")
 end

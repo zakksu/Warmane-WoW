@@ -2,14 +2,57 @@
 
 P1AG = P1AG or {}
 
--- itemId = { name, goal, profHint, needByLevel }
+-- First Aid tiers: cloth + crafted bandages count as equivalent linen/wool/etc.
+P1AG.FIRST_AID = {
+    finalLevel = 40,
+    tiers = {
+        {
+            skillMin = 1, skillMax = 75, levelMin = 1, levelMax = 15,
+            label = "Apprentice FA (1-75)",
+            clothId = 2589, clothName = "Linen",
+            bandageIds = { [1251] = 1, [2581] = 1 },
+            goalTotal = 80,
+        },
+        {
+            skillMin = 75, skillMax = 150, levelMin = 15, levelMax = 30,
+            label = "Journeyman FA (75-150)",
+            clothId = 2592, clothName = "Wool",
+            bandageIds = { [3530] = 1, [3531] = 1 },
+            goalTotal = 60,
+        },
+        {
+            skillMin = 150, skillMax = 225, levelMin = 30, levelMax = 40,
+            label = "Expert FA (150-225)",
+            clothId = 4306, clothName = "Silk",
+            bandageIds = { [6450] = 2, [6451] = 2, [8544] = 3, [8545] = 3 },
+            altClothId = 4338, altClothName = "Mageweave",
+            goalTotal = 50,
+        },
+    },
+}
+
+-- Herb milestones by level band (alchemy prep)
+P1AG.HERB_MILESTONES = {
+    { levelMin = 1, levelMax = 15, items = {
+        { id = 2447, name = "Peacebloom", goal = 20 },
+        { id = 765,  name = "Silverleaf", goal = 20 },
+    }},
+    { levelMin = 15, levelMax = 30, items = {
+        { id = 2450, name = "Briarthorn", goal = 15 },
+        { id = 785,  name = "Mageroyal", goal = 15 },
+    }},
+    { levelMin = 30, levelMax = 40, items = {
+        { id = 3820, name = "Stranglekelp", goal = 12 },
+        { id = 3355, name = "Wild Steelbloom", goal = 12 },
+    }},
+}
+
+-- Leather / tailoring basics (simple raw counts)
 P1AG.MAT_WATCH = {
-    [2589]  = { "Linen Cloth", 40, "Tailoring / First Aid", 10 },
-    [2939]  = { "Ruined Leather Scraps", 20, "Leatherworking", 12 },
-    [2318]  = { "Light Leather", 20, "Skinning", 14 },
-    [2320]  = { "Coarse Thread", 10, "Tailoring", 12 },
-    [2447]  = { "Peacebloom", 15, "Herbalism / Alchemy", 10 },
-    [765]   = { "Silverleaf", 15, "Herbalism", 10 },
+    { id = 2939, name = "Ruined Leather Scraps", goal = 20, levelMin = 1, levelMax = 15, hint = "Leatherworking" },
+    { id = 2318, name = "Light Leather", goal = 30, levelMin = 10, levelMax = 25, hint = "Skinning" },
+    { id = 2320, name = "Coarse Thread", goal = 10, levelMin = 10, levelMax = 20, hint = "Tailoring" },
+    { id = 4231, name = "Cured Light Hide", goal = 10, levelMin = 20, levelMax = 35, hint = "Leatherworking" },
 }
 
 P1AG.LEVEL_ACTIONS = {

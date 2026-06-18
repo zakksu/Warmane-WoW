@@ -1,9 +1,17 @@
-Phase One Warmane Leveling Packs — v1.2.3
+Phase One Warmane Leveling Packs — v1.2.4
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.4)
+  - P1RangeRadar: visible 2D HUD arc above action bars (TOOLTIP strata, no SetRotation)
+  - Thick semi-circle dots (~120px wide) — blue idle, green in range, yellow/red out
+  - Shows without target; /p1range debug prints spell + range state
+  - P1AdventureGuide: First Aid consumable credit (cloth + bandages = total)
+  - Tiered mat goals lvl 1-15 / 15-30 / 30-40; FA skill line progress
+  - Scrollable mats panel, color-coded green/yellow/red milestones
 
 CHANGELOG (v1.2.3)
   - P1QuestNav: fix numbered minimap pins (higher frame level + edge fallback)
@@ -50,7 +58,7 @@ INSTALL (players)
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons)
   P1QuestNav (exp/min ranked pins + quest list + dotted line + TomTom arrow to #1)
-  P1RangeRadar (range arc under character — default ON)
+  P1RangeRadar (2D HUD range arc above action bars — default ON)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
   P1 Adventure Guide — crafting mats only (/p1guide)
 

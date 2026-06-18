@@ -1,8 +1,8 @@
 ## Interface: 30300
 ## Title: |cff00ccffP1 Adventure Guide|r
-## Notes: Next best action, professions, crafting mats, rare mobs — Phase One leveling helper.
+## Notes: Crafting mats with consumable credit and level milestones — Phase One helper.
 ## Author: zakksu
-## Version: 1.1.0
+## Version: 1.2.4
 ## SavedVariables: P1AdventureGuideDB
 ## OptionalDeps: P1FeralHUD, P1WarlockHUD
 

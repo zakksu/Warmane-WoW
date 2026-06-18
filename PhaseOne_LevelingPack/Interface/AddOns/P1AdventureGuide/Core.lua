@@ -1,11 +1,12 @@
--- P1 Adventure Guide — crafting mats only (quest pack)
+-- P1 Adventure Guide — crafting mats with consumable credit (quest pack)
 
 P1AdventureGuideDB = P1AdventureGuideDB or {
     point = "TOPLEFT", relPoint = "TOPLEFT", x = 12, y = -120,
 }
 
 local DB = P1AdventureGuideDB
-local panel, content
+local panel, scroll, content, contentText
+local MAX_VISIBLE_LINES = 8
 
 local function GetBagItemId(bag, slot)
     local link = GetContainerItemLink(bag, slot)
@@ -14,6 +15,7 @@ local function GetBagItemId(bag, slot)
 end
 
 local function CountItemInBags(itemId)
+    if not itemId then return 0 end
     local total = 0
     for bag = 0, 4 do
         for slot = 1, GetContainerNumSlots(bag) do
@@ -26,55 +28,158 @@ local function CountItemInBags(itemId)
     return total
 end
 
-local function ColorCount(have, goal)
-    if have >= goal then return "|cff00ff00" .. have .. "/" .. goal .. "|r" end
-    if have >= goal * 0.5 then return "|cffffff00" .. have .. "/" .. goal .. "|r" end
-    return "|cffff4444" .. have .. "/" .. goal .. "|r"
+local function CountBandageCredit(bandageIds)
+    local total = 0
+    for itemId, weight in pairs(bandageIds) do
+        total = total + CountItemInBags(itemId) * weight
+    end
+    return total
 end
 
-local function LevelHint(needBy, playerLevel)
-    if not needBy then return "" end
-    if playerLevel >= needBy then
-        return " |cffff8800(need by lvl " .. needBy .. " — stock up!)|r"
+local function GetFirstAidSkill()
+    for i = 1, GetNumSkillLines() do
+        local name, _, _, rank, _, _, skillMax = GetSkillLineInfo(i)
+        if name == "First Aid" then
+            return rank or 0, skillMax or 0
+        end
     end
-    if playerLevel >= needBy - 3 then
-        return " |cffffff00(soon — lvl " .. needBy .. ")|r"
+    return nil, nil
+end
+
+local function PickFaTier(playerLevel, faRank)
+    local tiers = P1AG.FIRST_AID.tiers
+    if faRank then
+        for _, tier in ipairs(tiers) do
+            if faRank < tier.skillMax then return tier end
+        end
+        return tiers[#tiers]
     end
-    return " |cff888888(by lvl " .. needBy .. ")|r"
+    for _, tier in ipairs(tiers) do
+        if playerLevel <= tier.levelMax then return tier end
+    end
+    return tiers[#tiers]
+end
+
+local function PickHerbMilestone(playerLevel)
+    for _, band in ipairs(P1AG.HERB_MILESTONES) do
+        if playerLevel >= band.levelMin and playerLevel <= band.levelMax then
+            return band
+        end
+    end
+    return P1AG.HERB_MILESTONES[#P1AG.HERB_MILESTONES]
+end
+
+local function ColorRatio(have, goal)
+    if goal <= 0 then return "|cff888888", "|r" end
+    if have >= goal then return "|cff00ff00", "|r" end
+    if have >= goal * 0.5 then return "|cffffff00", "|r" end
+    return "|cffff4444", "|r"
+end
+
+local function FormatRatio(have, goal)
+    local open, close = ColorRatio(have, goal)
+    return open .. have .. "/" .. goal .. close
+end
+
+local function LevelMilestoneTag(levelMin, levelMax, playerLevel)
+    if playerLevel >= levelMax then
+        return " |cffff8800(by lvl " .. levelMax .. " — catch up!)|r"
+    end
+    if playerLevel >= levelMin then
+        return " |cffffff00(next — lvl " .. levelMax .. ")|r"
+    end
+    return " |cff888888(lvl " .. levelMin .. "-" .. levelMax .. ")|r"
+end
+
+local function BuildFirstAidLines(playerLevel, lines)
+    local faRank, faMax = GetFirstAidSkill()
+    local tier = PickFaTier(playerLevel, faRank)
+    if not tier then return end
+
+    local cloth = CountItemInBags(tier.clothId)
+    local bandageCredit = CountBandageCredit(tier.bandageIds)
+    local altCloth = tier.altClothId and CountItemInBags(tier.altClothId) or 0
+    local total = cloth + bandageCredit + altCloth
+    local goal = tier.goalTotal
+
+    table.insert(lines, "|cff00ccffFIRST AID|r" .. LevelMilestoneTag(tier.levelMin, tier.levelMax, playerLevel))
+
+    if faRank then
+        local need = math.max(0, tier.skillMax - faRank)
+        local estMats = math.ceil(need * 0.6)
+        local open, close = ColorRatio(faRank, tier.skillMax)
+        table.insert(lines, string.format("  FA %s%d/%d%s — need ~%d more %s for next tier",
+            open, faRank, tier.skillMax, close, estMats, tier.clothName:lower()))
+    end
+
+    local bandageCount = 0
+    for itemId in pairs(tier.bandageIds) do
+        bandageCount = bandageCount + CountItemInBags(itemId)
+    end
+
+    local summary = string.format("  %s: %d cloth + %d bandages = %s toward %s",
+        tier.clothName, cloth, bandageCount, FormatRatio(total, goal), tier.label)
+    table.insert(lines, summary)
+
+    if tier.altClothName then
+        table.insert(lines, string.format("  + %d %s (expert tier)", altCloth, tier.altClothName))
+    end
+
+    local finalGoal = 0
+    for _, t in ipairs(P1AG.FIRST_AID.tiers) do finalGoal = finalGoal + t.goalTotal end
+    table.insert(lines, string.format("  Have: %d cloth, %d bandages | Need by lvl %d: ~%d total healing supplies",
+        cloth, bandageCount, P1AG.FIRST_AID.finalLevel, finalGoal))
+end
+
+local function BuildHerbLines(playerLevel, lines)
+    local band = PickHerbMilestone(playerLevel)
+    table.insert(lines, "|cff00ccffHERBS|r" .. LevelMilestoneTag(band.levelMin, band.levelMax, playerLevel))
+    for _, item in ipairs(band.items) do
+        local have = CountItemInBags(item.id)
+        table.insert(lines, "  " .. FormatRatio(have, item.goal) .. " " .. item.name)
+    end
+end
+
+local function BuildMatWatchLines(playerLevel, lines)
+    local shown = 0
+    for _, mat in ipairs(P1AG.MAT_WATCH) do
+        if playerLevel <= mat.levelMax + 5 then
+            local have = CountItemInBags(mat.id)
+            table.insert(lines, "  " .. FormatRatio(have, mat.goal) .. " " .. mat.name
+                .. LevelMilestoneTag(mat.levelMin, mat.levelMax, playerLevel))
+            if mat.hint then
+                table.insert(lines, "    |cff666666" .. mat.hint .. "|r")
+            end
+            shown = shown + 1
+        end
+    end
+    if shown == 0 then
+        table.insert(lines, "  |cff888888Leather/thread goals met for this level band|r")
+    end
 end
 
 local function BuildMatsContent()
-    if not content or not content.text then return end
+    if not contentText then return end
     local lvl = UnitLevel("player")
-    local lines = { "|cff00ccffCRAFTING MATS|r |cff888888(/p1guide to hide)|r" }
+    local lines = { "|cff00ccffCRAFTING MATS|r |cff888888(/p1guide to hide)|r", "" }
 
-    local rows = {}
-    for itemId, info in pairs(P1AG.MAT_WATCH) do
-        rows[#rows + 1] = { id = itemId, info = info }
+    BuildFirstAidLines(lvl, lines)
+    table.insert(lines, "")
+    BuildHerbLines(lvl, lines)
+    table.insert(lines, "")
+    table.insert(lines, "|cff00ccffOTHER MATS|r")
+    BuildMatWatchLines(lvl, lines)
+
+    contentText:SetText(table.concat(lines, "\n"))
+    if content then
+        local h = contentText:GetStringHeight() + 12
+        content:SetHeight(math.max(h, 80))
     end
-    table.sort(rows, function(a, b)
-        local la = a.info[4] or 99
-        local lb = b.info[4] or 99
-        if la ~= lb then return la < lb end
-        return (a.info[1] or "") < (b.info[1] or "")
-    end)
-
-    for _, row in ipairs(rows) do
-        local info = row.info
-        local have = CountItemInBags(row.id)
-        local name, goal, hint, needBy = info[1], info[2], info[3], info[4]
-        table.insert(lines, ColorCount(have, goal) .. " " .. name .. LevelHint(needBy, lvl))
-        if hint and hint ~= "" then
-            table.insert(lines, "  |cff666666" .. hint .. "|r")
-        end
-    end
-
-    content.text:SetText(table.concat(lines, "\n"))
 end
 
 local function BuildUI()
     panel = CreateFrame("Frame", "P1AdventureGuideFrame", UIParent)
-    panel:SetSize(260, 150)
+    panel:SetSize(300, 200)
     panel:SetPoint(DB.point or "TOPLEFT", UIParent, DB.relPoint or "TOPLEFT", DB.x or 12, DB.y or -120)
     panel:SetBackdrop({
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -94,15 +199,19 @@ local function BuildUI()
         DB.point, DB.relPoint, DB.x, DB.y = p, rp, x, y
     end)
 
-    content = CreateFrame("Frame", nil, panel)
-    content:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -8)
-    content:SetSize(244, 130)
+    scroll = CreateFrame("ScrollFrame", "P1AdventureGuideScroll", panel, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -28)
+    scroll:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -28, 8)
 
-    content.text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    content.text:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
-    content.text:SetWidth(240)
-    content.text:SetJustifyH("LEFT")
-    content.text:SetNonSpaceWrap(true)
+    content = CreateFrame("Frame", nil, scroll)
+    content:SetSize(260, 80)
+    scroll:SetScrollChild(content)
+
+    contentText = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    contentText:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
+    contentText:SetWidth(256)
+    contentText:SetJustifyH("LEFT")
+    contentText:SetNonSpaceWrap(true)
 
     BuildMatsContent()
 end
@@ -110,6 +219,7 @@ end
 local init = CreateFrame("Frame")
 init:RegisterEvent("PLAYER_LOGIN")
 init:RegisterEvent("BAG_UPDATE")
+init:RegisterEvent("SKILL_LINES_CHANGED")
 init:SetScript("OnEvent", function()
     if not panel then BuildUI() end
     BuildMatsContent()
