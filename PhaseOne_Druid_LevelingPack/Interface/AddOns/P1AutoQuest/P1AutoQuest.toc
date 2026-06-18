@@ -2,7 +2,7 @@
 ## Title: |cff00ccffP1 Auto Quest|r
 ## Notes: Auto TomTom arrow to nearest Questie objective + gentle idle click-to-move. Phase One pack.
 ## Author: zakksu
-## Version: 1.2.0
+## Version: 1.2.1
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## Dependencies: Questie-335, TomTom, !Astrolabe

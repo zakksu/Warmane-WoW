@@ -1,14 +1,17 @@
--- P1AutoQuest — Questie auto arrow + gentle idle click-to-move (Warmane 3.3.5a)
--- Phases: available pickup → objectives → turn-in. Not full autopilot.
+-- P1AutoQuest — Questie auto arrow + idle click-to-move (Warmane 3.3.5a)
+-- Phases: available pickup → objectives → turn-in. Aggressive addon-API automation.
 
-local IDLE_SECONDS = 3
-local MOVE_INTERVAL = 2.5
-local MOVE_MIN_DIST = 10
+local IDLE_SECONDS = 1
+local RESCAN_INTERVAL = 2
+local MOVE_INTERVAL = 1.5
+local MOVE_MIN_DIST = 8
 local MOVE_MAX_DIST = 800
 local REFRESH_THROTTLE = 0.4
-local AVAIL_CACHE_TTL = 5
-local INTERACT_RANGE = 10
-local INTERACT_COOLDOWN = 3
+local AVAIL_CACHE_TTL = 3
+local TARGET_RANGE = 30
+local INTERACT_RANGE = 8
+local INTERACT_COOLDOWN = 1.5
+local STUCK_SECONDS = 10
 
 local enabled = true
 local lastRefresh = 0
@@ -18,7 +21,10 @@ local idleSince = GetTime()
 local ourMoveUntil = 0
 local lastAvailScan = 0
 local availCache = nil
-local promptedAtGiver = false
+local lastRescan = 0
+local lastPosX, lastPosY, lastPosZone
+local lastPosChange = 0
+local stuckHintAt = 0
 
 local status = {
     enabled = true,
@@ -40,8 +46,18 @@ local status = {
     activeQuestCount = 0,
 }
 
-local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, HBD
+local promptedAtGiver = false
+
+local function TriggerQuestieRescan()
+    if not QuestieLoader then return end
+    local ok, AvailableQuests = pcall(function() return QuestieLoader:ImportModule("AvailableQuests") end)
+    if ok and AvailableQuests and AvailableQuests.CalculateAndDrawAll then
+        AvailableQuests.CalculateAndDrawAll()
+    end
+end
 local LoadQuestieModules
+
+local QuestieDB, QuestieMap, QuestiePlayer, QuestieCompat, ZoneDB, HBD
 
 local function GetAstrolabe()
     if DongleStub then
@@ -187,6 +203,86 @@ local function GetNearestStarterForQuestId(questId)
     return best.spawn, best.zone, best.name, best.dist
 end
 
+local function FindAvailableFromQuestieFrames()
+    if not LoadQuestieModules() or not QuestieMap or not QuestieMap.questIdFrames then return nil end
+    local hbd = GetHBD()
+    if not hbd or not ZoneDB then return nil end
+    local playerX, playerY, playerI = hbd:GetPlayerWorldPosition()
+    if not playerX then return nil end
+
+    local completed = Questie.db.char.complete or {}
+    local log = QuestiePlayer.currentQuestlog or {}
+    local bestDist, bestQuestId, bestSpawn, bestZone, bestName
+
+    for questId, frameNames in pairs(QuestieMap.questIdFrames) do
+        if not completed[questId] and not log[questId] then
+            for _, frameName in pairs(frameNames) do
+                local frame = _G[frameName]
+                if frame and frame.data and frame.data.Type == "available" and frame.x and frame.y then
+                    local uiMapId = frame.UiMapID or frame.data.UiMapID
+                    local areaId = uiMapId and ZoneDB:GetAreaIdByUiMapId and ZoneDB:GetAreaIdByUiMapId(uiMapId)
+                    if areaId then
+                        local spawn = { frame.x * 100, frame.y * 100 }
+                        local dX, dY, dInstance = hbd:GetWorldCoordinatesFromZone(frame.x, frame.y, uiMapId)
+                        local dist = hbd:GetWorldDistance(dInstance, playerX, playerY, dX, dY)
+                        if dist and (not bestDist or dist < bestDist) then
+                            bestDist = dist
+                            bestQuestId = questId
+                            bestSpawn = spawn
+                            bestZone = areaId
+                            bestName = frame.data.Name or frame.data.name
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if not bestQuestId then return nil end
+    local questName = QuestieDB.QueryQuestSingle(bestQuestId, "name") or ("Quest #" .. bestQuestId)
+    local title = "Pick up: " .. questName
+    if bestName then title = title .. " (" .. bestName .. ")" end
+    return {
+        questId = bestQuestId,
+        questName = questName,
+        mode = "available",
+        dist = bestDist,
+        spawn = bestSpawn,
+        zone = bestZone,
+        targetName = bestName,
+        title = title,
+    }
+end
+
+local function FindAvailableFromLandmarks()
+    if not GetNumTrackingTypes then return nil end
+    local hbd = GetHBD()
+    if not hbd then return nil end
+    local playerX, playerY, playerI = hbd:GetPlayerWorldPosition()
+    if not playerX then return nil end
+
+    local bestDist, bestName
+    for i = 1, GetNumTrackingTypes() do
+        local name, texture, active, category = GetTrackingInfo(i)
+        if active and category == "quest" and name then
+            bestName = name
+            bestDist = 25
+            break
+        end
+    end
+    if not bestName then return nil end
+    return {
+        questId = nil,
+        questName = bestName,
+        mode = "available",
+        dist = bestDist or 25,
+        spawn = nil,
+        zone = nil,
+        targetName = bestName,
+        title = "Pick up: " .. bestName,
+    }
+end
+
 local function FindAvailableQuestTarget()
     local now = GetTime()
     if availCache and (now - lastAvailScan) < AVAIL_CACHE_TTL then
@@ -236,8 +332,14 @@ local function FindAvailableQuestTarget()
 
     lastAvailScan = now
     if not bestQuestId then
-        availCache = nil
-        return nil
+        availCache = FindAvailableFromQuestieFrames()
+        if not availCache then
+            availCache = FindAvailableFromLandmarks()
+        end
+        if not availCache then
+            TriggerQuestieRescan()
+        end
+        return availCache
     end
 
     local questName = QuestieDB.QueryQuestSingle(bestQuestId, "name") or ("Quest #" .. bestQuestId)
@@ -333,6 +435,10 @@ local function SetTomTomWaypoint(title, areaId, x, y)
     if Questie and Questie.db and Questie.db.char then
         Questie.db.char._tom_waypoint = uid
     end
+    if uid and TomTom.SetActiveWaypoint then
+        TomTom:SetActiveWaypoint(uid)
+        if TomTom.arrow then TomTom.arrow:Show() end
+    end
     return uid
 end
 
@@ -418,14 +524,26 @@ local function ResetIdleTimer()
     status.autoMove = false
 end
 
+local function TryAutoTarget()
+    if not status.targetName then return end
+    if not status.dist or status.dist > TARGET_RANGE then return end
+    if UnitExists("target") and UnitName("target") == status.targetName then return end
+    if TargetByName then
+        TargetByName(status.targetName, true)
+    end
+end
+
 local function TryQuestGiverInteract()
-    if status.mode ~= "available" or not status.targetName then return end
+    if status.mode ~= "available" and status.mode ~= "turn-in" and status.mode ~= "objective" then return end
+    if not status.targetName and status.mode ~= "objective" then return end
     if not status.dist or status.dist > INTERACT_RANGE then return end
 
     local now = GetTime()
     if now - lastInteract < INTERACT_COOLDOWN then return end
 
-    if TargetByName then
+    TryAutoTarget()
+
+    if status.targetName and TargetByName and (not UnitExists("target") or UnitName("target") ~= status.targetName) then
         TargetByName(status.targetName, true)
     end
 
@@ -433,11 +551,33 @@ local function TryQuestGiverInteract()
         if InteractUnit then
             pcall(InteractUnit, "target")
         elseif not promptedAtGiver then
-            print("|cff00ccffP1 Auto Quest|r — at |cff00ff00" .. status.targetName .. "|r — interact to accept")
+            local label = status.targetName or "quest target"
+            print("|cff00ccffP1 Auto Quest|r — at |cff00ff00" .. label .. "|r — interact to continue")
             promptedAtGiver = true
         end
         lastInteract = now
     end
+end
+
+local function UpdateStuckDetection(pc, pz, px, py)
+    local now = GetTime()
+    if not pc or not px then return false end
+    local moved = (lastPosX ~= px or lastPosY ~= py or lastPosZone ~= pz)
+    if moved or not lastPosX then
+        lastPosX, lastPosY, lastPosZone = px, py, pz
+        lastPosChange = now
+        stuckHintAt = 0
+        return false
+    end
+    if status.autoMove and (now - lastPosChange) >= STUCK_SECONDS then
+        if stuckHintAt == 0 or (now - stuckHintAt) >= STUCK_SECONDS then
+            print("|cff00ccffP1 Auto Quest|r — stuck? Re-issuing move. Manual input or /p1fix if needed.")
+            stuckHintAt = now
+            lastMove = 0
+            return true
+        end
+    end
+    return false
 end
 
 local function TryAutoMove()
@@ -493,6 +633,9 @@ local function TryAutoMove()
         return
     end
 
+    TryAutoTarget()
+    local stuck = UpdateStuckDetection(pc, pz, px, py)
+
     local wc, wz, wx, wy = wp.c or pc, wp.z or pz, wp.x, wp.y
     if ast.TranslateWorldMapPosition then
         wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
@@ -509,6 +652,10 @@ local function TryAutoMove()
     if dist > MOVE_MAX_DIST then
         status.whyNotMoving = string.format("too far (%.0f yd)", dist)
         return
+    end
+
+    if stuck then
+        lastMove = 0
     end
 
     local step = 0.82
@@ -576,6 +723,9 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1)
 
     if event == "QUEST_ACCEPTED" or event == "QUEST_LOG_UPDATE" or event == "QUEST_COMPLETE" then
         InvalidateAvailCache()
+        if event == "QUEST_ACCEPTED" and IsAutoQuestOn() then
+            P1AutoQuest_Refresh(true)
+        end
     end
 
     if event == "PLAYER_REGEN_DISABLED" then
@@ -598,14 +748,25 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1)
         return
     end
 
+    if event == "GOSSIP_SHOW" and IsAutoQuestOn() then
+        TryQuestGiverInteract()
+        P1AutoQuest_Refresh(true)
+        return
+    end
+
     if IsAutoQuestOn() then
         P1AutoQuest_Refresh(false)
     end
 end)
 
 local moveFrame = CreateFrame("Frame")
-moveFrame:SetScript("OnUpdate", function()
+moveFrame:SetScript("OnUpdate", function(_, elapsed)
     if not IsAutoQuestOn() then return end
+    local now = GetTime()
+    if now - lastRescan >= RESCAN_INTERVAL then
+        lastRescan = now
+        P1AutoQuest_Refresh(false)
+    end
     TryAutoMove()
 end)
 
@@ -614,7 +775,7 @@ SlashCmdList["P1QUEST"] = function()
     P1AutoQuest_Refresh(true)
     local s = P1AutoQuest_GetStatus()
     local on = s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
-    print("|cff00ccffP1 Auto Quest|r v1.2.0 — " .. on)
+    print("|cff00ccffP1 Auto Quest|r v1.2.1 — " .. on)
     print("  Questie: " .. (s.questieLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  TomTom:  " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Astrolabe: " .. (s.astrolabeLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
@@ -633,5 +794,5 @@ SlashCmdList["P1QUEST"] = function()
     print("  Waypoint: " .. (s.waypoint and "set" or "|cffff0000none|r"))
     print("  Auto-move: " .. (s.autoMove and "|cff00ff00active|r" or "idle/waiting"))
     print("  Why not moving: " .. (s.whyNotMoving or "|cff00ff00ok|r"))
-    print("  |cffaaaaaaScope:|r pickup (!) + objectives + turn-in; accept via Questie gossip")
+    print("  |cffaaaaaaScope:|r pickup + objectives + turn-in; auto-target/interact within range")
 end

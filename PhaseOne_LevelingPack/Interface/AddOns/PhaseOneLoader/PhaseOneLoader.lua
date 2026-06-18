@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.2.0"
+local PACK_VERSION = "1.2.1"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINES = {
@@ -11,7 +11,7 @@ local WELCOME_LINES = {
     "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + TomTom arrow + idle walk.",
     "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
     "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + when to stock up.",
-    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r status · |cff00ff00/p1minimal|r addon checklist.",
+    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r · |cff00ff00/p1questie|r icons · |cff00ff00/p1minimal|r checklist.",
 }
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
@@ -75,13 +75,44 @@ local function PrintMinimalAddons()
     print("|cffaaaaaaToggle auto quests:|r /p1auto or Auto Q button (top-right)")
 end
 
+local function QuestieIconCount()
+    local n = 0
+    if QuestieLoader then
+        local ok, QuestieMap = pcall(function() return QuestieLoader:ImportModule("QuestieMap") end)
+        if ok and QuestieMap and QuestieMap.questIdFrames then
+            for _, frames in pairs(QuestieMap.questIdFrames) do
+                for _ in pairs(frames) do n = n + 1 end
+            end
+        end
+    end
+    return n
+end
+
+local function ForceQuestieIconRefresh()
+    if QuestieLoader then
+        local ok, AvailableQuests = pcall(function() return QuestieLoader:ImportModule("AvailableQuests") end)
+        if ok and AvailableQuests and AvailableQuests.CalculateAndDrawAll then
+            AvailableQuests.CalculateAndDrawAll()
+            return true
+        end
+    end
+    if Questie and Questie.RefreshQuestIcon then
+        Questie:RefreshQuestIcon()
+        return true
+    end
+    return false
+end
+
 local function ApplyQuestiePresets()
     if not Questie or not Questie.db or not Questie.db.profile then return false end
     local p = Questie.db.profile
-    p.minLevelFilter = -4
-    p.maxLevelFilter = 4
+    p.enabled = true
+    p.enableMapIcons = true
+    p.enableMiniMapIcons = true
+    p.lowLevelStyle = 3
     p.manualLevelOffset = 4
-    p.lowLevelStyle = 2
+    p.minLevelFilter = 1
+    p.maxLevelFilter = 80
     p.trackerSortObjectives = "byDistance"
     p.trackerShowCompleteQuests = false
     p.collapseCompletedQuests = true
@@ -96,11 +127,15 @@ local function ApplyQuestiePresets()
     p.enableObjectives = true
     p.hideIconsOnContinents = false
     p.nameplateEnabled = false
+    p.useWotlkMapData = true
+    if QuestieCompat and QuestieCompat.LoadUiMapData and QuestieCompat.WOW_PROJECT_WRATH_CLASSIC then
+        QuestieCompat.LoadUiMapData(QuestieCompat.WOW_PROJECT_WRATH_CLASSIC)
+    end
     p.autoaccept = IsAutoQuestEnabled()
     p.autocomplete = IsAutoQuestEnabled()
     p.autoModifier = "disabled"
     if Questie.db.char then Questie.db.char.complete = Questie.db.char.complete or {} end
-    if Questie.RefreshQuestIcon then Questie:RefreshQuestIcon() end
+    ForceQuestieIconRefresh()
     return true
 end
 
@@ -164,6 +199,35 @@ SlashCmdList["P1MINIMAL"] = function()
     PrintMinimalAddons()
 end
 
+SLASH_P1QUESTIE1 = "/p1questie"
+SlashCmdList["P1QUESTIE"] = function()
+    if not Questie or not Questie.db or not Questie.db.profile then
+        print("|cff00ccffP1 Questie:|r |cffff0000Questie not loaded|r — enable Questie-335 and /reload")
+        return
+    end
+    local p = Questie.db.profile
+    local yn = function(v) return v and "|cff00ff00yes|r" or "|cffff0000no|r" end
+    print("|cff00ccffP1 Questie|r v" .. PACK_VERSION .. " — map icon debug")
+    print("  enabled: " .. yn(p.enabled))
+    print("  enableMapIcons: " .. yn(p.enableMapIcons))
+    print("  enableMiniMapIcons: " .. yn(p.enableMiniMapIcons))
+    print("  enableAvailable: " .. yn(p.enableAvailable))
+    print("  enableTurnins: " .. yn(p.enableTurnins))
+    print("  enableObjectives: " .. yn(p.enableObjectives))
+    print("  hideIconsOnContinents: " .. yn(p.hideIconsOnContinents))
+    print("  useWotlkMapData: " .. yn(p.useWotlkMapData))
+    print(string.format("  level filter: style=%s offset=%s min=%s max=%s",
+        tostring(p.lowLevelStyle), tostring(p.manualLevelOffset),
+        tostring(p.minLevelFilter), tostring(p.maxLevelFilter)))
+    print(string.format("  scale: global=%.2f minimap=%.2f available=%.2f",
+        p.globalScale or 0, p.globalMiniMapScale or 0, p.availableScale or 0))
+    print("  autoaccept: " .. yn(p.autoaccept) .. "  autocomplete: " .. yn(p.autocomplete))
+    print("  autoModifier: " .. tostring(p.autoModifier))
+    print("  map icon frames: " .. QuestieIconCount())
+    ForceQuestieIconRefresh()
+    print("  refreshed — check world map / minimap for ! icons")
+end
+
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("PLAYER_LOGIN")
 loader:SetScript("OnEvent", function()
@@ -179,6 +243,7 @@ loader:SetScript("OnEvent", function()
         if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
         P1_AutoQuest_RefreshButtons()
     end)
+    Delay(5, function() ForceQuestieIconRefresh() end)
     if not db.welcomed or db.presetsApplied == PACK_VERSION then
         Delay(3, function() PrintWelcome() db.welcomed = true end)
     end
