@@ -15,7 +15,8 @@ CHANGELOG (v1.1.1)
   - Docs: Adventure Guide mockups, stuck-aura troubleshooting, class tip links
 
 INSTALL (players)
-  Run INSTALL.bat inside the pack folder → paste Warmane path → log in → /reload
+  Double-click INSTALL.bat at repo root → pick pack → confirm Warmane path → log in → /reload
+  Or: INSTALL_WARLOCK.bat / INSTALL_DRUID.bat / PhaseOne_*/INSTALL.bat
 
 BUILD (maintainers)
   Run RELEASE.bat at repo root → creates .zip files

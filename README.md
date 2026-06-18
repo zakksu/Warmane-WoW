@@ -15,10 +15,26 @@ Install **one pack** per character (don't mix loaders unless you know what you'r
 
 ---
 
+## Install (easiest)
+
+**Double-click `INSTALL.bat` at the repo root** → choose Warlock (1) or Feral Druid (2) → confirm or paste your Warmane folder (must contain `Wow.exe`) → enable addons at character select → `/reload`.
+
+Shortcuts:
+
+| Goal | Double-click |
+|------|----------------|
+| Either pack (menu) | **`INSTALL.bat`** (repo root) |
+| Warlock only | `INSTALL_WARLOCK.bat` or `PhaseOne_LevelingPack/INSTALL.bat` |
+| Feral Druid only | `INSTALL_DRUID.bat` or `PhaseOne_Druid_LevelingPack/INSTALL.bat` |
+
+Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `Interface/AddOns/`.
+
+---
+
 ## Feral Druid — quick install (Icecrown)
 
-1. Copy `PhaseOne_Druid_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
-   - Or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
+1. Run **`INSTALL.bat`** at repo root and pick **2**, or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
+   - Manual: copy `PhaseOne_Druid_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
 2. Character select → **AddOns** → enable all → **Load out of date AddOns**
 3. Log in on your **Druid** → `/reload`
 4. **Done** — Questie, Leatrix, **P1 Feral HUD**, and **P1 Adventure Guide** configure automatically (no WeakAuras import needed)
@@ -33,8 +49,8 @@ Class tips: **[HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORD
 
 ## Warlock — quick install
 
-1. Copy `PhaseOne_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
-   - Or run `PhaseOne_LevelingPack/INSTALL.bat`
+1. Run **`INSTALL.bat`** at repo root and pick **1**, or run `PhaseOne_LevelingPack/INSTALL.bat`
+   - Manual: copy `PhaseOne_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
 2. Same addon enable steps as above
 3. `/reload` on first login — **auto-configures** Questie, Leatrix, P1 Warlock HUD, P1 Adventure Guide
 4. `/p1` for tips · `/p1whud` to toggle HUD · `/p1guide` for the Adventure Guide

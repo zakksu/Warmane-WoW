@@ -17,8 +17,10 @@ echo  RELEASE READY
 echo ========================================
 echo.
 echo  Install packs (copy to Warmane):
-echo    PhaseOne_LevelingPack\INSTALL.bat      - Warlock
-echo    PhaseOne_Druid_LevelingPack\INSTALL.bat - Feral Druid
+echo    INSTALL.bat              - pick Warlock or Druid (easiest)
+echo    INSTALL_WARLOCK.bat      - Warlock only
+echo    INSTALL_DRUID.bat        - Feral Druid only
+echo    Or inside each pack folder: PhaseOne_* \INSTALL.bat
 echo.
 echo  Shareable zips (optional):
 echo    PhaseOne_LevelingPack.zip
