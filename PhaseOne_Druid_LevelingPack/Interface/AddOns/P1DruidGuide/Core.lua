@@ -3,17 +3,20 @@
 P1DruidGuideDB = P1DruidGuideDB or {
     point = "TOPLEFT", relPoint = "TOPLEFT", x = 12, y = -80,
     width = 280, height = 220, scale = 1.0,
-    collapsed = { next = false, mats = false, gather = false, bis = true },
+    collapsed = { next = false, tips = false, mats = false, gather = false, bis = true },
+    tipsVisible = true,
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.3.2"
+local VERSION = "1.4.0"
 local panel, headerText, bodyText, resizeGrip
 local guideVisible = true
+local tipsVisible = true
 
-local SECTIONS = { "next", "mats", "gather", "bis" }
+local SECTIONS = { "next", "tips", "mats", "gather", "bis" }
 local SECTION_LABELS = {
     next = "NEXT",
+    tips = "TIPS",
     mats = "MATS",
     gather = "GATHER",
     bis = "BIS / BUILD",
@@ -42,6 +45,28 @@ local function ReadGuideVisible()
         return PhaseOneDruidLoaderDB.guideVisible
     end
     return true
+end
+
+local function ReadTipsVisible()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.tipsVisible ~= nil then
+        return PhaseOneLoaderDB.tipsVisible
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.tipsVisible ~= nil then
+        return PhaseOneDruidLoaderDB.tipsVisible
+    end
+    if DB.tipsVisible ~= nil then return DB.tipsVisible end
+    return true
+end
+
+local function SyncLoaderTips(on)
+    DB.tipsVisible = on
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.tipsVisible = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.tipsVisible = on end
+end
+
+local function IsDruidPlayer()
+    local _, class = UnitClass("player")
+    return class == "DRUID"
 end
 
 local function GetBagItemId(bag, slot)
@@ -119,6 +144,68 @@ local function PickBisBracket(playerLevel)
         end
     end
     return P1DG.BIS_BRACKETS[#P1DG.BIS_BRACKETS]
+end
+
+local function PickTipsBracket(playerLevel)
+    if not P1DG.TIPS_BRACKETS then return nil, nil end
+    local current, nextBracket
+    for i, bracket in ipairs(P1DG.TIPS_BRACKETS) do
+        if playerLevel >= bracket.levelMin and playerLevel <= bracket.levelMax then
+            current = bracket
+            nextBracket = P1DG.TIPS_BRACKETS[i + 1]
+            break
+        end
+        if playerLevel < bracket.levelMin then
+            nextBracket = bracket
+            break
+        end
+    end
+    if not current and playerLevel >= P1DG.TIPS_BRACKETS[#P1DG.TIPS_BRACKETS].levelMax then
+        current = P1DG.TIPS_BRACKETS[#P1DG.TIPS_BRACKETS]
+    end
+    return current, nextBracket
+end
+
+local function AppendTipsBlock(lines, bracket, gray)
+    if not bracket then return end
+    local prefix = gray and "|cff666666" or "|cffffffff"
+    local close = "|r"
+    table.insert(lines, string.format("  %s[%d-%d] %s%s",
+        prefix, bracket.levelMin, bracket.levelMax, bracket.zone or "", close))
+    if bracket.rotation then
+        for rotLine in bracket.rotation:gmatch("[^\n]+") do
+            table.insert(lines, "  " .. prefix .. rotLine .. close)
+        end
+    end
+    if bracket.talents then
+        table.insert(lines, "  " .. prefix .. "Talents: " .. bracket.talents .. close)
+    end
+    if bracket.survival then
+        table.insert(lines, "  " .. prefix .. "Survive: " .. bracket.survival .. close)
+    end
+    if bracket.quests then
+        table.insert(lines, "  " .. prefix .. "Quests: " .. bracket.quests .. close)
+    end
+    if bracket.gather then
+        table.insert(lines, "  " .. prefix .. "Gather: " .. bracket.gather .. close)
+    end
+end
+
+local function BuildTipsLines(playerLevel, lines)
+    if not tipsVisible then
+        table.insert(lines, "  |cff888888Tips hidden — /p1tips to show|r")
+        return
+    end
+    local current, nextBracket = PickTipsBracket(playerLevel)
+    if current then
+        AppendTipsBlock(lines, current, false)
+    elseif playerLevel < 10 then
+        table.insert(lines, "  |cff888888Reach lvl 10 for cat form tips|r")
+    end
+    if nextBracket then
+        table.insert(lines, "  |cff666666--- next (" .. nextBracket.levelMin .. "-" .. nextBracket.levelMax .. ") ---|r")
+        AppendTipsBlock(lines, nextBracket, true)
+    end
 end
 
 local function ColorRatio(have, goal)
@@ -316,14 +403,19 @@ local function BuildBody()
     DB.collapsed = DB.collapsed or {}
     local lines = {}
     for _, key in ipairs(SECTIONS) do
-        local collapsed = DB.collapsed[key]
-        table.insert(lines, (collapsed and "[+]" or "[-]") .. " |cff00ccff" .. SECTION_LABELS[key] .. "|r")
-        if not collapsed then
-            if key == "next" then BuildNextLines(lines)
-            elseif key == "mats" then BuildMatsLines(lvl, lines)
-            elseif key == "gather" then BuildGatherLines(lvl, lines)
-            elseif key == "bis" then BuildBisLines(lvl, lines) end
-            table.insert(lines, "")
+        if key == "tips" and not tipsVisible then
+            -- skip section header when tips toggled off via /p1tips
+        else
+            local collapsed = DB.collapsed[key]
+            table.insert(lines, (collapsed and "[+]" or "[-]") .. " |cff00ccff" .. SECTION_LABELS[key] .. "|r")
+            if not collapsed then
+                if key == "next" then BuildNextLines(lines)
+                elseif key == "tips" then BuildTipsLines(lvl, lines)
+                elseif key == "mats" then BuildMatsLines(lvl, lines)
+                elseif key == "gather" then BuildGatherLines(lvl, lines)
+                elseif key == "bis" then BuildBisLines(lvl, lines) end
+                table.insert(lines, "")
+            end
         end
     end
     bodyText:SetText(table.concat(lines, "\n"))
@@ -445,6 +537,12 @@ function P1DruidGuide_Refresh()
     BuildBody()
 end
 
+function P1DruidGuide_SetTipsVisible(show)
+    tipsVisible = show and true or false
+    SyncLoaderTips(tipsVisible)
+    P1DruidGuide_Refresh()
+end
+
 function P1DruidGuide_SetVisible(show)
     if not panel then BuildUI() end
     guideVisible = show and true or false
@@ -494,6 +592,16 @@ SlashCmdList["P1GUIDE"] = HandleGuideSlash
 SLASH_P1DRUID1 = "/p1"
 SlashCmdList["P1DRUID"] = HandleGuideSlash
 
+SLASH_P1TIPS1 = "/p1tips"
+SlashCmdList["P1TIPS"] = function(msg)
+    msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
+    if msg == "on" then P1DruidGuide_SetTipsVisible(true)
+    elseif msg == "off" then P1DruidGuide_SetTipsVisible(false)
+    else P1DruidGuide_SetTipsVisible(not tipsVisible) end
+    print("|cff00ccffP1 Tips|r — level bracket advice "
+        .. (tipsVisible and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
+end
+
 local init = CreateFrame("Frame")
 init:RegisterEvent("PLAYER_LOGIN")
 init:RegisterEvent("BAG_UPDATE")
@@ -504,7 +612,14 @@ init:SetScript("OnEvent", function(_, event)
     MigrateLegacyDB()
     if not panel then BuildUI() end
     if event == "PLAYER_LOGIN" then
+        if not IsDruidPlayer() then
+            guideVisible = false
+            if panel then panel:Hide() end
+            return
+        end
         guideVisible = ReadGuideVisible()
+        tipsVisible = ReadTipsVisible()
+        SyncLoaderTips(tipsVisible)
         P1DruidGuide_SetVisible(guideVisible)
     else
         P1DruidGuide_Refresh()

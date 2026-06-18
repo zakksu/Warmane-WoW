@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.3.2-druid"
+local PACK_VERSION = "1.4.0-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide ready|r — |cff00ff00/p1guide|r toggle · |cff00ff00/p1settings|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide ready|r — |cff00ff00/p1guide|r · |cff00ff00/p1glow|r · |cff00ff00/p1settings|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -86,6 +86,8 @@ local function PrintSettings()
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (in guide NEXT)")
     print("  Guide:   " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
+    print("  Tips:    " .. Yn(IsFeatureOn("tipsVisible")) .. "  — /p1tips")
+    print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
     print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
 end
@@ -95,6 +97,8 @@ local function SetAllFeatures(on)
     db.navEnabled = on
     db.pathEnabled = on
     db.guideVisible = on
+    db.tipsVisible = on
+    db.questGlowEnabled = on
     ApplyFeatureDefaults(1)
     print("|cff00ccffP1 Settings:|r all features " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
 end
@@ -192,6 +196,8 @@ function ApplyFeatureDefaults(attempt)
     if P1QuestPath_SetEnabled then P1QuestPath_SetEnabled(IsFeatureOn("pathEnabled")) end
     if P1DruidGuide_SetVisible then P1DruidGuide_SetVisible(IsFeatureOn("guideVisible"))
     elseif P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
+    if P1DruidGuide_SetTipsVisible then P1DruidGuide_SetTipsVisible(IsFeatureOn("tipsVisible")) end
+    if P1QuestGlow_SetEnabled then P1QuestGlow_SetEnabled(IsFeatureOn("questGlowEnabled")) end
     ApplyQuestiePresets()
     if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
     if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
@@ -309,9 +315,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.3.2:|r Nav cross-zone pins + TomTom cleanup on zone/#1 change")
-            print("|cff00ccffP1 v1.3.2:|r BIS green when exact item equipped · GATHER AH tips when mats low")
-            print("|cff00ccffP1 v1.3.2:|r Pins flaky? |cff00ff00/p1nav debug|r · click NEXT row for TomTom")
+            print("|cff00ccffP1 v1.4.0:|r Quest mob glow — soft gold pulse on nameplates (/p1glow)")
+            print("|cff00ccffP1 v1.4.0:|r Druid TIPS section lvl 10-50 — rotation, talents, BIS to 50")
+            print("|cff00ccffP1 v1.4.0:|r /p1tips toggle · glow clears when objective completes")
         end)
     end
 

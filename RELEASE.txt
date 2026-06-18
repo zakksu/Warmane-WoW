@@ -1,9 +1,20 @@
-Phase One Warmane Leveling Packs — v1.3.2
+Phase One Warmane Leveling Packs — v1.4.0
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.4.0)
+  - P1QuestNav Glow: soft gold pulse on quest kill/collect mob nameplates (/p1glow)
+  - Parses quest log + Questie objectives; clears glow when objective completes
+  - Target frame fallback glow for quest mobs within interact range
+  - WorldFrame nameplate scan (3.3.5 pattern, no LibCustomGlow)
+  - P1DruidGuide TIPS section: lvl 10-50 Horde Feral/Caster bracket advice
+  - Rotation, talents, survival, quest chains, gather per bracket; next bracket preview grayed
+  - BIS extended to lvl 40-50 (Wildheart set, Golem Skull Staff, Hand of Justice)
+  - Herb/ore milestones extended to 50 · /p1tips toggle · druid class gate
+  - /p1settings shows Glow + Tips toggles
 
 CHANGELOG (v1.3.2)
   - P1QuestNav: harden AreaIdToCZ — no wrong player-zone fallback; log misses in debug
@@ -35,12 +46,15 @@ INSTALL (players)
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons + objectives)
   P1QuestNav (numbered minimap pins + dotted line + TomTom arrow to #1)
+  P1QuestGlow (gold pulse on quest mob nameplates — /p1glow)
   P1QuestPath logic (xp + gear ranked NEXT in guide — /p1path still toggles data)
-  P1 Druid Guide — NEXT / MATS / GATHER / BIS overlay (/p1 or /p1guide)
+  P1 Druid Guide — NEXT / TIPS / MATS / GATHER / BIS overlay (/p1 or /p1guide)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
 
 TROUBLESHOOTING
   No guide?                   /p1guide — ensure ON; drag title bar to reposition
+  No glow on mobs?              /p1glow — ensure ON; need incomplete kill objective
+  Glow stuck?                   /reload — clears on objective complete or mob death
   No NEXT quests?               /p1path refresh — needs Questie loaded
   No map icons?                 /p1questie  then open world map
   No quest pins?                /p1nav debug — zone, spawn, placement mode
@@ -48,9 +62,11 @@ TROUBLESHOOTING
 
 COMMANDS
   /p1guide or /p1     Toggle druid guide overlay
+  /p1tips             Toggle TIPS section (lvl bracket advice)
+  /p1glow             Toggle quest mob nameplate glow
   /p1guide reset      Reset position and size
   /p1guide scale 0.8  Scale overlay
-  /p1settings         Feature toggles (Auto Q, Nav, Path, Guide)
+  /p1settings         Feature toggles (Auto Q, Nav, Path, Guide, Glow, Tips)
   /p1nav              Toggle minimap pins + TomTom
   /p1nav debug        Zone id, spawn coords, pin placement for #1
   /p1path             Toggle path scoring (feeds guide NEXT section)

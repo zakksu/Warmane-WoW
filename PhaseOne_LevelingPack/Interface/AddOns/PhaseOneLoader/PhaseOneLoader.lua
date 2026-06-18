@@ -3,10 +3,10 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.3.2"
+local PACK_VERSION = "1.4.0"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
-local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Path, Mats — all ON. |cff00ff00/p1settings|r"
+local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Glow ON. |cff00ff00/p1settings|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -86,6 +86,7 @@ local function PrintSettings()
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path")
     print("  Mats:    " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
+    print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
     print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
 end
@@ -95,6 +96,7 @@ local function SetAllFeatures(on)
     db.navEnabled = on
     db.pathEnabled = on
     db.guideVisible = on
+    db.questGlowEnabled = on
     ApplyFeatureDefaults(1)
     print("|cff00ccffP1 Settings:|r all features " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
 end
@@ -186,6 +188,7 @@ function ApplyFeatureDefaults(attempt)
     if P1QuestNav_SetEnabled then P1QuestNav_SetEnabled(IsFeatureOn("navEnabled")) end
     if P1QuestPath_SetEnabled then P1QuestPath_SetEnabled(IsFeatureOn("pathEnabled")) end
     if P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
+    if P1QuestGlow_SetEnabled then P1QuestGlow_SetEnabled(IsFeatureOn("questGlowEnabled")) end
     ApplyQuestiePresets()
     if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
     if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
@@ -297,8 +300,8 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.3.2:|r P1QuestNav cross-zone pins + TomTom cleanup")
-            print("|cff00ccffP1 v1.3.2:|r Pins flaky? |cff00ff00/p1nav debug|r for zone/spawn/placement")
+            print("|cff00ccffP1 v1.4.0:|r Quest mob glow — soft gold pulse on nameplates (/p1glow)")
+            print("|cff00ccffP1 v1.4.0:|r Glow clears when kill/collect objective completes")
         end)
     end
 

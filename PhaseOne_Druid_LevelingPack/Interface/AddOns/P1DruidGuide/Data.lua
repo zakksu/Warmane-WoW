@@ -44,6 +44,10 @@ P1DG.HERB_MILESTONES = {
         { id = 3820, name = "Stranglekelp", goal = 12 },
         { id = 3355, name = "Wild Steelbloom", goal = 12 },
     }},
+    { levelMin = 40, levelMax = 50, items = {
+        { id = 3818, name = "Fadeleaf", goal = 10 },
+        { id = 3821, name = "Goldthorn", goal = 10 },
+    }},
 }
 
 P1DG.ORE_MILESTONES = {
@@ -56,6 +60,10 @@ P1DG.ORE_MILESTONES = {
     }},
     { levelMin = 30, levelMax = 40, items = {
         { id = 3858, name = "Mithril Ore", goal = 10 },
+    }},
+    { levelMin = 40, levelMax = 50, items = {
+        { id = 10620, name = "Thorium Ore", goal = 8 },
+        { id = 7912, name = "Solid Stone", goal = 10 },
     }},
 }
 
@@ -179,6 +187,26 @@ P1DG.BIS_BRACKETS = {
               suggest = "+Agi cloak, minor stamina boots", source = "AH when spare gold" },
         },
     },
+    {
+        levelMin = 40, levelMax = 50,
+        slots = {
+            { key = "Weapon", order = 1, equipSlot = 16, minIlvl = 42,
+              suggest = "Golem Skull Staff / +Agi 2H", itemName = "Golem Skull Staff", itemId = 9427,
+              source = "Uldaman / AH" },
+            { key = "Chest", order = 2, equipSlot = 5, minIlvl = 40,
+              suggest = "Wildheart Vest", itemName = "Wildheart Vest", itemId = 16706,
+              source = "Dire Maul / quest chain" },
+            { key = "Legs", order = 3, equipSlot = 7, minIlvl = 40,
+              suggest = "Wildheart Kilt", itemName = "Wildheart Kilt", itemId = 16709,
+              source = "Dire Maul / STV quests" },
+            { key = "Head", order = 4, equipSlot = 1, minIlvl = 38,
+              suggest = "Wildheart Cowl", itemName = "Wildheart Cowl", itemId = 16707,
+              source = "Dire Maul set piece" },
+            { key = "Trinket", order = 5, equipSlot = 13, minIlvl = 35,
+              suggest = "Hand of Justice", itemName = "Hand of Justice", itemId = 11815,
+              source = "Blackrock Depths (optional)" },
+        },
+    },
 }
 
 P1DG.AH_TIPS = {
@@ -194,4 +222,55 @@ P1DG.AH_TIPS = {
       equipSlot = 16, maxIlvl = 22, isGeneric = true },
     { levelMin = 25, levelMax = 35, itemId = 2459, itemName = "Swiftness Potion",
       tip = "Buy: Swiftness Potion for long travel legs", goal = 5 },
+    { levelMin = 40, levelMax = 50, itemId = 3827, itemName = "Mana Potion",
+      tip = "Buy: Mana Potion stacks for caster pulls / Innervate gaps", goal = 10 },
+}
+
+-- Level-bracketed Horde Feral/Caster leveling tips (lvl 10-50)
+P1DG.TIPS_BRACKETS = {
+    {
+        levelMin = 10, levelMax = 15,
+        zone = "Mulgore / Bloodhoof",
+        rotation = "Cat at 10: Rake → Mangle → Shred\nRejuv between pulls",
+        talents = "Next: Furor (shift w/ energy) or Feral Aggression",
+        survival = "Bear if 2+ mobs; run below 35% HP",
+        quests = "Rite of Vision · Mazzranache · The Ravaged Caravan · Dwarven Digging",
+        gather = "Peacebloom/Silverleaf · Copper at Red Rocks",
+    },
+    {
+        levelMin = 15, levelMax = 20,
+        zone = "The Barrens",
+        rotation = "Rake → 5cp Rip → Shred filler\nThorns + Mark of the Wild on pull",
+        talents = "Next: Sharpened Claws / Feral Swiftness",
+        survival = "Bear tough casters; bandage between pulls",
+        quests = "The Den (Staff of Nobles) · Raptor Horns · Plainstrider Menace",
+        gather = "Briarthorn/Mageroyal north Barrens · Tin ridges",
+    },
+    {
+        levelMin = 20, levelMax = 30,
+        zone = "Ashenvale / Stonetalon",
+        rotation = "Travel Form between nodes\nCat: Rake → Rip at 5cp → Ferocious Bite",
+        talents = "Next: Feral Charge (30) — save points until then",
+        survival = "Bear elites; Innervate before long chains",
+        quests = "The Sacred Flame (Horn of Beast) · WC set pieces",
+        gather = "Stranglekelp coast · Iron in Stonetalon",
+    },
+    {
+        levelMin = 30, levelMax = 40,
+        zone = "Shimmering Flats / Desolace / Arathi",
+        rotation = "Cat grind: Rake → Rip → Shred\nFa pots on cooldown in bear",
+        talents = "Next: Leader of the Pack (if grouping) or Savage Fury",
+        survival = "Bear + Fa pot vs 3+ mobs; run at 25%",
+        quests = "The Swarm Grows (Pole of Ages) · Reclaiming the Charred Vale",
+        gather = "Mithril Flats · Silk/Mageweave for FA Expert",
+    },
+    {
+        levelMin = 40, levelMax = 50,
+        zone = "Tanaris / Feralas / STV",
+        rotation = "Wildheart cat: maintain Rip/Rake\nShift bear for pull, cat for burn",
+        talents = "Next: Predatory Strikes · prep 60 mount gold",
+        survival = "Bear STV elites; always Mark/Thorns",
+        quests = "Wildheart set in Dire Maul · Zul'Farrak for XP",
+        gather = "Fadeleaf/Goldthorn STV · Thorium later zones",
+    },
 }
