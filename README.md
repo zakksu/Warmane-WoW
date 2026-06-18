@@ -31,6 +31,24 @@ Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `I
 
 ---
 
+## Getting updates
+
+Small fixes ship often — you can **keep playing** and update without a full reinstall.
+
+1. **Pull** the latest repo or download the newest [GitHub release](https://github.com/zakksu/Warmane-WoW/releases) zips.
+2. **Update addons** — either:
+   - Run **`INSTALL.bat`** again (same pack, same Warmane path — overwrites addon files), or
+   - Copy only the changed addon folders from `PhaseOne_*/Interface/AddOns/` into your Warmane `Interface/AddOns/`.
+3. In game, type **`/reload`**.
+
+Phase One presets re-apply when the loader version changes; your other addon settings stay in saved variables.
+
+Details: **[Docs/INCREMENTAL_UPDATES.md](Docs/INCREMENTAL_UPDATES.md)**
+
+**Maintainers:** after committing fixes on `main`, double-click **`QUICK_UPDATE.bat`** to bump the patch version, rebuild zips, push, tag, and publish a GitHub release.
+
+---
+
 ## Feral Druid — quick install (Icecrown)
 
 1. Run **`INSTALL.bat`** at repo root and pick **2**, or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
@@ -126,6 +144,16 @@ Disable WA animations. Turn off optional addons in cities if FPS drops.
 ---
 
 ## Build / release zips
+
+**Maintainers — ship a tested patch:**
+
+```text
+QUICK_UPDATE.bat
+```
+
+Bumps patch version, rebuilds zips, commits, pushes `main`, tags `vX.Y.Z`, and uploads to GitHub Releases (if `gh` is set up).
+
+**Zips only (no version bump / git):**
 
 ```powershell
 .\RELEASE.bat
