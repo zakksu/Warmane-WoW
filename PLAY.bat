@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
 echo ========================================
-echo  Phase One — PLAY
+echo  Phase One - PLAY
 echo ========================================
 echo.
 
@@ -14,7 +14,7 @@ if not errorlevel 1 (
 
 call "%~dp0tools\find-warmane-path.bat"
 if not defined WOWPATH (
-  echo Warmane folder not saved yet — paste it once ^(must contain Wow.exe^):
+  echo Warmane folder not saved yet - paste it once ^(must contain Wow.exe^):
   echo.
   set /p WOWPATH="WoW folder: "
   for /f "tokens=* delims= " %%A in ("!WOWPATH!") do set "WOWPATH=%%A"
@@ -46,7 +46,13 @@ set "PACK_FLAG=-Pack !PACK!"
 if /I "%~1"=="/FULL" set "SYNC_FLAG=-Full"
 if /I "%~1"=="FULL" set "SYNC_FLAG=-Full"
 if not exist "!ADDONS!\PhaseOneLoader" (
-  echo First run — installing !PACK! pack...
+  echo First run - installing !PACK! pack...
+  set "SYNC_FLAG=-Full"
+) else if not exist "!ADDONS!\Questie-335" (
+  echo Questie-335 missing - running full sync ^(!PACK!^)...
+  set "SYNC_FLAG=-Full"
+) else if not exist "!ADDONS!\TomTom" (
+  echo TomTom missing - running full sync ^(!PACK!^)...
   set "SYNC_FLAG=-Full"
 ) else if not defined SYNC_FLAG (
   echo Updating P1 addons ^(!PACK!^)...
@@ -73,5 +79,7 @@ echo ========================================
 echo  Done! Log in and type /reload
 echo ========================================
 echo.
-powershell -NoProfile -Command "$Host.UI.RawUI.Write('Press any key to close (auto in 3s)...'); $sw=[Diagnostics.Stopwatch]::StartNew(); while($sw.Elapsed.TotalSeconds -lt 3){if([Console]::KeyAvailable){[void][Console]::ReadKey($true); break}; Start-Sleep -m 50}"
+echo Press any key to close (auto in 3s)...
+timeout /t 3 /nobreak >nul
+pause >nul
 exit /b 0

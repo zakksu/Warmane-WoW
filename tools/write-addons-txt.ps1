@@ -83,6 +83,25 @@ function Write-AddonsTxt {
     Set-Content -Path $Path -Value $lines -Encoding ASCII
 }
 
+function Get-AddonsTxtTargets {
+    param([string]$WtfAccountRoot)
+    $targets = New-Object System.Collections.Generic.List[string]
+    if (-not (Test-Path $WtfAccountRoot)) { return $targets }
+
+    Get-ChildItem -Path $WtfAccountRoot -Directory | ForEach-Object {
+        $accountDir = $_.FullName
+        [void]$targets.Add((Join-Path $accountDir "AddOns.txt"))
+
+        Get-ChildItem -Path $accountDir -Directory | ForEach-Object {
+            $realmDir = $_.FullName
+            Get-ChildItem -Path $realmDir -Directory | ForEach-Object {
+                [void]$targets.Add((Join-Path $_.FullName "AddOns.txt"))
+            }
+        }
+    }
+    return $targets
+}
+
 $manifestRules = Read-Manifest -Path $ManifestPath -InstalledNames $installed
 $wtfAccount = Join-Path $WowPath "WTF\Account"
 if (-not (Test-Path $wtfAccount)) {
@@ -90,15 +109,17 @@ if (-not (Test-Path $wtfAccount)) {
     exit 0
 }
 
-$files = @(Get-ChildItem -Path $wtfAccount -Filter "AddOns.txt" -Recurse -File -ErrorAction SilentlyContinue)
-if ($files.Count -eq 0) {
-    Write-Host "No AddOns.txt files found under WTF/Account (normal before first character login)."
+$targets = @(Get-AddonsTxtTargets -WtfAccountRoot $wtfAccount)
+if ($targets.Count -eq 0) {
+    Write-Host "No account folders under WTF/Account yet (log in once to create them)."
     exit 0
 }
 
 $updated = 0
-foreach ($file in $files) {
-    $parsed = Parse-AddonsTxt -Path $file.FullName
+$created = 0
+foreach ($targetPath in $targets) {
+    $isNew = -not (Test-Path $targetPath)
+    $parsed = Parse-AddonsTxt -Path $targetPath
     $map = $parsed.Map
     $order = $parsed.Order
 
@@ -109,8 +130,13 @@ foreach ($file in $files) {
         $map[$name] = $state
     }
 
-    Write-AddonsTxt -Path $file.FullName -Map $map -Order $order
+    Write-AddonsTxt -Path $targetPath -Map $map -Order $order
     $updated++
+    if ($isNew) { $created++ }
 }
 
-Write-Host ('Updated {0} AddOns.txt files from manifest.' -f $updated)
+if ($created -gt 0) {
+    Write-Host ('Updated {0} AddOns.txt files from manifest ({1} created).' -f $updated, $created)
+} else {
+    Write-Host ('Updated {0} AddOns.txt files from manifest.' -f $updated)
+}
