@@ -54,6 +54,9 @@ if not exist "!ADDONS!\PhaseOneLoader" (
 ) else if not exist "!ADDONS!\TomTom" (
   echo TomTom missing - running full sync ^(!PACK!^)...
   set "SYNC_FLAG=-Full"
+) else if not exist "!ADDONS!\!Astrolabe" (
+  echo !Astrolabe missing - running full sync ^(!PACK!^)...
+  set "SYNC_FLAG=-Full"
 ) else if not defined SYNC_FLAG (
   echo Updating P1 addons ^(!PACK!^)...
 ) else (

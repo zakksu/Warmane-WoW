@@ -1,9 +1,16 @@
-Phase One Warmane Leveling Packs — v1.1.7
+Phase One Warmane Leveling Packs — v1.1.8
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.1.8)
+  - P1AutoQuest v1.1.8: auto-waypoint to nearest available quest (!) when quest log empty
+  - Three phases: available pickup → objectives → turn-in (existing logic preserved)
+  - /p1quest debug: Questie/TomTom/Astrolabe status, mode, coords, distance, why-not-moving
+  - At quest giver: TargetByName + InteractUnit (or chat prompt if protected)
+  - PLAY.bat: auto -Full when !Astrolabe missing (required for ClickToMove walk)
 
 CHANGELOG (v1.1.7)
   - PLAY.bat: fix pause (no RawUI.Write); ASCII title; auto -Full when Questie-335 or TomTom missing
