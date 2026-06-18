@@ -480,6 +480,18 @@ function P1AutoQuest_Refresh(force)
     end
 
     promptedAtGiver = false
+    if not target.spawn or not target.zone then
+        status.questId = target.questId
+        status.questName = target.questName
+        status.mode = target.mode
+        status.dist = target.dist
+        status.targetName = target.targetName
+        status.waypoint = nil
+        status.whyNotMoving = "nearby quest giver — walk toward yellow ! on minimap"
+        TryAutoTarget()
+        TryQuestGiverInteract()
+        return false
+    end
     local uid = SetTomTomWaypoint(target.title, target.zone, target.spawn[1], target.spawn[2])
     status.enabled = IsAutoQuestOn()
     status.questId = target.questId
