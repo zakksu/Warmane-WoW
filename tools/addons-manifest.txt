@@ -1,17 +1,16 @@
-# Phase One AddOns.txt manifest — addon folder name : 1 (on) or 0 (off)
-# Wildcards: Bagnon* matches any installed folder starting with Bagnon
-# Applied to WTF/Account/*/AddOns.txt and per-character AddOns.txt files.
+# Phase One Quest Pack — AddOns.txt manifest (1=on, 0=off)
+# Wildcards: Bagnon* matches any folder starting with Bagnon
 
 PhaseOneLoader: 1
 P1AutoQuest: 1
-P1FeralHUD: 1
-P1WarlockHUD: 1
 P1AdventureGuide: 1
 Questie-335: 1
 TomTom: 1
 !Astrolabe: 1
-Leatrix_Plus: 1
 
+P1FeralHUD: 0
+P1WarlockHUD: 0
+Leatrix_Plus: 0
 WeakAuras: 0
 WeakAurasOptions: 0
 WeakAurasArchive: 0

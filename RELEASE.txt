@@ -1,9 +1,19 @@
-Phase One Warmane Leveling Packs — v1.1.8
+Phase One Warmane Leveling Packs — v1.2.0
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.2.0)
+  - Quest-only pack: 6 addons (PhaseOneLoader, P1AutoQuest, P1AdventureGuide,
+    Questie-335, TomTom, !Astrolabe)
+  - Removed from default install: P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras
+  - PLAY.bat: minimal sync + cleanup-wow-addons.ps1 (moves conflicts to _disabled/)
+  - Auto Q button moved to P1AutoQuest (top-right) — works without class HUD
+  - P1AdventureGuide: Mats tab only, level-based stock-up hints
+  - PhaseOneLoader: Questie presets only; quest-focused welcome + /p1minimal
+  - Docs/MINIMAL_PACK.md — what's installed and why
 
 CHANGELOG (v1.1.8)
   - P1AutoQuest v1.1.8: auto-waypoint to nearest available quest (!) when quest log empty
@@ -12,63 +22,19 @@ CHANGELOG (v1.1.8)
   - At quest giver: TargetByName + InteractUnit (or chat prompt if protected)
   - PLAY.bat: auto -Full when !Astrolabe missing (required for ClickToMove walk)
 
-CHANGELOG (v1.1.7)
-  - PLAY.bat: fix pause (no RawUI.Write); ASCII title; auto -Full when Questie-335 or TomTom missing
-  - write-addons-txt.ps1: create/update account + per-character AddOns.txt under WTF/Account
-  - PhaseOneLoader v1.1.7
-
-CHANGELOG (v1.1.6)
-  - PLAY.bat — one double-click: git pull, WoW path, auto pack detect, install/sync, AddOns.txt
-  - First run: full pack install; later runs: quick P1 addon sync
-  - SYNC_AND_PLAY.bat forwards to PLAY.bat (backwards compatible)
-  - PhaseOneLoader v1.1.6
-
-CHANGELOG (v1.1.5)
-  - Dev workflow: SYNC_AND_PLAY.bat (git pull + quick P1 sync + AddOns.txt merge → /reload)
-  - Saved WoW path: tools/wow-path.cfg + set-wow-path.bat (installers skip re-prompting)
-  - tools/addons-manifest.txt + write-addons-txt.ps1 auto-enable required addons
-  - PhaseOneLoader: "P1 updated — /reload was enough" on version bump
-  - Docs/DEV_WORKFLOW.md — symlink vs sync, gh auth, /p1minimal, Leatrix automate quests
-
-CHANGELOG (v1.1.4)
-  - P1AutoQuest: auto TomTom arrow to nearest Questie objective (or turn-in NPC when done)
-  - Gentle idle click-to-move toward arrow when Auto Q ON and idle 3s+ (stops in combat / on input)
-  - /p1quest — debug status; /p1auto toggles Questie accept/turn-in + arrow + walk
-  - Addon conflict fixes: Leatrix Automate quests/gossip forced Off (use Questie + P1AutoQuest)
-  - P1AutoQuest bundled in both Warlock and Druid packs; /p1minimal char-select checklist
-
-CHANGELOG (v1.1.3)
-  - Questie auto-accept/complete: preset sets Auto Modifier to Disabled (fixes Control blocking automation)
-  - /p1auto or /p1qauto — toggle auto quest accept/turn-in; "Auto Q" button on class HUD (green=on, grey=off)
-
-CHANGELOG (v1.1.2)
-  - Questie: auto-accept and auto-complete quests (presets re-applied on upgrade)
-
-CHANGELOG (v1.1.1)
-  - P1AdventureGuide — next best action, professions, mat counts, zone rares (/p1guide)
-  - /p1fix — clears stuck TomTom arrow and pauses stuck WeakAuras glows/icons
-  - WeakAuras optional — P1 class HUDs work without importing auras
-  - Docs: Adventure Guide mockups, stuck-aura troubleshooting, class tip links
-
 INSTALL (players)
-  Double-click INSTALL.bat at repo root → pick pack → confirm Warmane path → log in → /reload
-  Or: INSTALL_WARLOCK.bat / INSTALL_DRUID.bat / PhaseOne_*/INSTALL.bat
-
-BUILD (maintainers)
-  Run RELEASE.bat at repo root → creates .zip files
+  Double-click PLAY.bat at repo root → /reload in game
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in)
   P1AutoQuest (TomTom arrow + idle walk when Auto Q on)
-  Leatrix (auto repair, sell greys)
-  P1 Warlock HUD / P1 Feral HUD (class DoT/rotation helper + Auto Q toggle)
-  P1 Adventure Guide (/p1guide)
+  P1 Adventure Guide — crafting mats only (/p1guide)
 
 TROUBLESHOOTING
-  Stuck WA icon or glow?  /p1fix
-  Hide Adventure Guide:   /p1guide
-  Toggle auto quests:      /p1auto
-  Auto quest debug:        /p1quest
-  Minimal addon list:      /p1minimal
+  Stuck TomTom arrow?       /p1fix
+  Hide mats panel:          /p1guide
+  Toggle auto quests:       /p1auto or Auto Q button
+  Auto quest debug:         /p1quest
+  Minimal addon list:       /p1minimal
 
 GITHUB: https://github.com/zakksu/Warmane-WoW

@@ -1,20 +1,17 @@
--- Phase One Loader: welcome + first-login presets (Horde Warlock)
+-- Phase One Loader: quest pack welcome + Questie presets
 
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.1.8"
-local PACK_NAME = "Phase One Warlock Pack"
+local PACK_VERSION = "1.2.0"
+local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINES = {
-    "|cff00ccff[" .. PACK_NAME .. "]|r Welcome, Horde Warlock!",
-    "|cffaaaaaaReady to go:|r Questie + Leatrix presets applied. |cff9482c9P1 Warlock HUD|r on screen.",
-    "|cffaaaaaaDoTs:|r Glow = apply |cff9482c9Corruption|r, |cff9482c9Immolate|r, |cff9482c9Curse of Agony|r.",
-    "|cffaaaaaaPet:|r |cff00ff00Summon Voidwalker|r (lvl 10+) tanks for you.",
-    "|cffaaaaaaQuesting:|r Auto Q = accept/turn-in + arrow + idle walk. |cff00ff00/p1quest|r debug.",
-    "|cffaaaaaaAdventure:|r |cff00ff00/p1guide|r — next action, profs, mats, rare mobs.",
-    "|cffaaaaaaStuck glow?|r |cff00ff00/p1fix|r — pause WeakAuras or delete via /wa.",
-    "|cffaaaaaaAuto quests:|r |cff00ff00/p1auto|r or |cff00ff00Auto Q|r — accept, arrow, gentle walk when idle.",
+    "|cff00ccff[" .. PACK_NAME .. "]|r Welcome!",
+    "|cffaaaaaaQuest pack:|r Questie tracking + auto accept/turn-in + TomTom arrow + idle walk.",
+    "|cffaaaaaaToggle:|r |cff00ff00/p1auto|r or top-right |cff00ff00Auto Q|r button (green=on).",
+    "|cffaaaaaaMats:|r |cff00ff00/p1guide|r — crafting material counts + when to stock up.",
+    "|cffaaaaaaDebug:|r |cff00ff00/p1quest|r status · |cff00ff00/p1minimal|r addon checklist.",
 }
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
@@ -70,15 +67,12 @@ local function PrintWelcome()
 end
 
 local function PrintMinimalAddons()
-    print("|cff00ccffP1 Minimal setup|r — at Character Select → AddOns, |cffff0000uncheck|r:")
-    print("  [ ] WeakAuras          (P1 Warlock HUD replaces this)")
-    print("  [ ] WeakAurasOptions   (only needed if WeakAuras enabled)")
-    print("|cffaaaaaaOptional — uncheck if you don't use them:|r")
-    print("  [ ] Bagnon")
-    print("  [ ] Auctionator")
-    print("|cffaaaaaaKeep enabled:|r PhaseOneLoader, P1AutoQuest, P1AdventureGuide, P1WarlockHUD,")
-    print("  Questie-335, TomTom, !Astrolabe, Leatrix_Plus, Load out of date AddOns")
-    print("|cffff0000Never|r enable Leatrix \"Automate quests\" or \"Automate gossip\" with Questie — use |cff00ff00/p1auto|r instead.")
+    print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
+    print("  [x] PhaseOneLoader, P1AutoQuest, P1AdventureGuide")
+    print("  [x] Questie-335, TomTom, !Astrolabe")
+    print("  [x] Load out of date AddOns")
+    print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
+    print("|cffaaaaaaToggle auto quests:|r /p1auto or Auto Q button (top-right)")
 end
 
 local function ApplyQuestiePresets()
@@ -110,33 +104,8 @@ local function ApplyQuestiePresets()
     return true
 end
 
-local function ApplyLeatrixPresets()
-    if not LeaPlusDB then return false end
-    LeaPlusDB["AutoRepairGear"] = "On"
-    LeaPlusDB["AutoRepairGuildFunds"] = "On"
-    LeaPlusDB["AutoRepairShowSummary"] = "On"
-    LeaPlusDB["AutoSellJunk"] = "On"
-    LeaPlusDB["AutoSellShowSummary"] = "On"
-    LeaPlusDB["FasterLooting"] = "On"
-    LeaPlusDB["HideErrorMessages"] = "On"
-    LeaPlusDB["NoHitIndicators"] = "On"
-    LeaPlusDB["HideZoneText"] = "Off"
-    LeaPlusDB["MinimapModder"] = "On"
-    LeaPlusDB["EnhanceQuestLog"] = "On"
-    LeaPlusDB["ShowCooldowns"] = "On"
-    LeaPlusDB["DurabilityStatus"] = "On"
-    LeaPlusDB["AutomateQuests"] = "Off"
-    LeaPlusDB["AutomateGossip"] = "Off"
-    if LeaPlusLC then
-        for k, v in pairs(LeaPlusDB) do
-            if type(v) == "string" and (v == "On" or v == "Off") then LeaPlusLC[k] = v end
-        end
-    end
-    return true
-end
-
 local function ApplyPresets()
-    if ApplyQuestiePresets() and ApplyLeatrixPresets() then
+    if ApplyQuestiePresets() then
         db.presetsApplied = PACK_VERSION
         return true
     end
@@ -178,16 +147,16 @@ SlashCmdList["P1FIX"] = function()
         TomTom.activeWaypoint = nil
         if TomTom.arrow then TomTom.arrow:Hide() end
     end
-    if WeakAuras and WeakAuras.Toggle and (not WeakAuras.IsPaused or not WeakAuras.IsPaused()) then
-        WeakAuras.Toggle()
-        print("|cff00ccffP1 Fix:|r WeakAuras paused (stuck glows hidden). /p1fix again to un-pause.")
-    elseif WeakAuras and WeakAuras.Toggle then
-        WeakAuras.Toggle()
-        print("|cff00ccffP1 Fix:|r WeakAuras un-paused.")
+    print("|cff00ccffP1 Fix:|r Cleared stuck TomTom arrow.")
+    if WeakAuras and WeakAuras.Toggle then
+        if WeakAuras.IsPaused and not WeakAuras.IsPaused() then
+            WeakAuras.Toggle()
+            print("|cff00ccffP1 Fix:|r WeakAuras paused. /p1fix again to un-pause.")
+        else
+            WeakAuras.Toggle()
+            print("|cff00ccffP1 Fix:|r WeakAuras un-paused.")
+        end
     end
-    if _G.P1WarlockHUDFrame then _G.P1WarlockHUDFrame:Show() end
-    print("|cff00ccffP1 Fix:|r To delete stuck aura forever: |cff00ff00/wa|r → find it → Delete.")
-    print("|cffaaaaaaTip:|r You don't need WeakAuras — P1 Warlock HUD handles DoT alerts.")
 end
 
 SLASH_P1MINIMAL1 = "/p1minimal"
@@ -203,11 +172,6 @@ loader:SetScript("OnEvent", function()
     end
     db.lastSeenVersion = PACK_VERSION
 
-    local _, class = UnitClass("player")
-    if class ~= "WARLOCK" then
-        print("|cff00ccff" .. PACK_NAME .. "|r loaded. Best on a Warlock — type /p1.")
-        return
-    end
     RetryPresets(1)
     Delay(2, function()
         ApplyAutoQuestToQuestie(IsAutoQuestEnabled())

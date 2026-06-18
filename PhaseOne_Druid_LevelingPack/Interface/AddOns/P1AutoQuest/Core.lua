@@ -522,6 +522,31 @@ local function TryAutoMove()
     status.whyNotMoving = nil
 end
 
+local function CreateAutoQuestToggle()
+    if _G.P1AutoQuestToggleBtn then return end
+    local btn = CreateFrame("Button", "P1AutoQuestToggleBtn", UIParent)
+    btn:SetSize(48, 18)
+    btn:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -8, -8)
+    btn:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 16, edgeSize = 12,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 },
+    })
+    btn:SetBackdropColor(0.05, 0.05, 0.08, 0.85)
+    btn:SetBackdropBorderColor(0.3, 0.6, 0.85, 0.8)
+    local txt = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    txt:SetPoint("CENTER")
+    txt:SetText("Auto Q")
+    btn.text = txt
+    btn:SetScript("OnClick", function()
+        if P1_AutoQuest_Toggle then P1_AutoQuest_Toggle() end
+    end)
+    P1AutoQuestButtons = P1AutoQuestButtons or {}
+    P1AutoQuestButtons[#P1AutoQuestButtons + 1] = btn
+    if P1_AutoQuest_RefreshButtons then P1_AutoQuest_RefreshButtons() end
+end
+
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("PLAYER_LOGIN")
 eventFrame:RegisterEvent("QUEST_LOG_UPDATE")
@@ -536,6 +561,7 @@ eventFrame:RegisterEvent("UNIT_SPELLCAST_START")
 
 eventFrame:SetScript("OnEvent", function(self, event, arg1)
     if event == "PLAYER_LOGIN" then
+        CreateAutoQuestToggle()
         local elapsed = 0
         self:SetScript("OnUpdate", function(f, e)
             elapsed = elapsed + e
@@ -588,7 +614,7 @@ SlashCmdList["P1QUEST"] = function()
     P1AutoQuest_Refresh(true)
     local s = P1AutoQuest_GetStatus()
     local on = s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
-    print("|cff00ccffP1 Auto Quest|r v1.1.8 — " .. on)
+    print("|cff00ccffP1 Auto Quest|r v1.2.0 — " .. on)
     print("  Questie: " .. (s.questieLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  TomTom:  " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Astrolabe: " .. (s.astrolabeLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))

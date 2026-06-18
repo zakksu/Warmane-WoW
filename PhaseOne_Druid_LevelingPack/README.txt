@@ -1,118 +1,30 @@
 ================================================================================
-  PHASE ONE — HORDE FERAL DRUID LEVELING PACK (v1.0.0)
-  Warmane Icecrown · WotLK 3.3.5a · Beginner install guide
+  PHASE ONE QUEST PACK — HORDE FERAL DRUID (v1.2.0)
+  Warmane Icecrown · WotLK 3.3.5a
 ================================================================================
 
-WHAT YOU GET (lightweight — 8 addons)
-  [Required]
-    Questie-335     Quest helper (map icons, tracker)
-    TomTom          Waypoint arrow (Questie integration)
-    !Astrolabe      Map library (TomTom dependency)
-    Leatrix_Plus    Auto-repair, auto-sell greys, faster loot
-    WeakAuras       Aura framework (Bunny67 WotLK)
-    PhaseOneLoader  Druid welcome + leveling presets
+WHAT YOU GET (6 addons — quest only)
+  PhaseOneLoader    Questie presets + /p1auto /p1minimal
+  P1AutoQuest       Auto arrow + idle walk + Auto Q button
+  P1AdventureGuide  Crafting mats panel (/p1guide)
+  Questie-335       Quest tracking + auto accept/complete
+  TomTom            Waypoint arrow
+  !Astrolabe        Map library (required for auto-walk)
 
-  [Optional]
-    Bagnon          Combined bags
-    Auctionator     Auction house helper
+NOT INSTALLED: P1FeralHUD, Leatrix_Plus, WeakAuras, Bagnon, Auctionator
+  PLAY.bat moves old copies to Interface/AddOns/_disabled/
 
-================================================================================
-STEP 1 — FIND YOUR WARMANE FOLDER
-================================================================================
-  Folder must contain Wow.exe, e.g.:
-    C:\Games\Warmane\
-    C:\Program Files\Warmane\
+INSTALL
+  Double-click PLAY.bat at repo root (or INSTALL_DRUID.bat)
+  Log in → /reload
 
-================================================================================
-STEP 2 — INSTALL (pick one method)
-================================================================================
+COMMANDS
+  /p1auto or Auto Q (top-right) — toggle auto quests
+  /p1guide — mats panel
+  /p1quest — debug
+  /p1minimal — addon checklist
+  /p1d — welcome tips
 
-  METHOD A — INSTALL.bat (easiest)
-    1. Double-click INSTALL.bat in this folder
-    2. Paste full path to your Warmane folder when asked
-    3. Wait for "Done!"
-
-  METHOD B — Manual copy
-    1. Open: PhaseOne_Druid_LevelingPack\Interface\AddOns
-    2. Select ALL folders
-    3. Copy into: YourWarmaneFolder\Interface\AddOns
-    4. Merge/replace when prompted
-
-  IMPORTANT: Folder names must match exactly (Questie-335, not Questie).
-
-================================================================================
-STEP 3 — ENABLE ADDONS (character select screen)
-================================================================================
-  1. Launch Warmane — stop at CHARACTER SELECT
-  2. Click "AddOns"
-  3. Check "Load out of date AddOns"  ← REQUIRED
-  4. Enable: PhaseOneLoader, Questie-335, TomTom, !Astrolabe,
-             Leatrix_Plus, WeakAuras, WeakAurasOptions
-  5. Optional: Bagnon*, Auctionator
-  6. OK → log in on your Druid
-
-================================================================================
-STEP 4 — RELOAD & VERIFY
-================================================================================
-  In chat:
-    /reload
-
-  You should see a welcome message from Phase One Druid Pack.
-  Type /p1d anytime for Feral tips.
-
-================================================================================
-STEP 5 — PLAY (no extra setup required!)
-================================================================================
-  On first login the pack automatically configures:
-    - Questie (±4 levels, sort by distance, hide completed)
-    - Leatrix (auto repair, auto sell greys, faster loot)
-    - P1 Feral HUD (energy bar, combo points, Rip/Rake/Mangle alerts)
-
-  Quest auto-accept/turn-in + arrow + idle walk: /p1auto or HUD "Auto Q" button.
-  See STEP 6 below. Not full autopilot on 3.3.5.
-
-  You will see a welcome message and the HUD near bottom-center.
-  Drag the HUD to move it. /p1hud toggles it.
-
-  OPTIONAL — extra WeakAuras (not required):
-    /wa → WeakAuras\Feral_MANUAL_SETUP.txt
-
-================================================================================
-STEP 6 — QUESTING + AUTO Q
-================================================================================
-  Auto Q (/p1auto or HUD "Auto Q" button, green=on):
-    - Questie auto-accept and auto-turn-in at NPCs
-    - TomTom arrow auto-points to nearest objective (turn-in when done)
-    - After 3s idle, gentle click-to-move toward arrow (stops in combat/input)
-    - /p1quest — debug status
-
-  NOT full autopilot — you still fight, loot, and handle tricky paths.
-  Manual: Ctrl + Left-click any Questie icon for a custom arrow.
-
-  Horde leveling route summary: Docs\HORDE_FERAL_DRUID_TIPS.txt
-
-================================================================================
-PERFORMANCE (Warmane Icecrown)
-================================================================================
-  /console scriptErrors 1
-  /console maxfps 60
-
-  Low FPS in Orgrimmar / Dalaran?
-    - Video: Environment Low, Spell Effects Low
-    - Disable Bagnon + Auctionator if not needed
-    - WeakAuras: no animations, keep only Feral pack auras
-    - Questie: lower icon limit in settings
-
-================================================================================
-TROUBLESHOOTING
-================================================================================
-  No addons?        → Wrong path or forgot "Load out of date"
-  Questie broken?   → Options → Advanced → "Use WotLK map data"
-  No arrow?         → Enable TomTom + !Astrolabe; Ctrl+click quest
-  Wrong class tips? → Pack is for Feral Druid; /p1d still works
-  Stuck icon/glow?  → /p1fix  (or /wa → Delete the aura)
-                    → Or disable WeakAuras at character select
-
-  GitHub: https://github.com/zakksu/Warmane-WoW
+See ENABLE_ADDONS.txt and Docs/MINIMAL_PACK.md
 
 ================================================================================

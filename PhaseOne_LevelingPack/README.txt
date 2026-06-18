@@ -1,180 +1,30 @@
 ================================================================================
-  PHASE ONE — WARMANE WOTLK HORDE WARLOCK LEVELING PACK (v1.1.1)
-  Beginner install guide (plain text)
+  PHASE ONE QUEST PACK — HORDE WARLOCK (v1.2.0)
+  Warmane Icecrown · WotLK 3.3.5a
 ================================================================================
 
-WHAT YOU GET (lightweight — 8 addons)
-  [Required]
-    Questie-335     Quest helper (map icons, tracker)
-    TomTom          Waypoint arrow (works with Questie)
-    !Astrolabe      Map library (required by TomTom)
-    Leatrix_Plus    QoL: auto-repair, auto-sell greys, faster loot
-    PhaseOneLoader  Welcome + presets on first login
-    P1AutoQuest     Auto arrow + idle walk (with Auto Q toggle)
-    P1WarlockHUD    DoT tracker (Corruption/Immolate/CoA) — no import!
-    P1AdventureGuide  Next action, profs, mats, rare mobs (/p1guide)
+WHAT YOU GET (6 addons — quest only)
+  PhaseOneLoader    Questie presets + /p1auto /p1minimal
+  P1AutoQuest       Auto arrow + idle walk + Auto Q button
+  P1AdventureGuide  Crafting mats panel (/p1guide)
+  Questie-335       Quest tracking + auto accept/complete
+  TomTom            Waypoint arrow
+  !Astrolabe        Map library (required for auto-walk)
 
-  [Optional — enable only if you want them]
-    WeakAuras       Aura framework (Bunny67 WotLK build) — not required
-    WeakAurasOptions  Only if WeakAuras enabled
-    Bagnon          Combined bags (search/sort)
-    Auctionator     Simple auction house helper
+NOT INSTALLED: P1WarlockHUD, Leatrix_Plus, WeakAuras, Bagnon, Auctionator
+  PLAY.bat moves old copies to Interface/AddOns/_disabled/
 
-================================================================================
-STEP 1 — FIND YOUR WARMANE FOLDER
-================================================================================
-  Typical path:
-    C:\Games\Warmane\Interface\AddOns
-    or wherever your Warmane 3.3.5a client is installed.
+INSTALL
+  Double-click PLAY.bat at repo root (or INSTALL_WARLOCK.bat)
+  Log in → /reload
 
-  You need the folder:
-    ...\World of Warcraft\Interface\AddOns
+COMMANDS
+  /p1auto or Auto Q (top-right) — toggle auto quests
+  /p1guide — mats panel
+  /p1quest — debug
+  /p1minimal — addon checklist
+  /p1 — welcome tips
 
-================================================================================
-STEP 2 — COPY ADDONS (2 minutes)
-================================================================================
-  1. Open this pack folder: PhaseOne_LevelingPack
-  2. Open: PhaseOne_LevelingPack\Interface\AddOns
-  3. Select ALL folders inside AddOns
-  4. Copy them into your game's Interface\AddOns folder
-  5. When asked to merge/replace folders, choose YES
+See ENABLE_ADDONS.txt and Docs/MINIMAL_PACK.md
 
-  IMPORTANT folder names (must match exactly):
-    Questie-335
-    TomTom
-    !Astrolabe
-    Leatrix_Plus
-    WeakAuras
-    PhaseOneLoader
-    Bagnon          (optional)
-    Auctionator     (optional)
-
-  Do NOT nest an extra AddOns folder inside AddOns.
-
-================================================================================
-STEP 3 — ENABLE ADDONS AT LOGIN
-================================================================================
-  1. Start Warmane / WoW 3.3.5a
-  2. At the CHARACTER SELECT screen, click "AddOns" (bottom-left)
-  3. Check: "Load out of date AddOns"  <-- REQUIRED
-  4. Enable these (check each box):
-       PhaseOneLoader
-       P1AdventureGuide
-       P1WarlockHUD
-       Questie-335
-       TomTom
-       !Astrolabe
-       Leatrix_Plus
-       WeakAuras       (optional — P1 Warlock HUD replaces this)
-       WeakAurasOptions (optional — only if WeakAuras enabled)
-       Bagnon          (optional)
-       Auctionator     (optional)
-  5. Click OK and log in
-
-  TIP: Click "Enable All" then disable anything you don't want.
-
-================================================================================
-STEP 4 — RELOAD UI
-================================================================================
-  In-game chat:
-    /reload
-
-  You should see a welcome message from Phase One Pack.
-
-================================================================================
-STEP 5 — IMPORT WEAKAURAS (optional — skip if using P1 Warlock HUD)
-================================================================================
-  1. Type: /wa
-  2. Click "Import"
-  3. Open file: WeakAuras\Warlock_Leveling_Starter_Pack.txt
-  4. Copy the long !WA:2! string and paste into import box
-  5. Click Import → Accept
-
-  If import fails, use the manual guide:
-    WeakAuras\Warlock_MANUAL_SETUP.txt
-
-  Also import (optional):
-    WeakAuras\Warlock_Pet_Focus.txt
-    WeakAuras\Warlock_Rotation_Helper.txt
-
-================================================================================
-STEP 6 — QUESTIE + TOMTOM + AUTO Q
-================================================================================
-  Auto Q (/p1auto or HUD button, green=on):
-    - Questie auto-accept and auto-turn-in at NPCs
-    - TomTom arrow auto-points to nearest active objective
-    - When all objectives done, arrow points to turn-in NPC
-    - After 3s idle (not in combat), character walks toward arrow gently
-    - Stops on combat, casting, or manual movement
-    - /p1quest — debug status
-
-  NOT full autopilot — you still fight, loot, and navigate tricky areas.
-  Manual override: Ctrl+click any Questie icon to set arrow yourself.
-
-  Questie presets applied on first login:
-    - Show quests within ±4 levels
-    - Tracker sorted by distance
-    - Completed quests hidden in tracker
-    - Auto Modifier = Disabled (so Ctrl doesn't block automation)
-
-================================================================================
-STEP 7 — LEATRIX PLUS
-================================================================================
-  Type: /ltp
-
-  Presets enabled on first login:
-    - Auto repair gear
-    - Auto sell grey items at vendors
-    - Faster looting
-    - Hide spammy error messages (performance)
-
-================================================================================
-PERFORMANCE TIPS (Warmane / low FPS)
-================================================================================
-  In-game console (paste in chat):
-    /console scriptErrors 1
-    /console maxfps 60
-
-  Check FPS: enable FPS counter in Video options, or use Leatrix Plus.
-
-  If FPS drops in cities:
-    - Video → Environment Detail: Low
-    - Video → Spell Effects: Low
-    - WeakAuras → disable animations (see WeakAuras\PERFORMANCE.txt)
-    - Disable optional addons (Bagnon, Auctionator) if not needed
-    - Questie: reduce icon limit in Questie settings
-
-  Target: < 5-6 active addons for Phase One (excluding libraries).
-
-================================================================================
-HORDE WARLOCK TIPS
-================================================================================
-  See: Docs\HORDE_WARLOCK_TIPS.txt
-  In-game: /p1
-
-================================================================================
-TROUBLESHOOTING
-================================================================================
-  Addons not showing?
-    - Wrong folder (must be Interface\AddOns\Questie-335 not nested)
-    - Forgot "Load out of date AddOns"
-
-  Questie errors on Warmane?
-    - Questie-335 → Options → Advanced → enable "Use WotLK map data" if needed
-
-  No quest arrow?
-    - Enable TomTom + !Astrolabe
-    - Ctrl+click quest icon on map
-
-  Lua errors?
-    /console scriptErrors 1
-    Screenshot error and check GitHub issues
-
-  Stuck icon/glow on screen?
-    /p1fix  (pauses WeakAuras + clears TomTom arrow)
-    /wa → select the aura → Delete
-    Or disable WeakAuras at character select (P1 Warlock HUD is enough)
-
-================================================================================
-GITHUB: https://github.com/zakksu/Warmane-WoW
 ================================================================================

@@ -15,11 +15,13 @@ if not exist "%SRC%Interface\AddOns" (
 if /I "%PACK%"=="WARLOCK" (
   set "TITLE=Phase One WARLOCK Pack"
   set "CLASS=Warlock"
-  set "TIPS=/p1 for tips - /p1whud to toggle HUD - /p1guide for Adventure Guide"
+  set "PACK_FLAG=-Pack WARLOCK"
+  set "TIPS=/p1 for tips - /p1guide for mats - /p1auto for Auto Q"
 ) else if /I "%PACK%"=="DRUID" (
   set "TITLE=Phase One DRUID Pack"
   set "CLASS=Druid"
-  set "TIPS=/p1d for tips - /p1hud to toggle HUD - /p1guide for Adventure Guide"
+  set "PACK_FLAG=-Pack DRUID"
+  set "TIPS=/p1d for tips - /p1guide for mats - /p1auto for Auto Q"
 ) else (
   goto usage
 )
@@ -55,8 +57,15 @@ if not exist "!WOWPATH!\Interface\AddOns" (
   echo Creating Interface\AddOns...
   mkdir "!WOWPATH!\Interface\AddOns"
 )
-echo Copying addons...
-xcopy /E /I /Y "%SRC%Interface\AddOns\*" "!WOWPATH!\Interface\AddOns\"
+echo Copying quest pack addons...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0sync-addons.ps1" -WowPath "!WOWPATH!" !PACK_FLAG!
+if errorlevel 1 (
+  echo ERROR: addon sync failed.
+  pause
+  exit /b 1
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0cleanup-wow-addons.ps1" -WowPath "!WOWPATH!"
 
 echo.
 echo Updating AddOns.txt (enable P1 addons, disable conflicts)...
@@ -73,7 +82,7 @@ echo   1. Start WoW - character select - AddOns
 echo   2. Check "Load out of date AddOns" - required addons should already be on
 echo   3. Log in on your !CLASS! - type /reload
 echo.
-echo Auto on first login: Questie, Leatrix, P1 class HUD, P1 Adventure Guide
+echo Auto on first login: Questie, P1AutoQuest, P1 Adventure Guide (mats)
 echo !TIPS!
 echo.
 echo Daily dev updates: double-click PLAY.bat at repo root, then /reload in game.

@@ -1,8 +1,10 @@
-# Warmane WotLK — Phase One Leveling Packs
+# Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v1.1.8** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.2.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
-Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). Copy one folder to `Interface/AddOns`, enable addons, level fast.
+Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, waypoint arrow, idle walk, and crafting mat hints. **No class HUD, Leatrix, or WeakAuras** in the default install.
+
+Full details: **[Docs/MINIMAL_PACK.md](Docs/MINIMAL_PACK.md)**
 
 ## Choose your pack
 
@@ -11,166 +13,79 @@ Beginner-friendly, lightweight addon bundles for **Warmane Icecrown** (3.3.5a). 
 | **Warlock** | Horde Warlock | `PhaseOne_LevelingPack/` | `PhaseOne_LevelingPack.zip` |
 | **Feral Druid** | Horde Feral Druid | `PhaseOne_Druid_LevelingPack/` | `PhaseOne_Druid_LevelingPack.zip` |
 
-Install **one pack** per character (don't mix loaders unless you know what you're doing).
+Both packs install the **same 6 addons**; only PhaseOneLoader welcome text differs.
 
 ---
 
 ## Install (easiest)
 
-**Players: double-click `PLAY.bat` at the repo root** — it pulls updates, finds your Warmane folder (asks once), installs or syncs the right pack, enables addons, then tells you to `/reload`. No other steps.
+**Double-click `PLAY.bat` at the repo root** — git pull, sync 6 quest addons, disable conflicts, update AddOns.txt, then **`/reload`** in game.
 
 First time only: paste your Warmane folder when prompted (must contain `Wow.exe`). Path is saved to `tools/wow-path.cfg`.
-
-Legacy installers (optional):
 
 | Goal | Double-click |
 |------|----------------|
 | One-click play + updates | **`PLAY.bat`** (repo root) |
 | Pick pack manually | `INSTALL.bat` (repo root) |
-| Warlock only | `INSTALL_WARLOCK.bat` or `PhaseOne_LevelingPack/INSTALL.bat` |
-| Feral Druid only | `INSTALL_DRUID.bat` or `PhaseOne_Druid_LevelingPack/INSTALL.bat` |
+| Warlock only | `INSTALL_WARLOCK.bat` |
+| Feral Druid only | `INSTALL_DRUID.bat` |
 
-Manual copy works too: copy `PhaseOne_*/Interface/AddOns/*` into your Warmane `Interface/AddOns/`.
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
 
-**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** (`SYNC_AND_PLAY.bat` forwards to `PLAY.bat`).
+---
+
+## What's installed (6 addons)
+
+| Addon | Role |
+|-------|------|
+| **PhaseOneLoader** | Questie presets, `/p1auto`, `/p1minimal`, `/p1fix` |
+| **P1AutoQuest** | Auto waypoint + idle walk + **Auto Q** button (top-right) |
+| **P1AdventureGuide** | Crafting mats only — `/p1guide` |
+| **Questie-335** | Quest tracking + auto accept/complete |
+| **TomTom** + **!Astrolabe** | Waypoint arrow + ClickToMove walk |
+
+**Not installed:** P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras, Bagnon, Auctionator (PLAY.bat moves these to `AddOns/_disabled/`).
+
+---
+
+## In-game commands
+
+| Command | Action |
+|---------|--------|
+| `/p1auto` | Toggle Auto Q (accept/turn-in + arrow + idle walk) |
+| `/p1guide` | Show/hide crafting mats panel |
+| `/p1quest` | Debug auto-quest status |
+| `/p1minimal` | Addon checklist |
+| `/p1fix` | Clear stuck TomTom arrow |
+| `/p1` or `/p1d` | Pack welcome / tips |
 
 ---
 
 ## Getting updates
 
-Small fixes ship often — you can **keep playing** and update without a full reinstall.
+1. **Pull** latest repo or download [GitHub release](https://github.com/zakksu/Warmane-WoW/releases).
+2. Double-click **`PLAY.bat`**, then **`/reload`**.
 
-1. **Pull** the latest repo or download the newest [GitHub release](https://github.com/zakksu/Warmane-WoW/releases) zips.
-2. **Update addons** — double-click **`PLAY.bat`** (or run it again after `git pull`), then **`/reload`** in game.
-
-Phase One presets re-apply when the loader version changes; your other addon settings stay in saved variables.
-
-Details: **[Docs/INCREMENTAL_UPDATES.md](Docs/INCREMENTAL_UPDATES.md)** · dev loop: **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)**
-
-**Maintainers:** after committing fixes on `main`, double-click **`QUICK_UPDATE.bat`** to bump the patch version, rebuild zips, push, tag, and publish a GitHub release.
+Details: **[Docs/INCREMENTAL_UPDATES.md](Docs/INCREMENTAL_UPDATES.md)**
 
 ---
 
-## Feral Druid — quick install (Icecrown)
+## Class tips (still in repo)
 
-1. Run **`INSTALL.bat`** at repo root and pick **2**, or run `PhaseOne_Druid_LevelingPack/INSTALL.bat`
-   - Manual: copy `PhaseOne_Druid_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
-2. Character select → **AddOns** → enable all → **Load out of date AddOns**
-3. Log in on your **Druid** → `/reload`
-4. **Done** — Questie, Leatrix, **P1 Feral HUD**, and **P1 Adventure Guide** configure automatically (no WeakAuras import needed)
-5. `/p1d` for tips · `/p1hud` to toggle the HUD · `/p1guide` for the Adventure Guide
+- Feral: [HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt)
+- Warlock: [HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt)
 
-Optional extra WeakAuras: `WeakAuras/Feral_MANUAL_SETUP.txt`
-
-Full guide: **[PhaseOne_Druid_LevelingPack/README.txt](PhaseOne_Druid_LevelingPack/README.txt)**  
-Class tips: **[HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt)**
+Optional legacy HUD/WeakAuras files remain in pack folders but are **not copied** by PLAY.bat.
 
 ---
 
-## Warlock — quick install
+## Build / release
 
-1. Run **`INSTALL.bat`** at repo root and pick **1**, or run `PhaseOne_LevelingPack/INSTALL.bat`
-   - Manual: copy `PhaseOne_LevelingPack/Interface/AddOns/*` → your Warmane `Interface/AddOns/`
-2. Same addon enable steps as above
-3. `/reload` on first login — **auto-configures** Questie, Leatrix, P1 Warlock HUD, P1 Adventure Guide
-4. `/p1` for tips · `/p1whud` to toggle HUD · `/p1guide` for the Adventure Guide
-
-Optional WeakAuras: `PhaseOne_LevelingPack/WeakAuras/Warlock_MANUAL_SETUP.txt`
-
-Full guide: **[PhaseOne_LevelingPack/README.txt](PhaseOne_LevelingPack/README.txt)**  
-Class tips: **[HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt)**
-
----
-
-## What's in every pack (core)
-
-| Addon | Role |
-|-------|------|
-| **Questie-335** | Quest helper ([widxwer/Questie](https://github.com/widxwer/Questie) @ 335) |
-| **TomTom** + **!Astrolabe** | Waypoint arrow for Questie |
-| **Leatrix_Plus** | Auto-repair, auto-sell greys, QoL |
-| **WeakAuras** | Bunny67 [WotLK port](https://github.com/Bunny67/WeakAuras-WotLK) — **optional** |
-| **P1FeralHUD** / **P1WarlockHUD** | Built-in rotation/DoT HUD (no import) |
-| **P1AdventureGuide** | Next action, profs, mats, zone rares — `/p1guide` |
-| **PhaseOneLoader** | Auto presets + welcome |
-| *Bagnon* / *Auctionator* | Optional |
-
-**Target:** 5–6 core addons + 2 optional. WeakAuras is bundled but not required — P1 HUDs cover the basics.
-
----
-
-## Pre-configured (first login — no manual setup)
-
-- **Questie:** ±4 levels, sort by proximity, hide completed in tracker, auto accept/turn-in
-- **P1AutoQuest:** Auto TomTom arrow to nearest objective + gentle idle walk when Auto Q is on (`/p1auto`, `/p1quest` debug). Not full autopilot.
-- **Leatrix Plus:** Auto-repair, auto-sell junk, faster loot, FPS-friendly options
-- **P1 Feral HUD / P1 Warlock HUD:** Energy/CP or DoT alerts — appears automatically
-- **P1 Adventure Guide:** Next best action, professions, mat counts, zone rares — `/p1guide`  
-  Preview and tab details: **[Docs/ADVENTURE_GUIDE.md](Docs/ADVENTURE_GUIDE.md)**
-
-**WeakAuras is optional** (for advanced customization). Stuck icon or glow on screen? Type **`/p1fix`**.
-
----
-
-## Feral Druid beginner highlights
-
-- **1–19:** Moonfire + Wrath; learn heals between pulls
-- **20+:** Cat Form leveling — Mangle → Rip (5 CP) → Rake → Shred
-- **Self-heal:** Rejuvenation on the run; leave Cat to cast if low
-- **Movement:** Dash to engage/escape; Prowl + Ravage when safe
-- **Horde route:** Mulgore/Durotar → Barrens → Stonetalon → Thousand Needles
-
-Details: [PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt](PhaseOne_Druid_LevelingPack/Docs/HORDE_FERAL_DRUID_TIPS.txt)
-
----
-
-## Warlock beginner highlights
-
-- **1–10:** Corruption + Wand; Immolate when mana allows
-- **10+:** Drain Tank with Siphon Life + Corruption; Life Tap between pulls
-- **Pets:** Voidwalker for safety; Felhunter when comfortable
-- **Horde route:** Durotar → Barrens → Stonetalon → Thousand Needles
-
-Details: [PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt](PhaseOne_LevelingPack/Docs/HORDE_WARLOCK_TIPS.txt)
-
----
-
-## Performance (Warmane)
-
-```text
-/console scriptErrors 1
-/console maxfps 60
-```
-
-Disable WA animations. Turn off optional addons in cities if FPS drops.
-
----
-
-## Build / release zips
-
-**Maintainers — ship a tested patch:**
-
-```text
-QUICK_UPDATE.bat
-```
-
-Bumps patch version, rebuilds zips, commits, pushes `main`, tags `vX.Y.Z`, and uploads to GitHub Releases (if `gh` is set up).
-
-**Zips only (no version bump / git):**
-
-```powershell
-.\RELEASE.bat
-# or
-.\tools\build-all.ps1
-```
-
-Creates `PhaseOne_LevelingPack.zip` and `PhaseOne_Druid_LevelingPack.zip` (not in git — run locally).
-
----
+**Maintainers:** `QUICK_UPDATE.bat` or `RELEASE.bat` · see [RELEASE.txt](RELEASE.txt)
 
 ## Credits
 
-Questie (widxwer), Leatrix Plus (Sattva-108 backport), WeakAuras (Bunny67), Bagnon, Auctionator, Astrolabe (Trimitor). Pack layout & loaders: this repo.
+Questie (widxwer), TomTom, Astrolabe. Pack loaders: this repo.
 
 ## License
 

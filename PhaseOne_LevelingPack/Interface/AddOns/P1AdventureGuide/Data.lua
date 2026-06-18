@@ -2,14 +2,14 @@
 
 P1AG = P1AG or {}
 
--- itemId = { name, goal, profHint }
+-- itemId = { name, goal, profHint, needByLevel }
 P1AG.MAT_WATCH = {
-    [2589]  = { "Linen Cloth", 40, "Tailoring / First Aid" },
-    [2939]  = { "Ruined Leather Scraps", 20, "Leatherworking" },
-    [2318]  = { "Light Leather", 20, "Skinning" },
-    [2320]  = { "Coarse Thread", 10, "Tailoring" },
-    [2447]  = { "Peacebloom", 15, "Herbalism / Alchemy" },
-    [765]   = { "Silverleaf", 15, "Herbalism" },
+    [2589]  = { "Linen Cloth", 40, "Tailoring / First Aid", 10 },
+    [2939]  = { "Ruined Leather Scraps", 20, "Leatherworking", 12 },
+    [2318]  = { "Light Leather", 20, "Skinning", 14 },
+    [2320]  = { "Coarse Thread", 10, "Tailoring", 12 },
+    [2447]  = { "Peacebloom", 15, "Herbalism / Alchemy", 10 },
+    [765]   = { "Silverleaf", 15, "Herbalism", 10 },
 }
 
 P1AG.LEVEL_ACTIONS = {

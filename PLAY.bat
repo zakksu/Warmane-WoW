@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
 echo ========================================
-echo  Phase One - PLAY
+echo  Phase One Quest Pack - PLAY
 echo ========================================
 echo.
 
@@ -33,39 +33,45 @@ if not defined WOWPATH (
 
 set "ADDONS=!WOWPATH!\Interface\AddOns"
 set "PACK=DRUID"
-if exist "!ADDONS!\P1FeralHUD" (
-  set "PACK=DRUID"
+set "PACK_FLAG=-Pack DRUID"
+if exist "!ADDONS!\PhaseOneLoader\PhaseOneLoader.lua" (
+  findstr /C:"Warlock Pack" "!ADDONS!\PhaseOneLoader\PhaseOneLoader.lua" >nul 2>&1
+  if not errorlevel 1 (
+    set "PACK=WARLOCK"
+    set "PACK_FLAG=-Pack WARLOCK"
+  )
 ) else if exist "!ADDONS!\P1WarlockHUD" (
   set "PACK=WARLOCK"
-) else (
-  set "PACK=DRUID"
+  set "PACK_FLAG=-Pack WARLOCK"
 )
 
 set "SYNC_FLAG="
-set "PACK_FLAG=-Pack !PACK!"
 if /I "%~1"=="/FULL" set "SYNC_FLAG=-Full"
 if /I "%~1"=="FULL" set "SYNC_FLAG=-Full"
 if not exist "!ADDONS!\PhaseOneLoader" (
-  echo First run - installing !PACK! pack...
-  set "SYNC_FLAG=-Full"
+  echo First run - installing quest pack ^(!PACK!^)...
 ) else if not exist "!ADDONS!\Questie-335" (
-  echo Questie-335 missing - running full sync ^(!PACK!^)...
-  set "SYNC_FLAG=-Full"
+  echo Questie-335 missing - syncing quest pack ^(!PACK!^)...
 ) else if not exist "!ADDONS!\TomTom" (
-  echo TomTom missing - running full sync ^(!PACK!^)...
-  set "SYNC_FLAG=-Full"
+  echo TomTom missing - syncing quest pack ^(!PACK!^)...
 ) else if not exist "!ADDONS!\!Astrolabe" (
-  echo !Astrolabe missing - running full sync ^(!PACK!^)...
-  set "SYNC_FLAG=-Full"
+  echo !Astrolabe missing - syncing quest pack ^(!PACK!^)...
 ) else if not defined SYNC_FLAG (
-  echo Updating P1 addons ^(!PACK!^)...
+  echo Updating quest pack addons ^(!PACK!^)...
 ) else (
-  echo Full sync ^(!PACK!^)...
+  echo Full sync ^(dev only, !PACK!^)...
 )
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\sync-addons.ps1" -WowPath "!WOWPATH!" !SYNC_FLAG! !PACK_FLAG!
 if errorlevel 1 (
   echo ERROR: addon sync failed.
+  pause
+  exit /b 1
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\cleanup-wow-addons.ps1" -WowPath "!WOWPATH!"
+if errorlevel 1 (
+  echo ERROR: addon cleanup failed.
   pause
   exit /b 1
 )
@@ -82,6 +88,7 @@ echo ========================================
 echo  Done! Log in and type /reload
 echo ========================================
 echo.
+echo Quest pack: Questie + Auto Q + Mats guide only.
 echo Press any key to close (auto in 3s)...
 timeout /t 3 /nobreak >nul
 pause >nul

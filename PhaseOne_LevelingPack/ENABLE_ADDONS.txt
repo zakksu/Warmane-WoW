@@ -1,35 +1,28 @@
 ================================================================================
-  ENABLE THESE ADDONS (Character Select → AddOns)
+  PHASE ONE QUEST PACK — ENABLE ADDONS
+  Character Select → AddOns
 ================================================================================
 
-REQUIRED — check all:
+REQUIRED (only these 6):
   [x] PhaseOneLoader
-  [x] P1AutoQuest          <-- REQUIRED: auto arrow + idle walk (with Auto Q)
-  [x] P1AdventureGuide     <-- next action, profs, mats, rares
-  [x] P1WarlockHUD         <-- built-in DoT tracker (no import!)
+  [x] P1AutoQuest          auto arrow + idle walk + Auto Q toggle
+  [x] P1AdventureGuide     crafting mats panel (/p1guide)
   [x] Questie-335
   [x] TomTom
   [x] !Astrolabe
-  [x] Leatrix_Plus
-  [ ] WeakAuras              <-- OPTIONAL — uncheck! (P1 Warlock HUD replaces this)
-  [ ] WeakAurasOptions       <-- only if WeakAuras enabled
 
-OPTIONAL:
-  [ ] Bagnon
-  [ ] Auctionator
-
-ALWAYS CHECK:
+ALWAYS:
   [x] Load out of date AddOns
 
-CONFLICTS:
-  Never enable Leatrix "Automate quests" or "Automate gossip" with Questie.
-  Phase One turns these OFF on login — use /p1auto (Auto Q) for quest automation.
-  Type /p1minimal in-game for a quick checklist.
+NOT INSTALLED (PLAY.bat moves these to AddOns/_disabled/):
+  P1WarlockHUD, P1FeralHUD, Leatrix_Plus, WeakAuras*, Bagnon*, Auctionator
 
-TIP: Click "Enable All" then uncheck WeakAuras (+ WeakAurasOptions) and other optional addons.
+COMMANDS:
+  /p1auto or Auto Q button (top-right) — toggle auto quests
+  /p1guide — show/hide mats panel
+  /p1quest — debug status
+  /p1minimal — in-game checklist
 
-After first install: /reload
-
-P1 Warlock HUD loads automatically. WeakAuras optional.
+After PLAY.bat: log in → /reload
 
 ================================================================================
