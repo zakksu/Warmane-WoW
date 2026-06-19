@@ -12,7 +12,9 @@ param(
     [switch] $RunGrok,
     [switch] $RunCursor,
     [switch] $Status,
-    [switch] $NotifyCursor
+    [switch] $NotifyCursor,
+    [switch] $Parallel,
+    [switch] $Sequential
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,7 +35,12 @@ if ($Status) {
 }
 
 if ($RunCursor) {
-    & (Join-Path $PSScriptRoot 'cursor-handoff.ps1')
+    $manifest = Join-Path $paths.Handoff 'task-manifest.json'
+    if ((Test-Path $manifest) -and -not $Sequential) {
+        & (Join-Path $PSScriptRoot 'cursor-parallel.ps1')
+    } else {
+        & (Join-Path $PSScriptRoot 'cursor-handoff.ps1')
+    }
     exit $LASTEXITCODE
 }
 
@@ -47,6 +54,23 @@ if (-not (Test-Path $grokScript)) {
 }
 
 Set-HandoffState -State 'GROK_WORKING' -RepoRoot $repoRoot
+
+$manifest = Join-Path $paths.Handoff 'task-manifest.json'
+$useParallel = $Parallel -or ((Test-Path $manifest) -and -not $Sequential)
+
+if ($useParallel) {
+    try {
+        & (Join-Path $PSScriptRoot 'grok-parallel.ps1')
+        if ($LASTEXITCODE -ne 0) { throw "grok-parallel exited $LASTEXITCODE" }
+        if ($NotifyCursor) {
+            & (Join-Path $PSScriptRoot 'cursor-parallel.ps1')
+        }
+        exit 0
+    } catch {
+        Set-HandoffState -State 'GROK_FAILED' -Note "Parallel Grok error: $($_.Exception.Message)" -RepoRoot $repoRoot
+        throw
+    }
+}
 
 $prompt = @"
 You are Grok Build on the Warmane-WoW repo.

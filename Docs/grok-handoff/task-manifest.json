@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "cycle": "2026-06-19",
+  "parallel": true,
+  "maxParallel": 3,
+  "maxTurnsPerTask": 18,
+  "tasks": [
+    {
+      "id": "G5",
+      "title": "Feral ICC BiS depth (ilvl 264+ full slots)",
+      "spec": "tasks/G5-icc-bis.md",
+      "response": "responses/G5.md",
+      "cursorLane": "druid-data",
+      "cursorPaths": [
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Data.lua"
+      ]
+    },
+    {
+      "id": "G6",
+      "title": "Warlock 70-80 Northrend PATH",
+      "spec": "tasks/G6-warlock-70.md",
+      "response": "responses/G6.md",
+      "cursorLane": "warlock-data",
+      "cursorPaths": [
+        "PhaseOne_LevelingPack/Interface/AddOns/P1WarlockGuide/Data.lua"
+      ]
+    },
+    {
+      "id": "G7",
+      "title": "Waypoint audit (remaining dungeons/zones)",
+      "spec": "tasks/G7-waypoints.md",
+      "response": "responses/G7.md",
+      "cursorLane": "druid-waypoints",
+      "cursorPaths": [
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Data.lua"
+      ]
+    }
+  ]
+}

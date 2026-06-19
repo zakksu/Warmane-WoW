@@ -1,16 +1,8 @@
 # Agent handoff status
 
-**State:** SHIPPED
-**Updated:** 2026-06-19
-**Release:** v2.1.0 — druid assist + realm market moat
-
-## Shipped (v2.1.0)
-
-- MarketDB / AhScanner / RelistAssist — assist-only, no auto-buy
-- `/p1ah scan|relist|watch` + SHOP relist hints
-- TestHarness `harnessLog` in SavedVariables
-- Harness: Unicode slash delivery, SV-first pass, OCR/chat fallback
-- `Docs/TOS_WARMANE.md`, `tools/market/export-prices.ps1`
+**State:** GROK_WORKING
+**Updated:** 2026-06-19 01:36
+Parallel Grok (3 lanes)
 
 **You:** `PLAY.bat` → `/reload` on druid toon.
 

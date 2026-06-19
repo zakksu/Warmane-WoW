@@ -34,8 +34,11 @@ function Invoke-GrokCycle {
         return
     }
     Invoke-WithBackoff -Label 'Grok' -MaxAttempts $MaxRetries -BaseDelaySeconds 60 -Action {
-        & $handoffScript -RunGrok
-        if ($LASTEXITCODE -ne 0) { throw "agent-handoff exited $LASTEXITCODE" }
+        & (Join-Path $PSScriptRoot 'grok-parallel.ps1')
+        if ($LASTEXITCODE -ne 0) {
+            & $handoffScript -RunGrok -Sequential
+            if ($LASTEXITCODE -ne 0) { throw "grok exited $LASTEXITCODE" }
+        }
     }
     Set-HandoffState -State 'GROK_DONE' -Note 'Grok response ready for Cursor.' -RepoRoot $repoRoot
 }
@@ -46,7 +49,11 @@ function Invoke-CursorCycle {
         Set-HandoffState -State 'CURSOR_SHIPPED' -Note 'Dry run  - Cursor skipped.' -RepoRoot $repoRoot
         return
     }
-    & $cursorScript
+    if (Test-Path (Join-Path $paths.Handoff 'task-manifest.json')) {
+        & (Join-Path $PSScriptRoot 'cursor-parallel.ps1')
+    } else {
+        & $cursorScript
+    }
     $script:cursorWaitStart = Get-Date
 }
 

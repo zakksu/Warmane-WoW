@@ -84,12 +84,24 @@ function Write-HandoffLog {
     $logFile = (Get-HandoffPaths -RepoRoot $RepoRoot).Log
     $stamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
     $line = "[$stamp] $Message"
-    Add-Content -Path $logFile -Value $line -Encoding UTF8
+    try {
+        Add-Content -Path $logFile -Value $line -Encoding UTF8 -ErrorAction Stop
+    } catch {
+        # LOOP.bat may hold loop.log open
+    }
     Write-Host $line
 }
 
 function Test-GrokTasksPending {
     param([string] $RepoRoot = (Get-RepoRoot))
+    $handoff = Get-HandoffDir -RepoRoot $RepoRoot
+    $manifest = Join-Path $handoff 'task-manifest.json'
+    if (Test-Path $manifest) {
+        try {
+            $m = Get-Content $manifest -Raw | ConvertFrom-Json
+            if ($m.tasks -and $m.tasks.Count -gt 0) { return $true }
+        } catch { }
+    }
     $file = (Get-HandoffPaths -RepoRoot $RepoRoot).GrokTasks
     if (-not (Test-Path $file)) { return $false }
     $text = Get-Content $file -Raw

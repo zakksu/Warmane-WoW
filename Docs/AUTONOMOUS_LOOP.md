@@ -26,9 +26,14 @@ Log file: `Docs/grok-handoff/loop.log`
 ```powershell
 .\tools\agent-loop.ps1 -PollSeconds 60      # slower poll
 .\tools\agent-loop.ps1 -Once -DryRun          # smoke test state machine
-.\tools\agent-handoff.ps1 -RunGrok            # manual Grok only (unchanged)
+.\tools\agent-handoff.ps1 -RunGrok            # parallel Grok (3 lanes when manifest exists)
+.\tools\grok-parallel.ps1                     # direct parallel Grok
+.\tools\emit-handoff-lane.ps1 -All            # spawn 3 Cursor lane prompts
+.\tools\agent-handoff.ps1 -RunGrok -Sequential  # legacy single Grok
 .\tools\agent-handoff.ps1 -RunGrok -NotifyCursor
 ```
+
+See `Docs/PARALLEL_AGENTS.md`.
 
 ## Cursor integration
 

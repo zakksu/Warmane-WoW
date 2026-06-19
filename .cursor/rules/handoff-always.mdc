@@ -11,8 +11,9 @@ When **LOOP.bat** or `tools/agent-loop.ps1` is running, autonomous cycles use `D
 
 1. Read `Docs/grok-handoff/STATUS.md` — respect **State:**
 2. If `GROK_DONE`, `CURSOR_PENDING`, or `CURSOR_WORKING` → implement `CURSOR_TASKS.md` using `grok-response.md`
-3. If `GROK_PENDING` / tasks in `GROK_TASKS.md` → wait for loop to run Grok, or run `.\tools\agent-handoff.ps1 -RunGrok`
-4. After shipping → set **CURSOR_SHIPPED**; loop runs sync/commit/release
+3. If `GROK_PENDING` / tasks in `GROK_TASKS.md` or `task-manifest.json` → loop runs **parallel Grok** (`grok-parallel.ps1`) or `agent-handoff.ps1 -RunGrok`
+4. **Parallel Cursor:** read `CURSOR_TASKS-<lane>.md` per lane; spawn with `tools/emit-handoff-lane.ps1 -All`
+5. After shipping → set **CURSOR_SHIPPED**; loop runs sync/commit/release
 
 ## State machine
 
