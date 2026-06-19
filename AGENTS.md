@@ -34,8 +34,11 @@ See `Docs/DEV_WORKFLOW.md` for symlink mode, manifest, and release tooling.
 | `tools/addons-manifest.txt` | Required ON/OFF addon list |
 | `Docs/MINIMAL_PACK.md` | What ships in the default install |
 | `Docs/GROK_INTEGRATION.md` | Grok Build + Cursor setup |
+| `Docs/AUTONOMOUS_LOOP.md` | Full autonomy — no user prompts between cycles |
 
 ## Commits and releases
+
+- **Autonomous mode:** commit, push, tag, and `gh release` without asking (see `Docs/AUTONOMOUS_LOOP.md`).
 
 - Conventional, concise commit messages focused on *why*.
 - Maintainers: `QUICK_UPDATE.bat` / `RELEASE.bat` for version bumps and zips.

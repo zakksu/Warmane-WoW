@@ -2,7 +2,7 @@
 ## Title: |cff9933ffP1 Warlock Guide|r
 ## Notes: Warlock leveling PATH overlay (scaffold). /p1wguide
 ## Author: zakksu
-## Version: 1.6.0
+## Version: 2.0.2
 ## SavedVariables: P1WarlockGuideDB
 ## LoadAfter: PhaseOneLoader
 

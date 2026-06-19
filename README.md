@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v2.0.1** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v2.0.2** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, embedded waypoint arrow, Auctionator AH search, and **P1 Druid Guide v2** — SHOP + fused NEXT coach overlay. **No class HUD, range HUD, damage numbers, Leatrix, WeakAuras, or TomTom** in the default install.
 
@@ -13,7 +13,7 @@ Full details: **[Docs/MINIMAL_PACK.md](Docs/MINIMAL_PACK.md)**
 | **Warlock** | Horde Warlock | `PhaseOne_LevelingPack/` | `PhaseOne_LevelingPack.zip` |
 | **Feral Druid** | Horde Feral Druid | `PhaseOne_Druid_LevelingPack/` | `PhaseOne_Druid_LevelingPack.zip` |
 
-Druid pack: **P1DruidGuide** (NEXT + MATS + GATHER + BIS). Warlock pack: **P1AdventureGuide** (mats only).
+Druid pack: **P1DruidGuide v2** (SHOP + fused NEXT + `/p1scan`). Warlock pack: **P1WarlockGuide** (`/p1wguide` PATH) + P1AdventureGuide.
 
 ---
 

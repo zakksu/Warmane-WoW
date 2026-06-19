@@ -385,9 +385,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v2.0:|r SHOP section — affordable AH list from your gear scan")
-            print("|cff00ccffP1 v2.0:|r Fused NEXT — gear ROI + quests ranked together")
-            print("|cff00ccffP1 v2.0:|r /p1scan shows delta since login")
+            print("|cff00ccffP1 v2.0.2:|r PATH through 80 · TIPS Outland/Northrend · /p1scan")
+            print("|cff00ccffP1 v2.0.2:|r Click SHOP/NEXT [AH] lines → Auctionator search")
+            print("|cff00ccffP1 v2.0.2:|r Warlock pack: P1WarlockGuide /p1wguide PATH 10-50")
         end)
     end
 

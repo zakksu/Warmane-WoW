@@ -28,6 +28,14 @@ P1WG.PATH_STEPS = {
       text = "AH: Golem Skull Staff or +Int staff upgrade" },
     { level = 50, impact = 66, type = "spell", spellId = 28176,
       text = "Fel Armor — armor + spell power buff" },
+    { level = 52, impact = 64, type = "spell", spellId = 17877,
+      text = "Shadowburn — instant finisher / moving cast" },
+    { level = 54, impact = 62, type = "gear", equipSlot = 13, minIlvl = 35, itemId = 11815,
+      text = "Optional AH: Hand of Justice (long-term BiS)" },
+    { level = 56, impact = 60, type = "consume", itemId = 13446, goal = 15,
+      text = "AH: Major Healing Potions before Outland" },
+    { level = 58, impact = 58, type = "hint", maxLevel = 60,
+      text = "Pre-Outland: bank mount gold · buy Outland green weapon on AH" },
 }
 
 P1WG.GOLD_AH_BIS = {
