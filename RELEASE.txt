@@ -1,9 +1,14 @@
-Phase One Warmane Leveling Packs - v2.0.1
+Phase One Warmane Leveling Packs - v2.0.2
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v2.0.2)
+  - Grok queue completed by Cursor: PATH 60/68/70/80, TIPS 58-80, AH_TIPS consumables
+  - Warlock PATH extended 30-50 (Rain of Fire, Briarwood Reed, Soul Link, Fel Armor)
+  - Wildheart boots PATH row; Outland/Northrend weapon gates (25762, 36596, 50267)
 
 CHANGELOG (v2.0.1) — druid pack
   - Click → Auctionator: SHOP, NEXT [AH], BIS slots, PATH [AH], GATHER consumables, icon bar
