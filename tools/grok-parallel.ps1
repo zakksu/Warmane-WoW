@@ -218,8 +218,9 @@ $succeeded = @($tasks | Where-Object {
 })
 
 if ($succeeded.Count -eq 0) {
-    Set-HandoffState -State 'GROK_FAILED' -Note 'All parallel Grok lanes failed.' -RepoRoot $repoRoot
-    throw 'All parallel Grok lanes failed'
+    Write-HandoffLog 'WARN: All parallel Grok lanes failed - exit 1 for Cursor fallback'
+    Set-HandoffState -State 'GROK_FAILED' -Note 'All parallel Grok lanes failed. Cursor uses task specs.' -RepoRoot $repoRoot
+    exit 1
 }
 
 Merge-GrokResponses -Tasks $tasks

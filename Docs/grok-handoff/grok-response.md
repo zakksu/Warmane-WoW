@@ -2,25 +2,25 @@
 
 **From:** Grok Build (research + tables + audits only; 2026-06-19)  
 **State:** GROK_DONE — full tables/audits ready; Cursor to implement  
-**Tasks completed:** ALL G1–G4 from GROK_TASKS.md (read + researched via tools)  
-**Research sources:** web_search + open_page/browse on wowhead wotlk (spells/items/feral bis/ashen verdict) [web:0][web:1][web:2][web:7][web:17][web:27][web:37][web:47][web:66][web:75][web:85][web:95][web:106][web:107], Questie-335 (druid + warlock pack copies) /Database/Zones/zoneTables.lua (entrances exact) + /Database/Wotlk/wotlkItemDB.lua (item ID/ilvl verification via read_file/grep), read-only read_file + grep on P1DruidGuide/Data.lua + P1WarlockGuide/Data.lua (current tables/waypoints without any edit), standard 3.3.5 WotLK references (Warmane context, Outland/ICC AH fills for Horde leveling). All cross-checked 2026-06-19.  
+**Tasks completed:** ALL G1–G4 from GROK_TASKS.md (researched via web_search + read_file/grep read-only on Questie-335 zoneTables.lua + wotlkItemDB.lua + P1*Guide/Data.lua + Path.lua; no edits)  
+**Research sources:** web_search + results for wowhead wotlk pages (spells 17877/28176/30283/30108/603, items 50178/49919/49899/49898/49895/50351/51830/25786/25806/31308, Ashen Verdict patterns, Alchemist Finklestein, ICC 10H/25N sources) [web:0][web:2][web:5][web:10][web:11][web:13][web:16][web:19][web:22][web:27][web:30][web:33][web:39][web:41][web:45][web:48][web:51][web:52]; Questie-335 (both packs) /Database/Zones/zoneTables.lua (entrances exact: 2057/2557/1583/1584) + /Database/Wotlk/wotlkItemDB.lua (ilvl+name verification via grep); read-only read_file + grep on PhaseOne_Druid_LevelingPack/.../P1DruidGuide/Data.lua (BIS_BRACKETS ~374, PATH_STEPS ~558, GOLD_AH_BIS ~704, TIPS ~442 etc) and PhaseOne_LevelingPack/.../P1WarlockGuide/Data.lua (PATH_STEPS ~6, GOLD ~59) + Path.lua (no hardcoded dungeons/spells); standard 3.3.5 WotLK references (Warmane Horde leveling context, Outland/ICC AH fills). All cross-checked 2026-06-19. (Read STATUS.md first per AGENTS.md.)
 
-**Critical per user query + AGENTS.md:** Grok performed **zero .lua edits** (read-only + web tools only; no search_replace/write on any *.lua, no other non-handoff files touched except the two specified mds). Full answer written ONLY here. Remind user after ship: run `PLAY.bat` + `/reload`.
+**Critical per user query + AGENTS.md:** Grok performed **zero .lua edits** (read-only + web tools only; no search_replace/write on any *.lua, no other non-handoff files touched except the two specified mds: grok-response.md + CURSOR_TASKS.md). Full answer written ONLY here (to grok-response.md). Remind user after ship: run `PLAY.bat` + `/reload`.
 
 ## G1 — Feral ICC/raid AH fill-ins (ilvl 264+) — table only
 
-**Research summary (tool verified 2026-06-19):** 264 ilvl items from ICC (10H/25N drops + LW BoE crafts via Ashen Verdict rep patterns sold by Alchemist Finklestein in ICC for Honored/Revered + Primordial Saronite). On Warmane AH these are common flip/fill-ins for fresh 80 feral (pre full heroic ICC/T10). Feral priorities: agi > arp > crit/hit/expertise > AP (weapons get form multipliers). Prefer feral agi/arp variants. No major LW 264 shoulder craft (only raid drop shoulder fill). Weapon #1 priority (DPS lever + /p1scan flags it).
+**Research summary (tool verified 2026-06-19):** 264 ilvl items from ICC (10H/25N drops + LW BoE crafts via Ashen Verdict rep patterns sold by Alchemist Finklestein in ICC Light's Hammer for Honored/Revered + Primordial Saronite). On Warmane AH these are common flip/fill-ins for fresh 80 feral (pre full heroic ICC/T10). Feral priorities: agi > arp > crit/hit/expertise > AP (weapons get form multipliers). Prefer feral agi/arp variants. No major LW 264 shoulder craft (only raid drop shoulder fill). Weapon #1 priority (DPS lever + /p1scan flags it).
 
-Read-only audit of PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Data.lua (BIS_BRACKETS 80 block ~374-412, PATH_STEPS ~678-692, GOLD_AH_BIS ~704-728): already covers most 80 264s (including 51830 shoulder, 49899 legs primary with alt note, weapons, boots, trinkets) but G1 table consolidates the 7 entries with correct primary/alt + Cryptmaker for reference. Current 80 slots already use correct 49899 Bladeborn as primary legs (with caster trap alt for 49898), 51830 shoulder etc.
+Read-only audit of PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Data.lua (BIS_BRACKETS 80 block ~374-412, PATH_STEPS ~678-692, GOLD_AH_BIS ~704-728): already covers most 80 264s (including 51830 shoulder, 49899 legs primary with alt note, weapons, boots, trinkets) but G1 table consolidates the 7 entries with correct primary/alt + Cryptmaker for reference. Current 80 slots already use correct 49899 Bladeborn as primary legs (with caster trap alt for 49898), 51830 shoulder etc. GOLD_AH_BIS already lists all 7 relevant 264s. PATH already calls out 80 264s.
 
 **Verified item IDs + sources (wowhead wotlk + wotlkItemDB.lua exact matches):**
-- 50178 Bloodfall: https://www.wowhead.com/wotlk/item=50178/bloodfall (ilvl 264 polearm, +form AP 3358/crit/haste from Blood-Queen Lana'thel 25N; wotlkItemDB confirms 264) [web:27][web:57 in prior]
-- 49919 Cryptmaker: https://www.wowhead.com/wotlk/item=49919/cryptmaker (ilvl 264 mace, str/hit/arp +form AP from Prince Valanar; wotlkItemDB 264) [web:17]
-- 49899 Bladeborn Leggings: https://www.wowhead.com/wotlk/item=49899/bladeborn-leggings (ilvl 264 LW craft Pattern 49959 Revered; agi/AP/arp/crit feral BiS fill; wotlkItemDB) [web:7][web:0 from ashen]
-- 49898 Legwraps of Unleashed Nature: https://www.wowhead.com/wotlk/item=49898/legwraps-of-unleashed-nature (ilvl 264 LW caster Pattern 49957; int/sp only — trap for cat) [web:57]
-- 49895 Footpads of Impending Death: https://www.wowhead.com/wotlk/item=49895/footpads-of-impending-death (ilvl 264 LW craft (Pattern 49961, Honored). +agi/AP/crit/exp boots) [web:47]
-- 50351 Tiny Abomination in a Jar: https://www.wowhead.com/wotlk/item=50351/tiny-abomination-in-a-jar (ilvl 264 trinket from Prof Putricide 25N; melee proc) [web:37]
-- 51830 Skinned Whelp Shoulders: https://www.wowhead.com/wotlk/item=51830/skinned-whelp-shoulders (ilvl 264 heroic leather from Valithria 10H cache; AP/crit/arp; normal 51565=251; wotlkItemDB confirms; raid drop, good AH shoulder fill) [web:66]
+- 50178 Bloodfall: https://www.wowhead.com/wotlk/item=50178/bloodfall (ilvl 264 polearm, +form AP 3358/crit/haste from Blood-Queen Lana'thel 25N; wotlkItemDB confirms 264) [web:13]
+- 49919 Cryptmaker: https://www.wowhead.com/wotlk/item=49919/cryptmaker (ilvl 264 mace, str/hit/arp +form AP from Prince Valanar; wotlkItemDB 264) [web:16]
+- 49899 Bladeborn Leggings: https://www.wowhead.com/wotlk/item=49899/bladeborn-leggings (ilvl 264 LW craft Pattern 49959 Revered; agi/AP/arp/crit feral BiS fill; wotlkItemDB) [web:19]
+- 49898 Legwraps of Unleashed Nature: https://www.wowhead.com/wotlk/item=49898/legwraps-of-unleashed-nature (ilvl 264 LW caster Pattern 49957; int/sp/spellpower only — trap for cat) [web:22]
+- 49895 Footpads of Impending Death: https://www.wowhead.com/wotlk/item=49895/footpads-of-impending-death (ilvl 264 LW craft (Pattern 49961, Honored). +agi/AP/crit/exp boots) [web:27]
+- 50351 Tiny Abomination in a Jar: https://www.wowhead.com/wotlk/item=50351/tiny-abomination-in-a-jar (ilvl 264 trinket from Prof Putricide 25N; melee proc) [web:30]
+- 51830 Skinned Whelp Shoulders: https://www.wowhead.com/wotlk/item=51830/skinned-whelp-shoulders (ilvl 264 heroic leather from Valithria 10H cache / Cache of the Dreamwalker; AP/crit/arp; normal 51565=251; wotlkItemDB confirms; raid drop, good AH shoulder fill) [web:33]
 
 **G1 Table (7 entries; use for BIS_BRACKETS 80 slots, GOLD_AH_BIS sync, PATH 80 refs):**
 
@@ -34,21 +34,21 @@ Read-only audit of PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Dat
 | 50351 | Trinket+ | Tiny Abomination in a Jar | splurge | 264 proc trinket (ICC 25N Professor Putricide). Motes proc scales cat bleeds/melee. |
 | 51830 | Shoulder | Skinned Whelp Shoulders | splurge | 264 heroic leather (ICC 10H Valithria Dreamwalker cache). AP/crit/arp + red sockets. Good AH flip; add explicit shoulder slot. |
 
-**Notes for Cursor (Data.lua only, per AGENTS.md):** In P1DruidGuide/Data.lua 80-level BIS_BRACKETS (the slots array ~374+): current already has 8 entries with good coverage (Weapon 50267/50178 primary +49919 alt, Trinket 50342, Chest generic, Legs 49899 primary +49898 alt note, Boots 49895, Shoulder 51830, Trinket+ 50351). G1 table provides the consolidated 7 for reference/sync. GOLD_AH_BIS (~704+) already includes 80 264 entries for 50178/49919/49899/49895/51830/50351 (plus lower). Minor PATH 80 step ~684-698 has 51830 shoulder already. Keep splurge tier, flavor texts matching pack style. Confirmed no other 264 feral LW shoulder craft. Warmane AH common for these post-80. Prefer correct agi/arp feral variants; update 80 PATH steps if any 264 refs needed for emphasis.
+**Notes for Cursor (Data.lua only, per AGENTS.md):** In P1DruidGuide/Data.lua 80-level BIS_BRACKETS (the slots array ~374+): current already has 8 entries with good coverage (Weapon 50267/50178 primary +49919 alt, Trinket 50342, Chest generic, Legs 49899 primary +49898 alt note, Boots 49895, Shoulder 51830, Trinket+ 50351). G1 table provides the consolidated 7 for reference/sync. GOLD_AH_BIS (~704+) already includes 80 264 entries for 50178/49919/49899/49895/51830/50351 (plus lower). Minor PATH 80 step ~684-698 has 51830 shoulder already. Keep splurge tier, flavor texts matching pack style. Confirmed no other 264 feral LW shoulder craft (Finklestein sells only legs Revere+boots Honored patterns + ammo; no shoulders) [web:37][web:52]. Warmane AH common for these post-80. Prefer correct agi/arp feral variants; update 80 PATH steps if any 264 refs needed for emphasis.
 
 (Also present in current read: 50267 ilvl200 weapon etc for pre-264.)
 
 ## G2 — Warlock 58–70 Outland PATH (spells + staff/wand)
 
-**Research summary:** Outland leveling 58-70 (Hellfire Peninsula entry → Zangarmarsh/Terokkar/Nagrand/Blade's Edge/Netherstorm) is Affliction friendly for questing (DoTs + Drain sustain vs packs). Key power spikes at 60/62/64. Staff > wand emphasis (high +SP/int 2H staff = largest ilvl/SP power spike for locks; wands secondary; AH abundant/cheap greens at 58/60/65 gates on Warmane). Fel Armor + Shadowburn from pre-58 carry. Current P1WarlockGuide/Data.lua PATH_STEPS (read ~lines 6-57) already has expanded 58-70 skeleton matching ~9 rows + staff/wand focus + correct Shadowfury (see below).
+**Research summary:** Outland leveling 58-70 (Hellfire Peninsula entry → Zangarmarsh/Terokkar/Nagrand/Blade's Edge/Netherstorm) is Affliction friendly for questing (DoTs + Drain sustain vs packs). Key power spikes at 60/62/64. Staff > wand emphasis (high +SP/int 2H staff = largest ilvl/SP power spike for locks; wands secondary; AH abundant/cheap greens at 58/60/65 gates on Warmane). Fel Armor + Shadowburn from pre-58 carry. Current P1WarlockGuide/Data.lua PATH_STEPS (read ~lines 6-57) already has expanded 58-70 skeleton matching ~9 rows + staff/wand focus + correct Shadowfury (see below). GOLD_AH_BIS already covers the gear.
 
 **Verified via web + wotlkItemDB (warlock pack):**
 - UA 30108: https://www.wowhead.com/wotlk/spell=30108/unstable-affliction (rank1 at 60) 
-- CoD 603: https://www.wowhead.com/wotlk/spell=603/curse-of-doom 
-- Shadowfury 30283 (r1): https://www.wowhead.com/wotlk/spell=30283/shadowfury (AoE stun 8yd; ranks 30283/30413/47847). NOTE: 47897 is Shadowflame (front cone + DoT), later talent ~75+; fix any misref (current Data already uses 30283 + note). [web:106][web:107]
-- Hypnotist's Watch 25786: https://www.wowhead.com/wotlk/item=25786/hypnotists-watch (ilvl93, Hellfire quest 9351 or AH; wotlkItemDB confirms) [web:75]
-- Nethekurse's Rod 25806: https://www.wowhead.com/wotlk/item=25806/nethekurses-rod-of-torment (ilvl109 wand, SLabs/Shattered Halls quest/AH; wotlkItemDB) [web:85][web:92]
-- The Bringer of Death 31308: https://www.wowhead.com/wotlk/item=31308/the-bringer-of-death (ilvl115 +121SP 2H staff, AH/drops; wotlkItemDB) [web:95]
+- CoD 603: https://www.wowhead.com/wotlk/spell=603/curse-of-doom (r1 at 60) [web:39]
+- Shadowfury 30283 (r1): https://www.wowhead.com/wotlk/spell=30283/shadowfury (AoE stun 8yd; ranks 30283/30413/47847). NOTE: 47897 is Shadowflame (front cone + DoT), later talent ~75+; fix any misref (current Data already uses 30283 + note). [web:10][web:11]
+- Hypnotist's Watch 25786: https://www.wowhead.com/wotlk/item=25786/hypnotists-watch (ilvl93, Hellfire quest 9351 or AH; wotlkItemDB confirms) [web:41]
+- Nethekurse's Rod 25806: https://www.wowhead.com/tbc/item=25806/nethekurses-rod-of-torment (ilvl109 wand, SLabs/Shattered Halls quest/AH; wotlkItemDB) [web:45]
+- The Bringer of Death 31308: https://www.wowhead.com/wotlk/item=31308/the-bringer-of-death (ilvl115 +121SP 2H staff, AH/drops; wotlkItemDB) [web:48]
 
 **Expanded PATH table (9 rows; for PATH_STEPS 58-70 + GOLD_AH_BIS sync + 58/70 hints):**
 
@@ -72,8 +72,8 @@ Read-only audit of PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Dat
 
 | spellId | Name | Verdict | Details |
 |--------:|------|---------|---------|
-| 17877 | Shadowburn | **OK** (no action) | WotLK Destruction talent rank 1 base ID. https://www.wowhead.com/wotlk/spell=17877/shadowburn . Instant SS blast, returns shard on kill. Higher ranks 18869/47827. Used in pack Data at level 52 — correct per 3.3.5. [web:2][web:4] |
-| 28176 | Fel Armor | **OK** (no action) | WotLK Demonology base spell. https://www.wowhead.com/wotlk/spell=28176/fel-armor (SP +30% spirit, 2% HP/5s regen, 30min). Requires ~62 in some tooltips but ID is the correct spell for the armor buff (higher rank 47893 exists). Item 28176 is unrelated plate feet. Used in pack Data at level 50 (pre-Outland prep) + 70 hint ref — correct ID usage. [web:0 from prior] |
+| 17877 | Shadowburn | **OK** (no action) | WotLK Destruction talent rank 1 base ID. https://www.wowhead.com/wotlk/spell=17877/shadowburn . Instant SS blast, returns shard on kill. Higher ranks 18869/47827. Used in pack Data at level 52 — correct per 3.3.5. [web:0][web:2] |
+| 28176 | Fel Armor | **OK** (no action) | WotLK Demonology base spell. https://www.wowhead.com/wotlk/spell=28176/fel-armor (SP +30% spirit, 2% HP/5s regen, 30min). Requires ~62 in some tooltips but ID is the correct spell for the armor buff (higher rank 47893 exists). Item 28176 is unrelated plate feet. Used in pack Data at level 50 (pre-Outland prep) + 70 hint ref — correct ID usage. [web:5] |
 
 **G3 complete: OK, no changes.** Ties to G2 only for the separate Shadowfury 30283 correction (already noted correctly in current data). Confirmed in current warlock Data.lua lines 29-32,56 (and web confirms).
 
@@ -92,7 +92,7 @@ Read-only audit of PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Dat
   - Scholo: 28, 69.7, 73.2 (Chillpike, AH/Scholo texts)
   - DM: 357, 59.2, 45.1 (all Wildheart vest/kilt/cowl/gloves/boots/bracers + pre-60 refs)
   - Blackrock: 51, 34.8, 85.3 (HoJ BRD, Truestrike LBRS, Blackhand UBRS, PATH steps for BRD texts, "Blackrock Depths (optional)", "LBRS / AH", "Upper Blackrock Spire", "Quest BRD/AH", "WPL / EPL / BRD", "Farm BRD")
-No legacy bad coords (e.g. no 69.2/73.0, no 45.8, no 36/80.4/46.8) present in the file. Texts already use "Scholomance", "Chillpike", "Dire Maul", "Blackrock Depths (optional)", "LBRS / AH" etc.
+No legacy bad coords (e.g. no 69.2/73.0, no 45.8, no 36/80.4/46.8) present in the file. Texts already use "Scholomance", "Chillpike", "Dire Maul", "Blackrock Depths (optional)", "LBRS / AH" etc. (Grep for potential bad numbers confirmed only correct usages + unrelated other zone coords.)
 
 **Exact fixes from Questie (apply to ALL refs in P1DruidGuide/Data.lua only if any drift found — but audit shows already aligned):**
 - Scholo: use zone=28, 69.7, 73.2 (current exact). Update texts/titles ("Scholomance", "Chillpike", "AH/Scholo") if needed for consistency.

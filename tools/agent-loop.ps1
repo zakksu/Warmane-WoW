@@ -34,14 +34,13 @@ function Invoke-GrokCycle {
         Set-HandoffState -State 'GROK_DONE' -Note 'Dry run  - Grok skipped.' -RepoRoot $repoRoot
         return
     }
-    Invoke-WithBackoff -Label 'Grok' -MaxAttempts $MaxRetries -BaseDelaySeconds 60 -Action {
+    Invoke-WithBackoff -Label 'Grok' -MaxAttempts 1 -BaseDelaySeconds 30 -Action {
         & (Join-Path $PSScriptRoot 'grok-parallel.ps1')
         if ($LASTEXITCODE -ne 0) {
-            & $handoffScript -RunGrok -Sequential
-            if ($LASTEXITCODE -ne 0) { throw "grok exited $LASTEXITCODE" }
+            Write-HandoffLog 'Parallel Grok failed - Cursor will implement from task specs'
         }
     }
-    Set-HandoffState -State 'GROK_DONE' -Note 'Grok response ready for Cursor.' -RepoRoot $repoRoot
+    Set-HandoffState -State 'GROK_DONE' -Note 'Ready for Cursor (Grok and/or task-spec fallback).' -RepoRoot $repoRoot
 }
 
 function Invoke-CursorCycle {

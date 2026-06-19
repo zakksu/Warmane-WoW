@@ -3,7 +3,7 @@
   "cycle": "2026-06-19",
   "parallel": true,
   "maxParallel": 3,
-  "maxTurnsPerTask": 18,
+  "maxTurnsPerTask": 12,
   "tasks": [
     {
       "id": "G5",

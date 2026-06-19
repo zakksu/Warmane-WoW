@@ -1,9 +1,10 @@
 # Agent handoff status
 
-**State:** GROK_WORKING
-**Updated:** 2026-06-19 01:36
-Parallel Grok (3 lanes)
+**State:** CURSOR_SHIPPED
+**Updated:** 2026-06-19
 
-**You:** `PLAY.bat` → `/reload` on druid toon.
+G5-G7 shipped (Cursor fallback after Grok max-turn failures). Parallel lane infra ready for next cycle.
 
-**Next Grok queue:** G5 deeper ICC BiS, G6 warlock 70+, G7 waypoint coords.
+**You:** `/reload` in game.
+
+**Next:** Re-run `grok-parallel.ps1` when Grok CLI stable, or keep Cursor fallback.

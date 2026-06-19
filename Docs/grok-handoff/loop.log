@@ -141,3 +141,30 @@ Follow AGENTS.md and Docs/AUTONOMOUS_LOOP.md. Do not ask the user.
 [2026-06-19 01:35:08] STATE -> GROK_WORKING
 [2026-06-19 01:35:08] STATE -> GROK_WORKING
 [2026-06-19 01:36:49] Parallel Grok: 3 tasks, maxParallel=3
+[2026-06-19 01:37:37] STATE -> GROK_FAILED
+[2026-06-19 01:37:37] WARN Grok attempt 1/3 failed: grok exited 1
+[2026-06-19 01:37:37] Backoff 60s before retry...
+[2026-06-19 01:38:37] STATE -> GROK_WORKING
+[2026-06-19 01:38:37] Parallel Grok: 3 tasks, maxParallel=3
+[2026-06-19 01:38:37] STATE -> GROK_WORKING
+[2026-06-19 01:39:52] STATE -> GROK_FAILED
+[2026-06-19 01:39:52] WARN Grok attempt 2/3 failed: Max turns reached
+[2026-06-19 01:39:52] Backoff 120s before retry...
+[2026-06-19 01:41:52] STATE -> GROK_WORKING
+[2026-06-19 01:41:52] Parallel Grok: 3 tasks, maxParallel=3
+[2026-06-19 01:41:52] STATE -> GROK_WORKING
+[2026-06-19 01:44:10] STATE -> GROK_FAILED
+[2026-06-19 01:44:10] WARN Grok attempt 3/3 failed: Max turns reached
+[2026-06-19 01:44:10] STATE -> GROK_FAILED
+[2026-06-19 01:45:40] STATE -> GROK_PENDING
+[2026-06-19 01:46:25] Starting Grok cycle
+[2026-06-19 01:46:25] STATE -> GROK_WORKING
+[2026-06-19 01:46:25] STATE -> GROK_WORKING
+[2026-06-19 01:46:25] Parallel Grok: 3 tasks, maxParallel=3
+[2026-06-19 01:46:25] STATE -> GROK_WORKING
+[2026-06-19 01:47:55] STATE -> GROK_FAILED
+[2026-06-19 01:47:55] WARN Grok attempt 1/3 failed: Max turns reached
+[2026-06-19 01:47:55] Backoff 60s before retry...
+[2026-06-19 01:48:55] STATE -> GROK_WORKING
+[2026-06-19 01:48:55] Parallel Grok: 3 tasks, maxParallel=3
+[2026-06-19 01:48:55] STATE -> GROK_WORKING

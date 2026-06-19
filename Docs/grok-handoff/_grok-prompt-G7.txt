@@ -1,0 +1,5 @@
+﻿You are Grok Build on the Warmane-WoW repo.
+Read AGENTS.md.
+Complete ONLY: Docs/grok-handoff/tasks/G7-waypoints.md
+Write FULL answer ONLY to: Docs/grok-handoff/responses/G7.md
+No .lua edits. Questie wotlkItemDB wins for item IDs.

@@ -53,7 +53,20 @@ P1WG.PATH_STEPS = {
       text = "AH: The Bringer of Death 2H staff (+121 SP) or equivalent high-ilvl staff",
       flavor = "Staff ilvl > most armor slots." },
     { level = 70, impact = 46, type = "hint", maxLevel = 72,
-      text = "Cap Outland: stock runed orbs · Northrend blues staff (ilvl 170+) · keep Fel Armor (28176) up" },
+      text = "Northrend: Borean Tundra start · stack haste/spirit · keep Fel Armor (28176) up" },
+    { level = 71, impact = 45, type = "spell", spellId = 59164,
+      text = "Haunt — Affliction core (snapshot DoTs; learn at 71)" },
+    { level = 72, impact = 44, type = "spell", spellId = 47893,
+      text = "Fel Armor rank 2 — upgrade armor/SP buff (replaces 28176 rank)" },
+    { level = 74, impact = 42, type = "spell", spellId = 47836,
+      text = "Seed of Corruption — NR AoE packs (affliction/destro hybrid)" },
+    { level = 76, impact = 40, type = "gear", equipSlot = 18, minIlvl = 200, itemId = 44310,
+      text = "AH: Namlak's Supernumerary Sticker wand (ilvl 200 +SP)" },
+    { level = 78, impact = 38, type = "gear", equipSlot = 16, minIlvl = 200, itemId = 45128,
+      text = "AH: Silvery Sylvan Stave or ilvl 200+ 2H staff",
+      flavor = "Staff ilvl still king for locks in NR." },
+    { level = 80, impact = 36, type = "hint", maxLevel = 80,
+      text = "Cap NR: stock frost oil / runed orbs · AH ilvl 232+ staff before ICC blues" },
 }
 
 P1WG.GOLD_AH_BIS = {
@@ -64,4 +77,6 @@ P1WG.GOLD_AH_BIS = {
     { levelMin = 58, levelMax = 68, itemId = 25786, label = "Trinket", equipSlot = 13, minIlvl = 90 },
     { levelMin = 66, levelMax = 70, itemId = 25806, label = "Wand", equipSlot = 18, minIlvl = 100 },
     { levelMin = 68, levelMax = 72, itemId = 31308, label = "Weapon", equipSlot = 16, minIlvl = 115 },
+    { levelMin = 76, levelMax = 80, itemId = 44310, label = "Wand", equipSlot = 18, minIlvl = 200 },
+    { levelMin = 78, levelMax = 80, itemId = 45128, label = "Staff", equipSlot = 16, minIlvl = 200 },
 }
