@@ -116,6 +116,38 @@ function Get-WowPathFromConfig {
     return $null
 }
 
+function Test-GhAuthenticated {
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { return $false }
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    try {
+        & gh auth status *> $null
+        return ($LASTEXITCODE -eq 0)
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
+function Invoke-GitPush {
+    param(
+        [string] $Remote = 'origin',
+        [string] $Ref = 'HEAD',
+        [switch] $Force
+    )
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    try {
+        if ($Force) {
+            & git push $Remote $Ref --force *> $null
+        } else {
+            & git push $Remote $Ref *> $null
+        }
+        return ($LASTEXITCODE -eq 0)
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
 function Invoke-WithBackoff {
     param(
         [Parameter(Mandatory)]

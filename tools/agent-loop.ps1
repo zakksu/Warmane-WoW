@@ -56,7 +56,11 @@ function Invoke-ShipCycle {
         Set-HandoffState -State 'SHIPPED' -Note 'Dry run  - ship skipped.' -RepoRoot $repoRoot
         return
     }
-    & $shipScript
+    try {
+        & $shipScript
+    } catch {
+        Write-HandoffLog "WARN: ship cycle error: $($_.Exception.Message)"
+    }
 }
 
 function Step-HandoffLoop {

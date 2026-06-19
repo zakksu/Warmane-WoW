@@ -63,14 +63,11 @@ try {
         }
 
         if (-not $SkipPush -and -not $DryRun) {
-            if (Get-Command gh -ErrorAction SilentlyContinue) {
-                $null = gh auth status 2>&1
-                if ($LASTEXITCODE -eq 0) {
-                    git push origin HEAD 2>&1 | Out-Null
-                    Write-HandoffLog 'Pushed to remote'
-                } else {
-                    Write-HandoffLog 'WARN: gh not authenticated  - skipped push'
-                }
+            if (Invoke-GitPush) {
+                Write-HandoffLog 'Pushed to remote'
+            } else {
+                $ghHint = if (Test-GhAuthenticated) { 'git push failed' } else { 'gh not authenticated (run: gh auth login) or git credentials missing' }
+                Write-HandoffLog "WARN: skipped push - $ghHint. Loop continues."
             }
         }
     }

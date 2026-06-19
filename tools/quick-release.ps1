@@ -5,6 +5,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'handoff-common.ps1')
 
 $warlockLoader = Join-Path $root "PhaseOne_LevelingPack\Interface\AddOns\PhaseOneLoader\PhaseOneLoader.lua"
 $druidLoader = Join-Path $root "PhaseOne_Druid_LevelingPack\Interface\AddOns\PhaseOneLoader\PhaseOneLoader.lua"
@@ -52,13 +53,12 @@ function Invoke-GhRelease {
     )
 
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        Write-Warning "GitHub CLI (gh) not found — skipping GitHub release."
+        Write-Warning "GitHub CLI (gh) not found - skipping GitHub release."
         return
     }
 
-    $null = gh auth status 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "gh is not authenticated — skipping GitHub release. Run: gh auth login"
+    if (-not (Test-GhAuthenticated)) {
+        Write-Warning "gh is not authenticated - skipping GitHub release. Run: gh auth login"
         return
     }
 
@@ -130,13 +130,15 @@ try {
     }
 
     Write-Host "Pushing main..."
-    git push origin main
-    if ($LASTEXITCODE -ne 0) { throw "git push failed." }
+    if (-not (Invoke-GitPush -Remote 'origin' -Ref 'main')) {
+        Write-Warning "git push failed (configure git credentials or run: gh auth login). Release committed locally."
+    }
 
     Write-Host "Tagging $tag..."
     git tag -a $tag -m "Release $tag" -f
-    git push origin "refs/tags/$tag" -f
-    if ($LASTEXITCODE -ne 0) { throw "git push tag failed." }
+    if (-not (Invoke-GitPush -Remote 'origin' -Ref "refs/tags/$tag" -Force)) {
+        Write-Warning "git push tag failed. Tag exists locally: $tag"
+    }
 }
 finally {
     Pop-Location
