@@ -36,6 +36,20 @@ P1WG.PATH_STEPS = {
       text = "AH: Major Healing Potions before Outland" },
     { level = 58, impact = 58, type = "hint", maxLevel = 60,
       text = "Pre-Outland: bank mount gold · buy Outland green weapon on AH" },
+    { level = 60, impact = 57, type = "spell", spellId = 30108,
+      text = "Unstable Affliction — third DoT layer" },
+    { level = 62, impact = 55, type = "spell", spellId = 603,
+      text = "Curse of Doom — long fight opener" },
+    { level = 62, impact = 54, type = "gear", equipSlot = 13, minIlvl = 90, itemId = 25786,
+      text = "Quest/AH: Hypnotist's Watch trinket (Hellfire)" },
+    { level = 64, impact = 52, type = "spell", spellId = 47897,
+      text = "Shadowfury — AoE Hellfire packs" },
+    { level = 66, impact = 50, type = "gear", equipSlot = 18, minIlvl = 100, itemId = 25806,
+      text = "Quest: Nethekurse's Rod wand upgrade" },
+    { level = 68, impact = 48, type = "gear", equipSlot = 16, minIlvl = 115, itemId = 31308,
+      text = "AH: The Bringer of Death (2H) or +Int staff" },
+    { level = 70, impact = 46, type = "hint", maxLevel = 72,
+      text = "Northrend: stack haste/spirit gear · keep Fel Armor up" },
 }
 
 P1WG.GOLD_AH_BIS = {
@@ -43,4 +57,7 @@ P1WG.GOLD_AH_BIS = {
     { levelMin = 16, levelMax = 28, itemId = 3902, label = "Staff", equipSlot = 16, minIlvl = 18 },
     { levelMin = 34, levelMax = 50, itemId = 12930, label = "Trinket", equipSlot = 13, minIlvl = 50 },
     { levelMin = 44, levelMax = 55, itemId = 9427, label = "Staff", equipSlot = 16, minIlvl = 42 },
+    { levelMin = 62, levelMax = 68, itemId = 25786, label = "Trinket", equipSlot = 13, minIlvl = 90 },
+    { levelMin = 66, levelMax = 70, itemId = 25806, label = "Wand", equipSlot = 18, minIlvl = 100 },
+    { levelMin = 68, levelMax = 72, itemId = 31308, label = "Weapon", equipSlot = 16, minIlvl = 115 },
 }

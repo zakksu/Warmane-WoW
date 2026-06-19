@@ -1,9 +1,9 @@
 # Agent handoff status
 
-**State:** GROK_WORKING  
-**Version:** v2.0.2  
-**Updated:** 2026-06-18
+**State:** GROK_DONE → CURSOR_SHIPPED v2.0.3  
+**Updated:** 2026-06-19
 
-All G1–G5 tasks implemented by Cursor (Grok CLI unavailable). See `grok-response.md`.
+Grok CLI: max turns on first run (bumped to 30 in agent-handoff.ps1).  
+User Grok sidebar + Cursor Questie verify → `grok-response.md`.
 
-**You:** `PLAY.bat` → `/reload`
+**You:** `/reload`

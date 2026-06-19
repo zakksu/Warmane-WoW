@@ -1,9 +1,11 @@
-Phase One Warmane Leveling Packs - v2.0.2
-Released: 2026-06-18
+Phase One Warmane Leveling Packs - v2.0.4
+Released: 2026-06-19
 ==========================================
 
-Warlock pack:  PhaseOne_LevelingPack/
-Druid pack:    PhaseOne_Druid_LevelingPack/
+CHANGELOG (v2.0.4) — Grok cycle
+  - Feral ICC/AH ilvl 264: Bloodfall, Legwraps, Footpads, Tiny Abomination
+  - Warlock PATH 58-70: UA, Curse of Doom, Shadowfury, Hellfire gear
+  - agent-handoff.ps1 MaxTurns 30; grok-response.md handoff
 
 CHANGELOG (v2.0.2)
   - Grok queue completed by Cursor: PATH 60/68/70/80, TIPS 58-80, AH_TIPS consumables

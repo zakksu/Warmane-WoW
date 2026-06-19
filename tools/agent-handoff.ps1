@@ -61,7 +61,7 @@ $promptFile = Join-Path $handoff '_grok-prompt.txt'
 Set-Content -Path $promptFile -Value $prompt
 
 try {
-    & $grokScript -PromptFile $promptFile -MaxTurns 12
+    & $grokScript -PromptFile $promptFile -MaxTurns 30 -Yolo
     if ($LASTEXITCODE -ne 0) { throw "grok exited $LASTEXITCODE" }
     Set-HandoffState 'GROK_DONE'
     Write-Host "Grok done -> $responseFile"
