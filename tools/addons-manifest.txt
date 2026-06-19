@@ -7,6 +7,7 @@ P1AutoQuest: 1
 P1QuestNav: 1
 P1DruidGuide: 1
 P1AdventureGuide: 0
+P1WarlockGuide: 0
 Questie-335: 1
 TomTom: 1
 !Astrolabe: 1

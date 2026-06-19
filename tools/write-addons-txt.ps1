@@ -120,10 +120,17 @@ function Detect-PackGuide {
 $packGuide = Detect-PackGuide -AddonsDir $addonsDir
 if ($packGuide -eq "WARLOCK") {
     $manifestRules["P1DruidGuide"] = 0
-    $manifestRules["P1AdventureGuide"] = 1
+    $manifestRules["P1WarlockGuide"] = 0
+    $manifestRules["P1AdventureGuide"] = 0
+    if (Test-Path (Join-Path $addonsDir "P1WarlockGuide")) {
+        $manifestRules["P1WarlockGuide"] = 1
+    } else {
+        $manifestRules["P1AdventureGuide"] = 1
+    }
 } else {
     $manifestRules["P1DruidGuide"] = 1
     $manifestRules["P1AdventureGuide"] = 0
+    $manifestRules["P1WarlockGuide"] = 0
 }
 $wtfAccount = Join-Path $WowPath "WTF\Account"
 if (-not (Test-Path $wtfAccount)) {

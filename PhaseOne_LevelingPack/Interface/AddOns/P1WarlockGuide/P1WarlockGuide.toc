@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: |cff9933ffP1 Warlock Guide|r
+## Notes: Warlock leveling PATH overlay (scaffold). /p1wguide
+## Author: zakksu
+## Version: 1.6.0
+## SavedVariables: P1WarlockGuideDB
+## LoadAfter: PhaseOneLoader
+
+Data.lua
+Path.lua
+Core.lua

@@ -4,7 +4,7 @@ P1DG = P1DG or {}
 P1AG = P1DG
 
 P1DG.FIRST_AID = {
-    finalLevel = 40,
+    finalLevel = 58,
     tiers = {
         {
             skillMin = 1, skillMax = 75, levelMin = 1, levelMax = 15,
@@ -528,6 +528,34 @@ P1DG.PATH_STEPS = {
     { level = 48, impact = 50, type = "gear", equipSlot = 13, minIlvl = 35, itemId = 11815,
       text = "Optional AH: Hand of Justice (BiS trinket long-term)",
       flavor = "Farm BRD when bored. Until then, Horn is fine." },
+    { level = 50, impact = 49, type = "profession", skill = 225,
+      text = "FA Artisan 225 — Runecloth bandages stocked",
+      flavor = "Artisan bandages = fewer corpse runs in WPL." },
+    { level = 50, impact = 48, type = "gear", equipSlot = 10, minIlvl = 45, itemId = 16705,
+      text = "AH: Wildheart Gloves — next set piece",
+      flavor = "Gloves on AH? Buy. Don't negotiate with snakes.",
+      waypoint = { zone = 357, x = 59.2, y = 45.8, title = "Wildheart Gloves" } },
+    { level = 52, impact = 46, type = "gear", equipSlot = 3, minIlvl = 50, itemId = 12927,
+      text = "AH/LBRS: Truestrike Shoulders — shoulder spike",
+      flavor = "Splurge shoulders. Worth every gold coin.",
+      waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Truestrike Shoulders" } },
+    { level = 54, impact = 44, type = "gear", equipSlot = 16, minIlvl = 54, itemId = 13148,
+      text = "AH/LBRS: Fist of Omokk — weapon past Golem Skull",
+      flavor = "Big fist energy. Omokk would approve.",
+      waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Fist of Omokk" } },
+    { level = 54, impact = 43, type = "spell", spellId = 6785,
+      text = "Train Ravage — stealth/charge opener burst",
+      flavor = "Ravage from behind. Very cat." },
+    { level = 56, impact = 42, type = "gear", equipSlot = 13, minIlvl = 45, itemId = 13965,
+      text = "AH/UBRS: Blackhand's Breadth trinket",
+      flavor = "Crit trinket until Outland. Buy if listed." },
+    { level = 56, impact = 41, type = "gear", equipSlot = 8, minIlvl = 52, itemId = 16708,
+      text = "AH: Wildheart Wrangler's Boots",
+      flavor = "Boots complete the wrangler look.",
+      waypoint = { zone = 357, x = 59.2, y = 45.8, title = "Wildheart Boots" } },
+    { level = 58, impact = 40, type = "hint", maxLevel = 60,
+      text = "Pre-60: finish Wildheart belt/bracers on AH · bank mount gold",
+      flavor = "58 is the calm before the mount invoice." },
 }
 
 P1DG.GOLD_AH_BIS = {
@@ -538,4 +566,9 @@ P1DG.GOLD_AH_BIS = {
     { levelMin = 32, levelMax = 42, itemId = 10648, label = "Weapon", equipSlot = 16, minIlvl = 32 },
     { levelMin = 40, levelMax = 50, itemId = 16706, label = "Chest", equipSlot = 5, minIlvl = 40 },
     { levelMin = 42, levelMax = 50, itemId = 9427, label = "Weapon", equipSlot = 16, minIlvl = 42 },
+    { levelMin = 50, levelMax = 54, itemId = 12927, label = "Shoulders", equipSlot = 3, minIlvl = 50 },
+    { levelMin = 52, levelMax = 58, itemId = 13148, label = "Weapon", equipSlot = 16, minIlvl = 54 },
+    { levelMin = 50, levelMax = 58, itemId = 16705, label = "Gloves", equipSlot = 10, minIlvl = 45 },
+    { levelMin = 54, levelMax = 58, itemId = 13965, label = "Trinket", equipSlot = 13, minIlvl = 45 },
+    { levelMin = 54, levelMax = 58, itemId = 16708, label = "Boots", equipSlot = 8, minIlvl = 52 },
 }

@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.6.1"
+local VERSION = "1.6.2"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -240,6 +240,10 @@ local function BuildTipsLines(playerLevel, lines)
     local current, nextBracket = PickTipsBracket(playerLevel)
     if current then
         AppendTipsBlock(lines, current, false)
+        local talentTip = P1DG.GetTalentTip and P1DG.GetTalentTip(playerLevel)
+        if talentTip then
+            AddLine(lines, "  |cffffcc00@lvl " .. playerLevel .. ":|r " .. talentTip)
+        end
     elseif playerLevel < 10 then
         AddLine(lines, "  |cff888888Reach lvl 10 for cat form tips|r")
     end
@@ -382,6 +386,16 @@ local function BuildPathLines(playerLevel, lines)
     if #steps == 0 then
         AddLine(lines, "  |cff888888On track — check NEXT quests|r")
         return
+    end
+    local hasWp = false
+    for _, step in ipairs(steps) do
+        if step.waypoint or (P1DG.FindBisSlotForStep and P1DG.FindBisSlotForStep(step) and P1DG.FindBisSlotForStep(step).waypoint) then
+            hasWp = true
+            break
+        end
+    end
+    if hasWp then
+        AddLine(lines, "  |cff666666(click • line → TomTom)|r")
     end
     for _, step in ipairs(steps) do
         local tag = (step.goldAh or (step.text and step.text:find("AH", 1, true))) and " |cffffcc00[AH]|r" or ""

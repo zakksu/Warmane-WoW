@@ -184,6 +184,14 @@ function P1DG.GetItemIcon(itemId)
     return "Interface\\Icons\\INV_Misc_QuestionMark"
 end
 
+function P1DG.GetTalentTip(playerLevel)
+    if not P1DG.TALENT_SCHEDULE then return nil end
+    for _, row in ipairs(P1DG.TALENT_SCHEDULE) do
+        if row.level == playerLevel then return row.tip end
+    end
+    return nil
+end
+
 function P1DG.FindBisSlotForStep(step)
     if not step or step.type ~= "gear" then return nil end
     if step.waypoint then return step end

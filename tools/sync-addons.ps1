@@ -16,17 +16,6 @@ $dest = Join-Path $WowPath "Interface\AddOns"
 if (-not (Test-Path "$WowPath\Wow.exe")) { throw "Wow.exe not found in: $WowPath" }
 if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
 
-$minimalFolders = @(
-    "PhaseOneLoader",
-    "P1AutoQuest",
-    "P1QuestNav",
-    "P1DruidGuide",
-    "P1AdventureGuide",
-    "Questie-335",
-    "TomTom",
-    "!Astrolabe"
-)
-
 function Copy-AddonFolder {
     param([string]$SourceRoot, [string]$Folder, [string]$TargetRoot)
     $src = Join-Path $SourceRoot $Folder
@@ -57,6 +46,12 @@ function Detect-Pack {
 
 $packName = Detect-Pack -TargetRoot $dest -ForcedPack $Pack
 $srcRoot = if ($packName -eq "DRUID") { $druidSrc } else { $warlockSrc }
+
+$minimalFolders = if ($packName -eq "WARLOCK") {
+    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1WarlockGuide", "P1AdventureGuide", "Questie-335", "TomTom", "!Astrolabe")
+} else {
+    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1DruidGuide", "P1AdventureGuide", "Questie-335", "TomTom", "!Astrolabe")
+}
 
 if (-not (Test-Path $srcRoot)) { throw "Pack source not found: $srcRoot" }
 

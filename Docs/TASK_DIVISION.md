@@ -2,7 +2,18 @@
 
 Use **separate Cursor Agent / Cloud tasks** on the same repo. All read `AGENTS.md`. You merge via git + **PLAY.bat** → `/reload`.
 
-Last updated: v1.6.1
+Last updated: v1.6.2
+
+---
+
+## Cursor ↔ Grok (autonomous)
+
+```powershell
+.\tools\agent-handoff.ps1 -RunGrok
+.\tools\agent-handoff.ps1 -Status
+```
+
+Grok writes `Docs/grok-handoff/grok-response.md` → Cursor implements → PLAY.bat. See [grok-handoff/README.md](grok-handoff/README.md).
 
 ---
 

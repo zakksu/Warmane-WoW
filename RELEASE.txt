@@ -1,9 +1,18 @@
-Phase One Warmane Leveling Packs - v1.6.1
+Phase One Warmane Leveling Packs - v1.6.2
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.6.2)
+  - PATH extended to lvl 58: Wildheart finish, Truestrike, Fist of Omokk, Ravage, Blackhand's Breadth
+  - TIPS + BIS brackets 50-58; per-level talent schedule (@lvl line in TIPS)
+  - FA Artisan tier (Runecloth); herb/ore milestones 50-58
+  - Cursor <-> Grok autonomous handoff: Docs/grok-handoff/ + tools/agent-handoff.ps1
+  - P1WarlockGuide scaffold (warlock pack): PATH 10-30, /p1wguide
+  - sync-addons.ps1: warlock pack syncs P1WarlockGuide
+  - find-warmane-path.bat: fix wow-path.cfg read for PLAY.bat
 
 CHANGELOG (v1.6.1)
   - P1QuestNav: 3-quest minimap dot trails from /p1path ranking (fainter #2/#3)

@@ -74,6 +74,8 @@ Configure CLI path if needed: setting `grok.cliPath` → `C:\Users\godin\.grok\b
 
 ### 3. Use both agents deliberately
 
+See **[TASK_DIVISION.md](TASK_DIVISION.md)** for the current sprint split and copy-paste prompts.
+
 | Task | Prefer |
 |------|--------|
 | In-editor multi-file edits, Cursor subagents, Bugbot | **Cursor Agent** (this chat) |

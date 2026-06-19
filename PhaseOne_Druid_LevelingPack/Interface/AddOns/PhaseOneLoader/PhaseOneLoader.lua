@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.6.1-druid"
+local PACK_VERSION = "1.6.2-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.5|r — PATH · icons · |cff00ff00/p1guide|r (minimize title bar)"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.2|r — PATH to 58 · talents · |cff00ff00/p1guide|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -340,8 +340,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.6.1:|r Autogo in /p1settings — top quest auto-sets TomTom")
-            print("|cff00ccffP1 v1.6.1:|r /p1guide autogo on|off · /p1settings all on|off syncs it")
+            print("|cff00ccffP1 v1.6.2:|r PATH to lvl 58 — Wildheart finish, BRD splurges, talent @lvl tips")
+            print("|cff00ccffP1 v1.6.2:|r Grok handoff: tools\\agent-handoff.ps1 · Docs\\grok-handoff\\")
+            print("|cff00ccffP1 v1.6.2:|r Warlock pack: P1WarlockGuide /p1wguide (scaffold)")
         end)
     end
 
