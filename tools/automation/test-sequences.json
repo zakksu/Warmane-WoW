@@ -1,0 +1,28 @@
+{
+  "description": "WoW must be logged in (druid toon). Windowed or windowed-fullscreen recommended.",
+  "prelude": [
+    { "cmd": "/chatlog", "waitMs": 600, "note": "enable chat log for automation parse" }
+  ],
+  "suites": {
+    "smoke": [
+      { "cmd": "/p1test run", "waitMs": 4000, "expect": "\\[P1TEST\\] PASS summary" }
+    ],
+    "modules": [
+      { "cmd": "/p1test mod", "waitMs": 2500, "expect": "\\[P1TEST\\] PASS addon:P1DruidGuide" }
+    ],
+    "scan": [
+      { "cmd": "/p1test scan", "waitMs": 2500, "expect": "\\[P1TEST\\]" }
+    ],
+    "ah_closed": [
+      { "cmd": "/p1ah debug", "waitMs": 2000, "expect": "P1 AH debug" },
+      { "cmd": "/p1ah test 10410", "waitMs": 2000, "expect": "QUEUED|searching" }
+    ],
+    "ah_open": [
+      { "cmd": "/p1ah debug", "waitMs": 2000, "expect": "shopPane=yes|Bridge ready" },
+      { "cmd": "/p1ah test 10410", "waitMs": 5000, "expect": "SEARCHED" }
+    ]
+  },
+  "clicks": {
+    "guide_header_ah": { "x": 0, "y": 0, "note": "run /p1test calibrate — fill from log" }
+  }
+}

@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "2.0.3-druid"
+local PACK_VERSION = "2.0.4-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
 local WELCOME_LINE = "|cff00ccffP1 Druid Guide v2.0|r — SHOP + fused NEXT · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
@@ -310,6 +310,22 @@ local function EnsureSlash()
             end
         end
         print("|cff00ccffP1 AH|r — no pending upgrades · /p1ah debug")
+    end
+
+    SLASH_P1TEST1 = "/p1test"
+    SlashCmdList["P1TEST"] = function(msg)
+        msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
+        if P1DG and P1DG.RunSelfTests then
+            if msg == "" or msg == "run" or msg == "all" then
+                P1DG.RunSelfTests("all")
+            elseif msg == "log" and P1DG.PrintDevLog then
+                P1DG.PrintDevLog(60)
+            else
+                P1DG.RunSelfTests(msg)
+            end
+            return
+        end
+        print("|cff00ccffP1 Test|r — enable P1DruidGuide at character select, /reload")
     end
 
     SLASH_P1SCAN1 = "/p1scan"

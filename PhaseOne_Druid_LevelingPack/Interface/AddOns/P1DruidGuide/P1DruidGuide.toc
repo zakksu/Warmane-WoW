@@ -2,7 +2,7 @@
 ## Title: |cff00ccffP1 Druid Guide|r
 ## Notes: Unified druid leveling overlay - next quest, mats, gather, BIS. /p1guide
 ## Author: zakksu
-## Version: 2.0.3
+## Version: 2.0.4
 ## SavedVariables: P1DruidGuideDB
 ## OptionalDeps: Auctionator
 ## LoadAfter: PhaseOneLoader, P1QuestNav, Auctionator
@@ -14,4 +14,5 @@ Auction.lua
 Brain.lua
 AhAutopilot.lua
 NextRank.lua
+TestHarness.lua
 Core.lua

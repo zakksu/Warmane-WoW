@@ -1,0 +1,6 @@
+You are Grok Build on the Warmane-WoW repo.
+Read AGENTS.md and the file Docs/grok-handoff/GROK_TASKS.md.
+Complete ALL tasks in GROK_TASKS.md.
+Write your full answer ONLY to Docs/grok-handoff/grok-response.md (overwrite).
+Also update Docs/grok-handoff/CURSOR_TASKS.md with a checkbox list for Cursor.
+Do NOT edit any .lua files.
