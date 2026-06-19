@@ -71,6 +71,9 @@ Each alt sees its own priorities (level, equipped gear, bags, quest log).
 |---------|--------|
 | `/p1` or `/p1guide` | Toggle druid guide overlay (character-aware per toon) |
 | `/p1ah` | Search top pending AH upgrade in Auctionator (open AH first) |
+| `/p1ah scan` | Cache visible AH browse listings to realm market DB (assist-only) |
+| `/p1ah relist` | Print relist suggestions from bag + cached prices (you post) |
+| `/p1ah watch` | Queue SHOP item searches when AH opens |
 | `/p1scan` | Gear scan + AH gaps + **delta since login** (gold, quests, weapon ilvl) |
 | `/p1guide reset` | Reset guide position/size |
 | `/p1guide min` / `max` | Minimize / restore guide |

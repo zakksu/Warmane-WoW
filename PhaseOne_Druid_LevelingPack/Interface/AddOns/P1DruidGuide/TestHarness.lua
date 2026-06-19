@@ -152,6 +152,7 @@ end
 
 function P1DG.RunSelfTests(scope)
     scope = scope or "all"
+    P1DG.EmitHarnessState()
     P1DG.DevLog("INFO", "run scope=" .. scope .. " toon=" .. (UnitName("player") or "?")
         .. " zone=" .. (GetRealZoneText() or "?"))
 

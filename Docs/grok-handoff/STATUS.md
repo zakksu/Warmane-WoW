@@ -1,10 +1,17 @@
 # Agent handoff status
 
-**State:** CURSOR_SHIPPED
+**State:** SHIPPED
 **Updated:** 2026-06-19
+**Release:** v2.1.0 — druid assist + realm market moat
 
-G1–G4 complete in Data.lua (ICC 264 feral, warlock Outland PATH, Questie waypoints).
+## Shipped (v2.1.0)
 
-**You:** `/reload` in game.
+- MarketDB / AhScanner / RelistAssist — assist-only, no auto-buy
+- `/p1ah scan|relist|watch` + SHOP relist hints
+- TestHarness `harnessLog` in SavedVariables
+- Harness: Unicode slash delivery, SV-first pass, OCR/chat fallback
+- `Docs/TOS_WARMANE.md`, `tools/market/export-prices.ps1`
 
-**Next Grok queue:** G5 deeper ICC BiS, G6 warlock 70+, G7 remaining zone waypoints.
+**You:** `PLAY.bat` → `/reload` on druid toon.
+
+**Next Grok queue:** G5 deeper ICC BiS, G6 warlock 70+, G7 waypoint coords.

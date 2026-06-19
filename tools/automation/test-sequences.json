@@ -5,8 +5,8 @@
   ],
   "suites": {
     "smoke": [
-      { "cmd": "/p1scan", "waitMs": 1500, "expect": "P1 Scan" },
-      { "cmd": "/p1test run", "waitMs": 5000, "expect": "\\[P1TEST\\] PASS summary" }
+      { "cmd": "/p1scan", "waitMs": 1800, "verifyMs": 4000, "maxAttempts": 3, "expect": "P1 Scan" },
+      { "cmd": "/p1test run", "waitMs": 6000, "verifyMs": 8000, "maxAttempts": 3, "expect": "\\[P1TEST\\].*PASS.*summary" }
     ],
     "modules": [
       { "cmd": "/p1test mod", "waitMs": 2500, "expect": "\\[P1TEST\\] PASS addon:P1DruidGuide" }

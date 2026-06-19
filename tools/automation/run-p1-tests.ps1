@@ -63,14 +63,26 @@ foreach ($step in $steps) {
     Write-Host ">> $cmd" -ForegroundColor Cyan
     if ($step.note) { Write-Host "   $($step.note)" -ForegroundColor DarkGray }
 
-    Send-WowSlashCommand $cmd
-    Start-Sleep -Milliseconds $wait
+    Dismiss-WowUI -EscapeCount 5 -ClickWorld -ClickChat
+    Start-Sleep -Milliseconds 200
+    $expect = $step.expect
+    $verifyMs = [int]($step.verifyMs | ForEach-Object { if ($_){$_} else { [Math]::Max($wait, 3500) } })
+    $maxAttempts = [int]($step.maxAttempts | ForEach-Object { if ($_){$_} else {3} })
+    if ($expect) {
+        $ok = Send-WowSlashCommandVerified -Command $cmd -ExpectPattern $expect `
+            -MaxAttempts $maxAttempts -VerifyTimeoutMs $verifyMs
+    } else {
+        Send-WowSlashCommand -Command $cmd -ClickChatFirst
+        $ok = $true
+    }
+    if ($cmd -match '/p1test\s+run') {
+        Start-Sleep -Milliseconds ([Math]::Max($wait, 5000))
+    } else {
+        Start-Sleep -Milliseconds $wait
+    }
 
     $tail = Get-ChatLogTail -Lines 100
-    $expect = $step.expect
-    $ok = $true
-    if ($expect) {
-        $ok = $false
+    if ($expect -and -not $ok) {
         foreach ($line in $tail) {
             if ($line -match $expect) { $ok = $true; break }
         }

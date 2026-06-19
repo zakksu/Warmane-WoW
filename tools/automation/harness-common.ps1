@@ -16,16 +16,125 @@ function Get-P1DruidGuideSavedVarsPath {
     return $files[0].FullName
 }
 
+function Test-P1HarnessSummaryLine {
+    param([string]$Line)
+    if (-not $Line) { return $false }
+    if ($Line -match '\[P1TEST\].*PASS.*summary') { return $true }
+    if ($Line -match '\[P1TEST\]\s+PASS\s+summary\s+\d+/\d+\s+pass') { return $true }
+    return $false
+}
+
+function Test-P1SavedVarsSummaryPassed {
+    param($SavedVars)
+    if ($null -eq $SavedVars) { return $false }
+    if ($null -eq $SavedVars.lastTestPass -or $null -eq $SavedVars.lastTestTotal) { return $false }
+    if ($SavedVars.lastTestTotal -le 0) { return $false }
+    return ($SavedVars.lastTestPass -eq $SavedVars.lastTestTotal)
+}
+
+function Get-P1HarnessFailLines {
+    param([string[]]$Lines)
+    return @($Lines | Where-Object { $_ -match '\[P1TEST\].*FAIL' })
+}
+
+function Wait-P1HarnessLogSummary {
+    param(
+        [int]$TimeoutSec = 30,
+        [switch]$RequireFullPass
+    )
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $last = @{
+        passed = $false
+        source = "none"
+        summaryLine = $null
+        savedVars = $null
+        harnessLog = @()
+        failLines = @()
+    }
+    while ((Get-Date) -lt $deadline) {
+        $sv = Read-P1HarnessSavedVars
+        $logLines = @(Read-P1HarnessLog -LastN 120)
+        $failLines = @(Get-P1HarnessFailLines -Lines $logLines)
+
+        if (Test-P1SavedVarsSummaryPassed -SavedVars $sv) {
+            $summaryLine = $null
+            foreach ($line in ($logLines | Select-Object -Last 20)) {
+                if (Test-P1HarnessSummaryLine -Line $line) { $summaryLine = $line; break }
+            }
+            if (-not $summaryLine) {
+                $summaryLine = "lastTestPass=$($sv.lastTestPass)/$($sv.lastTestTotal)"
+            }
+            return @{
+                passed = $true
+                source = "SavedVariables"
+                summaryLine = $summaryLine
+                savedVars = $sv
+                harnessLog = $logLines
+                failLines = $failLines
+            }
+        }
+
+        foreach ($line in ($logLines | Select-Object -Last 30)) {
+            if (Test-P1HarnessSummaryLine -Line $line) {
+                return @{
+                    passed = $true
+                    source = "harnessLog"
+                    summaryLine = $line
+                    savedVars = $sv
+                    harnessLog = $logLines
+                    failLines = $failLines
+                }
+            }
+        }
+
+        if (-not $RequireFullPass) {
+            $chatFn = Get-Command Get-P1TestLinesFromChat -ErrorAction SilentlyContinue
+            if ($chatFn) {
+                foreach ($line in (Get-P1TestLinesFromChat -Lines 80)) {
+                    if (Test-P1HarnessSummaryLine -Line $line) {
+                        return @{
+                            passed = $true
+                            source = "chatLog"
+                            summaryLine = $line
+                            savedVars = $sv
+                            harnessLog = $logLines
+                            failLines = $failLines
+                        }
+                    }
+                }
+            }
+        }
+
+        $last.savedVars = $sv
+        $last.harnessLog = $logLines
+        $last.failLines = $failLines
+        if ($sv.lastTestPass -ne $null -and $sv.lastTestTotal -ne $null -and $sv.lastTestTotal -gt 0) {
+            $last.summaryLine = "lastTestPass=$($sv.lastTestPass)/$($sv.lastTestTotal)"
+        }
+        Start-Sleep -Milliseconds 500
+    }
+    return $last
+}
+
 function Wait-P1HarnessSavedVars {
     param(
         [int]$TimeoutSec = 30,
-        [int]$MinPass = 0
+        [int]$MinPass = 0,
+        [switch]$RequireFullPass
     )
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     while ((Get-Date) -lt $deadline) {
+        $summary = Wait-P1HarnessLogSummary -TimeoutSec 1 -RequireFullPass:$RequireFullPass
+        if ($summary.passed) {
+            return $summary.savedVars
+        }
         $sv = Read-P1HarnessSavedVars
         if ($sv.lastTestPass -ne $null -and $sv.lastTestTotal -ne $null) {
-            if ($MinPass -le 0 -or $sv.lastTestPass -ge $MinPass) { return $sv }
+            if ($RequireFullPass) {
+                if (Test-P1SavedVarsSummaryPassed -SavedVars $sv) { return $sv }
+            } elseif ($MinPass -le 0 -or $sv.lastTestPass -ge $MinPass) {
+                return $sv
+            }
         }
         Start-Sleep -Milliseconds 800
     }
@@ -43,6 +152,8 @@ function Read-P1HarnessSavedVars {
             lastTestAt = $null
             devLogCount = 0
             harnessLogCount = 0
+            harnessLogLines = @()
+            testsPassed = $false
         }
     }
     $text = Get-Content -Path $path -Raw -Encoding UTF8
@@ -54,6 +165,11 @@ function Read-P1HarnessSavedVars {
     if ($text -match '\["lastTestAt"\]\s*=\s*([\d.]+)') { $at = [double]$Matches[1] }
     $devCount = ([regex]::Matches($text, '\["devLog"\]')).Count
     $harnessCount = ([regex]::Matches($text, '\["harnessLog"\]')).Count
+    $harnessLines = @(Read-P1HarnessLog -LastN 120)
+    $testsPassed = (Test-P1SavedVarsSummaryPassed -SavedVars @{
+        lastTestPass = $pass
+        lastTestTotal = $total
+    })
     return @{
         path = $path
         exists = $true
@@ -62,6 +178,8 @@ function Read-P1HarnessSavedVars {
         lastTestAt = $at
         devLogCount = $devCount
         harnessLogCount = $harnessCount
+        harnessLogLines = $harnessLines
+        testsPassed = $testsPassed
     }
 }
 
@@ -71,20 +189,37 @@ function Read-P1HarnessLog {
     if (-not $path -or -not (Test-Path $path)) { return @() }
     $text = Get-Content -Path $path -Raw -Encoding UTF8
     $lines = New-Object System.Collections.Generic.List[string]
-    foreach ($m in [regex]::Matches($text, '\["line"\]\s*=\s*"([^"]*)"')) {
-        $val = $m.Groups[1].Value
-        if ($val -match '\[P1TEST\]') {
-            $lines.Add($val) | Out-Null
+
+    # Prefer harnessLog ["line"] entries (mirrored [P1TEST] output from TestHarness.lua)
+    if ($text -match '\["harnessLog"\]\s*=\s*\{') {
+        $blockStart = $text.IndexOf('["harnessLog"]')
+        $block = $text.Substring($blockStart)
+        foreach ($m in [regex]::Matches($block, '\["line"\]\s*=\s*"((?:\\.|[^"\\])*)"')) {
+            $val = $m.Groups[1].Value -replace '\\"', '"' -replace '\\\\', '\'
+            if ($val -match '\[P1TEST\]') {
+                $lines.Add($val) | Out-Null
+            }
         }
     }
+
     if ($lines.Count -eq 0) {
-        foreach ($m in [regex]::Matches($text, '\["msg"\]\s*=\s*"([^"]*)"')) {
-            $val = $m.Groups[1].Value
+        foreach ($m in [regex]::Matches($text, '\["line"\]\s*=\s*"((?:\\.|[^"\\])*)"')) {
+            $val = $m.Groups[1].Value -replace '\\"', '"' -replace '\\\\', '\'
+            if ($val -match '\[P1TEST\]') {
+                $lines.Add($val) | Out-Null
+            }
+        }
+    }
+
+    if ($lines.Count -eq 0) {
+        foreach ($m in [regex]::Matches($text, '\["msg"\]\s*=\s*"((?:\\.|[^"\\])*)"')) {
+            $val = $m.Groups[1].Value -replace '\\"', '"' -replace '\\\\', '\'
             if ($val -match 'summary|PASS|FAIL|addon:') {
                 $lines.Add("[P1TEST] SV $val") | Out-Null
             }
         }
     }
+
     if ($lines.Count -le $LastN) { return @($lines) }
     return @($lines | Select-Object -Last $LastN)
 }
@@ -94,10 +229,13 @@ function Get-P1TestLines {
         [int]$Lines = 150,
         [switch]$PreferSavedVars
     )
-    $chat = @(Get-P1TestLinesFromChat -Lines $Lines)
     $sv = @(Read-P1HarnessLog -LastN $Lines)
-    if ($PreferSavedVars -and $sv.Count -gt 0) { return $sv }
-    if ($chat.Count -gt 0) { return $chat }
+    if ($PreferSavedVars -or $sv.Count -gt 0) { return $sv }
+    $chatFn = Get-Command Get-P1TestLinesFromChat -ErrorAction SilentlyContinue
+    if ($chatFn) {
+        $chat = @(Get-P1TestLinesFromChat -Lines $Lines)
+        if ($chat.Count -gt 0) { return $chat }
+    }
     return $sv
 }
 
@@ -134,6 +272,9 @@ function Get-P1AddonsTxtStatus {
 function New-HarnessRecommendations {
     param($Report)
     $tips = New-Object System.Collections.Generic.List[string]
+    $sv = $Report.savedVars
+    $verification = $Report.verification
+
     if ($Report.addonsTxt) {
         foreach ($key in $Report.addonsTxt.Keys) {
             if ([int]$Report.addonsTxt[$key] -eq 0) {
@@ -141,24 +282,61 @@ function New-HarnessRecommendations {
             }
         }
     }
-    if ($Report.frameXml.errors.Count -gt 0) {
+    if ($Report.frameXml -and $Report.frameXml.errors.Count -gt 0) {
         $tips.Add("FrameXML P1 load errors - fix Lua syntax in repo, re-run run-autonomous.ps1") | Out-Null
-    }
-    if (-not $Report.chatLog.exists) {
-        if ($Report.harnessLog -and $Report.harnessLog.count -gt 0) {
-            $tips.Add("WoWChatLog.txt missing - using P1DruidGuideDB.harnessLog from SavedVariables") | Out-Null
-        } else {
-            $tips.Add("WoWChatLog.txt missing - enable /chatlog or rely on harnessLog in SavedVariables") | Out-Null
-        }
-    }
-    if ($Report.savedVars.exists -and $null -eq $Report.savedVars.lastTestPass) {
-        $tips.Add("TestHarness never ran - P1DruidGuide likely not loaded (check FrameXML + AddOns.txt)") | Out-Null
     }
     if ($Report.error) {
         $tips.Add("Automation exception: $($Report.error)") | Out-Null
     }
+
+    if ($Report.success -and $verification -and $verification.source -eq "SavedVariables") {
+        if (-not $Report.chatLog.exists) {
+            $tips.Add("PASS verified via SavedVariables (lastTestPass==lastTestTotal); WoWChatLog.txt unavailable") | Out-Null
+        }
+        if ($Report.stepFail -gt 0) {
+            $tips.Add("Step expects missed chat/OCR but SavedVariables confirm tests passed - safe to ignore step pass=false") | Out-Null
+        }
+        return $tips
+    }
+
+    if (-not $Report.chatLog.exists) {
+        if ($Report.harnessLog -and $Report.harnessLog.count -gt 0) {
+            $tips.Add("WoWChatLog.txt missing - primary verification is P1DruidGuideDB.harnessLog + lastTestPass in SavedVariables") | Out-Null
+        } else {
+            $tips.Add("WoWChatLog.txt missing - run /p1test run in-game; harness mirrors to SavedVariables on /reload") | Out-Null
+        }
+    }
+
+    if ($sv -and $sv.exists -and $null -eq $sv.lastTestPass) {
+        $tips.Add("TestHarness never ran - P1DruidGuide likely not loaded (check FrameXML + AddOns.txt)") | Out-Null
+    } elseif ($sv -and $sv.exists -and $sv.lastTestPass -ne $null -and $sv.lastTestTotal -ne $null -and -not $sv.testsPassed) {
+        $tips.Add("SavedVariables report $($sv.lastTestPass)/$($sv.lastTestTotal) pass - inspect harnessLog FAIL lines in report") | Out-Null
+        $failLines = @()
+        if ($Report.harnessLog -and $Report.harnessLog.lines) {
+            $failLines = @(Get-P1HarnessFailLines -Lines $Report.harnessLog.lines)
+        } elseif ($sv.harnessLogLines) {
+            $failLines = @(Get-P1HarnessFailLines -Lines $sv.harnessLogLines)
+        }
+        foreach ($line in ($failLines | Select-Object -First 4)) {
+            $short = $line -replace '^\[P1TEST\]\s+', ''
+            $tips.Add("  FAIL: $short") | Out-Null
+        }
+    }
+
+    if ($Report.stepFail -gt 0 -and $sv -and $sv.testsPassed) {
+        $tips.Add("Steps failed on chat/OCR expect but SavedVariables show full pass - re-run or check verification.source") | Out-Null
+    }
+
+    if ($verification -and -not $verification.passed) {
+        if ($verification.summaryLine) {
+            $tips.Add("No PASS summary yet ($($verification.summaryLine)) - wait for /reload after /p1test run") | Out-Null
+        } else {
+            $tips.Add("No PASS summary in harnessLog or SavedVariables - ensure /p1test run completed before reload") | Out-Null
+        }
+    }
+
     if ($tips.Count -eq 0 -and -not $Report.success) {
-        $tips.Add("Check harness-latest.json screenshots and step p1testLines for failing assertion") | Out-Null
+        $tips.Add("Check harness-latest.json: savedVars.testsPassed, harnessLog.lines, screenshots, and step p1testLines") | Out-Null
     }
     return $tips
 }

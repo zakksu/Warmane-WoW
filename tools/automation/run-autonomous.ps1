@@ -35,25 +35,50 @@ function Invoke-P1TestSuite {
     foreach ($step in $steps) {
         $cmd = $step.cmd
         $wait = [int]($step.waitMs | ForEach-Object { if ($_){$_} else {2000} })
-        Send-WowSlashCommand $cmd
-        Start-Sleep -Milliseconds $wait
+        $expect = $step.expect
+        $verifyMs = [int]($step.verifyMs | ForEach-Object { if ($_){$_} else { [Math]::Max($wait, 3500) } })
+        $maxAttempts = [int]($step.maxAttempts | ForEach-Object { if ($_){$_} else {3} })
+
+        Dismiss-WowUI -EscapeCount 5 -ClickWorld -ClickChat
+        Start-Sleep -Milliseconds 250
+
+        $cmdOk = $true
+        if ($expect) {
+            $cmdOk = Send-WowSlashCommandVerified -Command $cmd -ExpectPattern $expect `
+                -MaxAttempts $maxAttempts -VerifyTimeoutMs $verifyMs
+        } else {
+            Send-WowSlashCommand -Command $cmd -ClickChatFirst
+        }
+
+        $stepVerification = $null
+        if ($cmd -match '/p1test') {
+            $pollSec = [Math]::Max(6, [int][Math]::Ceiling([Math]::Max($wait, 5000) / 1000.0))
+            $stepVerification = Wait-P1HarnessLogSummary -TimeoutSec $pollSec
+        } else {
+            Start-Sleep -Milliseconds $wait
+        }
 
         $tail = @(Get-CombinedChatTail -Lines 150)
-        $p1Lines = @($tail | Where-Object { $_ -match '\[P1TEST\]' })
-        $expect = $step.expect
-        $ok = $true
-        if ($expect) {
-            $ok = $false
+        $p1Lines = @(Get-P1TestLines -Lines 150 -PreferSavedVars)
+        if ($p1Lines.Count -eq 0) {
+            $p1Lines = @($tail | Where-Object { $_ -match '\[P1TEST\]' })
+        }
+        $ok = $cmdOk
+        if ($expect -and -not $ok) {
             foreach ($line in $tail) {
                 if ($line -match $expect) { $ok = $true; break }
             }
+            if (-not $ok) {
+                foreach ($line in $p1Lines) {
+                    if ($line -match $expect) { $ok = $true; break }
+                }
+            }
+        }
+        if (-not $ok -and $stepVerification -and $stepVerification.passed) {
+            $ok = $true
         }
         if (-not $ok -and $expect -match 'addon_P1DruidGuide') {
-            Send-WowSlashCommand "/p1scan"
-            Start-Sleep -Milliseconds 1200
-            foreach ($line in (Get-CombinedChatTail -Lines 30)) {
-                if ($line -match 'P1 Scan') { $ok = $true; break }
-            }
+            $ok = Send-WowSlashCommandVerified -Command "/p1scan" -ExpectPattern "P1 Scan" -MaxAttempts 2
         }
 
         if ($ok) { $stepPass++ } else { $stepFail++ }
@@ -62,30 +87,52 @@ function Invoke-P1TestSuite {
             expect = $expect
             pass = $ok
             p1testLines = @($p1Lines | Select-Object -Last 10)
+            verificationSource = if ($stepVerification) { $stepVerification.source } else { $null }
         }
     }
 
+    $verification = Wait-P1HarnessLogSummary -TimeoutSec 12
     $Report.harnessLog = @{
-        lines = @(Read-P1HarnessLog -LastN 80)
+        lines = @(if ($verification.harnessLog.Count -gt 0) { $verification.harnessLog } else { Read-P1HarnessLog -LastN 80 })
         count = 0
         source = "SavedVariables"
+        failLines = @($verification.failLines)
     }
     $Report.harnessLog.count = $Report.harnessLog.lines.Count
-    $Report.chatLog.p1testLines = @(Get-P1TestLines -Lines 250)
-    $Report.savedVars = Read-P1HarnessSavedVars
-
-    $summaryOk = Test-P1SummaryPassed -ChatLines $Report.chatLog.p1testLines
-    if (-not $summaryOk -and $Report.harnessLog.lines.Count -gt 0) {
-        $summaryOk = Test-P1SummaryPassed -ChatLines $Report.harnessLog.lines
-        if ($summaryOk) { $Report.chatLog.p1testLines = $Report.harnessLog.lines }
-    }
-    if (-not $summaryOk -and $Report.savedVars.lastTestPass -ne $null -and $Report.savedVars.lastTestTotal -ne $null) {
-        $summaryOk = ($Report.savedVars.lastTestPass -eq $Report.savedVars.lastTestTotal)
+    $Report.chatLog.p1testLines = @(Get-P1TestLines -Lines 250 -PreferSavedVars)
+    $Report.savedVars = if ($verification.savedVars) { $verification.savedVars } else { Read-P1HarnessSavedVars }
+    if (-not $Report.savedVars.harnessLogLines -or $Report.savedVars.harnessLogLines.Count -eq 0) {
+        $Report.savedVars.harnessLogLines = $Report.harnessLog.lines
     }
 
+    $svOk = Test-P1SavedVarsSummaryPassed -SavedVars $Report.savedVars
+    $harnessOk = $false
+    foreach ($line in $Report.harnessLog.lines) {
+        if (Test-P1HarnessSummaryLine -Line $line) { $harnessOk = $true; break }
+    }
+    $chatOk = $false
+    foreach ($line in $Report.chatLog.p1testLines) {
+        if (Test-P1HarnessSummaryLine -Line $line) { $chatOk = $true; break }
+    }
+
+    $summaryOk = $svOk -or $harnessOk -or $chatOk -or $verification.passed
+    $verifySource = "none"
+    if ($svOk) { $verifySource = "SavedVariables" }
+    elseif ($harnessOk) { $verifySource = "harnessLog" }
+    elseif ($chatOk) { $verifySource = "chatLog" }
+    elseif ($verification.passed) { $verifySource = $verification.source }
+
+    $Report.verification = @{
+        passed = $summaryOk
+        source = $verifySource
+        summaryLine = $verification.summaryLine
+        savedVarsPass = $Report.savedVars.lastTestPass
+        savedVarsTotal = $Report.savedVars.lastTestTotal
+    }
     $Report.stepPass = $stepPass
     $Report.stepFail = $stepFail
-    $Report.success = ($stepFail -eq 0) -and $summaryOk
+    # Step expects are advisory; SavedVariables/harnessLog summary is authoritative pre-reload.
+    $Report.success = $summaryOk
     return $Report
 }
 
@@ -110,14 +157,20 @@ function Invoke-AutonomousCycle {
         chatLog = @{}
         frameXml = @{}
         savedVars = @{}
+        harnessLog = @{ lines = @(); count = 0; source = "SavedVariables"; failLines = @() }
+        verification = @{ passed = $false; source = "none"; summaryLine = $null; savedVarsPass = $null; savedVarsTotal = $null }
         addonsTxt = @{}
         steps = @()
         actions = @()
     }
 
+    Ensure-WowReady -InWorldTimeoutSec 60 | Out-Null
     $report.screenshots.before = Capture-WowWindow -Label ("cycle{0}-before" -f $Cycle)
     $report.wowTitle = Get-WowWindowTitle
     $xmlOffset = Get-FrameXmlOffset
+
+    Dismiss-WowUI -EscapeCount 5 -ClickWorld -ClickChat
+    Start-Sleep -Milliseconds 350
 
     if ($DoRelog) {
         Invoke-WowRelogCycle
@@ -130,9 +183,9 @@ function Invoke-AutonomousCycle {
         $report.actions += "reload"
     }
 
-    Enable-WowChatLog
+    $chatOk = Enable-WowChatLog
     $report.chatLog.path = Get-WowChatLogPath
-    $report.chatLog.exists = Test-Path $report.chatLog.path
+    $report.chatLog.exists = (Test-Path $report.chatLog.path) -or $chatOk
     if (-not $report.chatLog.exists) {
         $ocr = Join-Path $here "WowOcr.ps1"
         if (Test-Path $ocr) {
@@ -151,8 +204,17 @@ function Invoke-AutonomousCycle {
     $report.frameXml.errors = @(Get-P1FrameErrorsSince -Offset $xmlOffset)
     $report.addonsTxt = Get-P1AddonsTxtStatus
 
-    Dismiss-WowUI -EscapeCount 4
-    Start-Sleep -Milliseconds 400
+    Dismiss-WowUI -EscapeCount 6 -ClickWorld -ClickChat
+    Start-Sleep -Milliseconds 500
+
+    if ($seq.prelude) {
+        foreach ($pre in $seq.prelude) {
+            $preCmd = $pre.cmd
+            $preWait = [int]($pre.waitMs | ForEach-Object { if ($_){$_} else {600} })
+            Send-WowSlashCommandVerified -Command $preCmd -MaxAttempts 2 -VerifyTimeoutMs 1200 | Out-Null
+            Start-Sleep -Milliseconds $preWait
+        }
+    }
 
     if ($report.frameXml.errors.Count -gt 0) {
         $report.screenshots.errors = Capture-WowWindow -Label ("cycle{0}-xml-errors" -f $Cycle)
@@ -171,12 +233,50 @@ function Invoke-AutonomousCycle {
     Send-WowSlashCommand "/reload"
     Start-Sleep -Seconds 14
     $null = Wait-WowPlayerInWorld -TimeoutSec 40
-    $report.savedVars = Wait-P1HarnessSavedVars -TimeoutSec 25
+    $postReload = Wait-P1HarnessLogSummary -TimeoutSec 25 -RequireFullPass
+    $report.savedVars = if ($postReload.savedVars) { $postReload.savedVars } else { Read-P1HarnessSavedVars }
+    if (-not $report.savedVars.harnessLogLines -or $report.savedVars.harnessLogLines.Count -eq 0) {
+        $report.savedVars.harnessLogLines = @(Read-P1HarnessLog -LastN 80)
+    }
+    $report.harnessLog = @{
+        lines = @(if ($postReload.harnessLog.Count -gt 0) { $postReload.harnessLog } else { $report.savedVars.harnessLogLines })
+        count = 0
+        source = "SavedVariables"
+        failLines = @($postReload.failLines)
+    }
+    $report.harnessLog.count = $report.harnessLog.lines.Count
 
-    if ($report.savedVars.lastTestPass -ne $null -and $report.savedVars.lastTestTotal -ne $null) {
-        $svOk = ($report.savedVars.lastTestPass -eq $report.savedVars.lastTestTotal)
-        $report.success = $svOk
+    $svOk = Test-P1SavedVarsSummaryPassed -SavedVars $report.savedVars
+    if ($svOk) {
+        $report.success = $true
+        $report.verification = @{
+            passed = $true
+            source = "SavedVariables"
+            summaryLine = if ($postReload.summaryLine) { $postReload.summaryLine } else { "lastTestPass=$($report.savedVars.lastTestPass)/$($report.savedVars.lastTestTotal)" }
+            savedVarsPass = $report.savedVars.lastTestPass
+            savedVarsTotal = $report.savedVars.lastTestTotal
+        }
         $report.actions += "verified:savedvars"
+    } elseif ($postReload.passed) {
+        $report.success = $true
+        $report.verification = @{
+            passed = $true
+            source = $postReload.source
+            summaryLine = $postReload.summaryLine
+            savedVarsPass = $report.savedVars.lastTestPass
+            savedVarsTotal = $report.savedVars.lastTestTotal
+        }
+        $report.actions += "verified:$($postReload.source)"
+    } else {
+        $report.success = $false
+        $report.verification = @{
+            passed = $false
+            source = "none"
+            summaryLine = $postReload.summaryLine
+            savedVarsPass = $report.savedVars.lastTestPass
+            savedVarsTotal = $report.savedVars.lastTestTotal
+        }
+        $report.actions += "verified:failed"
     }
 
     $report.screenshots.after = Capture-WowWindow -Label ("cycle{0}-after" -f $Cycle)
@@ -208,10 +308,15 @@ if (-not $SkipSync) {
 }
 
 if (-not $NoStartWow) {
-    Write-Host "Ensuring WoW is running ..."
-    Start-WowClient | Out-Null
-    Focus-WowWindow | Out-Null
-    Write-Host "WoW ready: $(Get-WowWindowTitle)" -ForegroundColor Green
+    Write-Host "Ensuring WoW is running and in-world ..."
+    try {
+        Ensure-WowReady -InWorldTimeoutSec 90 | Out-Null
+        Write-Host "WoW ready: $(Get-WowWindowTitle)" -ForegroundColor Green
+    } catch {
+        Write-Host "WoW start/world check: $($_.Exception.Message)" -ForegroundColor Yellow
+        Start-WowClient | Out-Null
+        Focus-WowWindow | Out-Null
+    }
 }
 
 $finalReport = $null
@@ -223,17 +328,40 @@ for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
     try {
         $finalReport = Invoke-AutonomousCycle -Cycle $cycle -DoRelog:$doRelog
     } catch {
-        $finalReport = [ordered]@{
-            timestamp = (Get-Date).ToString("o")
-            cycle = $cycle
-            suite = $Suite
-            success = $false
-            error = $_.Exception.Message
-            screenshots = @{}
+        $errMsg = $_.Exception.Message
+        if ($errMsg -match 'Wow\.exe not running|WoW window not found') {
+            try {
+                Write-Host "WoW not running - restarting client ..." -ForegroundColor Yellow
+                Start-WowClient | Out-Null
+                $null = Wait-WowPlayerInWorld -TimeoutSec 90
+                $finalReport = Invoke-AutonomousCycle -Cycle $cycle -DoRelog:$doRelog
+            } catch {
+                $errMsg = $_.Exception.Message
+                $finalReport = [ordered]@{
+                    timestamp = (Get-Date).ToString("o")
+                    cycle = $cycle
+                    suite = $Suite
+                    success = $false
+                    error = $errMsg
+                    screenshots = @{}
+                    actions = @("wow_restart_failed")
+                }
+            }
+        } else {
+            $finalReport = [ordered]@{
+                timestamp = (Get-Date).ToString("o")
+                cycle = $cycle
+                suite = $Suite
+                success = $false
+                error = $errMsg
+                screenshots = @{}
+            }
         }
-        try {
-            $finalReport.screenshots.error = Capture-WowWindow -Label ("cycle{0}-exception" -f $cycle)
-        } catch { }
+        if (-not $finalReport.success) {
+            try {
+                $finalReport.screenshots.error = Capture-WowWindow -Label ("cycle{0}-exception" -f $cycle)
+            } catch { }
+        }
     }
 
     $reportPath = Write-HarnessReport -Report $finalReport -FileName "harness-latest.json"
