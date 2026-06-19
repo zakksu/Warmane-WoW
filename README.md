@@ -1,8 +1,8 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v1.6.4** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v2.0.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
-Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, embedded waypoint arrow, Auctionator AH search, and a **character-aware P1 Druid Guide** overlay. **No class HUD, range HUD, damage numbers, Leatrix, WeakAuras, or TomTom** in the default install.
+Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, embedded waypoint arrow, Auctionator AH search, and **P1 Druid Guide v2** — SHOP + fused NEXT coach overlay. **No class HUD, range HUD, damage numbers, Leatrix, WeakAuras, or TomTom** in the default install.
 
 Full details: **[Docs/MINIMAL_PACK.md](Docs/MINIMAL_PACK.md)**
 
@@ -30,7 +30,7 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 | Warlock only | `INSTALL_WARLOCK.bat` |
 | Feral Druid only | `INSTALL_DRUID.bat` |
 
-**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · **[Cursor ↔ Grok tasks](Docs/TASK_DIVISION.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor orchestration](Docs/CURSOR_ORCHESTRATION.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · **[Task lanes](Docs/TASK_DIVISION.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
 
 ---
 
@@ -41,7 +41,7 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 | **PhaseOneLoader** | Questie presets, smart defaults, `/p1settings`, `/p1fix` |
 | **P1AutoQuest** | Auto accept/turn-in + **Auto Q** button (top-right) |
 | **P1QuestNav** | Ranked minimap pins, **P1Waypoint** arrow to #1 — `/p1nav` |
-| **P1DruidGuide** | Character-aware overlay: NEXT, MATS, GATHER, BIS — `/p1guide` |
+| **P1DruidGuide** | v2 coach overlay: SHOP, fused NEXT, MATS, GATHER, BIS — `/p1guide` |
 | **Questie-335** | Quest tracking + map/objective icons |
 | **!Astrolabe** | Map library (minimap coords, cross-zone pins) |
 | **Auctionator** | AH search from guide — `/p1ah`, click `[AH]` lines |
@@ -69,7 +69,7 @@ Each alt sees its own priorities (level, equipped gear, bags, quest log).
 |---------|--------|
 | `/p1` or `/p1guide` | Toggle druid guide overlay (character-aware per toon) |
 | `/p1ah` | Search top pending AH upgrade in Auctionator (open AH first) |
-| `/p1scan` | List pending AH upgrades + refresh buyout prices |
+| `/p1scan` | Gear scan + AH gaps + **delta since login** (gold, quests, weapon ilvl) |
 | `/p1guide reset` | Reset guide position/size |
 | `/p1guide min` / `max` | Minimize / restore guide |
 | `/p1guide scale 0.8` | Scale overlay |

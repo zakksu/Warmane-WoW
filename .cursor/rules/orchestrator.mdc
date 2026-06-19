@@ -1,0 +1,19 @@
+---
+description: Multi-agent lane ownership — read before editing P1DruidGuide or v2.0 sprint files
+globs:
+  - PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/**
+  - tools/orchestrator/**
+  - Docs/v2.0/**
+  - Docs/CURSOR_ORCHESTRATION.md
+---
+
+# Orchestrator lanes
+
+Before editing files in scope, read `tools/orchestrator/lanes.json`.
+
+- Edit **only** paths listed for your assigned lane `id`.
+- Do **not** edit files in another lane's `paths` while that lane is `in_progress`.
+- When finished: `.\tools\orchestrator\set-status.ps1 -Lane <id> -Status done`
+- **integrate** lane owns `Core.lua` and `P1DruidGuide.toc` — module lanes must not touch them.
+
+Lua 5.1 / WoW 3.3.5a. User tests: PLAY.bat + /reload.

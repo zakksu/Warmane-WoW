@@ -3,25 +3,27 @@
 P1DruidGuideDB = P1DruidGuideDB or {
     point = "TOPLEFT", relPoint = "TOPLEFT", x = 12, y = -80,
     width = 280, height = 220, scale = 1.0,
-    collapsed = { path = false, next = false, tips = false, mats = false, gather = false, bis = false },
+    collapsed = { path = false, next = false, shop = false, tips = false, mats = false, gather = false, bis = false },
     minimized = false,
     tipsVisible = true,
     autoWaypoint = true,
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.6.4.1"
+local VERSION = "2.0.0"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
 local tipsVisible = true
 local clickTargets = {}
 local lastAutoQuestKey = nil
+local lastRanked = {}
 
-local SECTIONS = { "path", "next", "tips", "mats", "gather", "bis" }
+local SECTIONS = { "path", "next", "shop", "tips", "mats", "gather", "bis" }
 local SECTION_LABELS = {
     path = "PATH",
     next = "NEXT",
+    shop = "SHOP",
     tips = "TIPS",
     mats = "MATS",
     gather = "GATHER",
@@ -527,66 +529,61 @@ local function BuildHeaderLine()
         Truncate(primary.questName, 22), dir, xpTag, gearTag)
 end
 
-local function BuildNextLines(lines)
-    local lvl = UnitLevel("player")
-    local lineNum = 0
-    local ahList = {}
-    if ReadAhPriority() and P1DG.GetPersonalGaps then
-        for _, g in ipairs(P1DG.GetPersonalGaps(lvl, 2)) do
-            ahList[#ahList + 1] = {
-                itemId = g.itemId,
-                itemName = g.itemName,
-                label = g.key,
-                haveIlvl = g.haveIlvl,
-                needIlvl = g.needIlvl,
-            }
-        end
+local function BuildShopLines(playerLevel, lines)
+    if not P1DG.BuildShopList then
+        AddLine(lines, "  |cff888888SHOP module loading…|r")
+        return
     end
-    if #ahList < 2 and P1DG.GetPendingAhUpgrades then
-        for _, ah in ipairs(P1DG.GetPendingAhUpgrades(lvl, 2 - #ahList)) do
-            local dup = false
-            for _, x in ipairs(ahList) do if x.itemId and x.itemId == ah.itemId then dup = true break end end
-            if not dup then ahList[#ahList + 1] = ah end
-        end
+    local shop = P1DG.BuildShopList(playerLevel, 5)
+    if #shop == 0 then
+        AddLine(lines, "  |cff00ff00Gear on track — no AH buys needed|r")
+        return
     end
-    for _, ah in ipairs(ahList) do
-        lineNum = lineNum + 1
-        local priceTag = "scan AH"
-        if ah.itemId and P1DG.GetItemBuyout and P1DG.FormatAhPrice then
-            local price = P1DG.GetItemBuyout(ah.itemId)
-            if price then priceTag = P1DG.FormatAhPrice(price) end
+    AddLine(lines, string.format("  |cff666666Gold %s · click line → Auctionator|r",
+        P1DG.FormatGoldShort and P1DG.FormatGoldShort(GetMoney()) or "?"))
+    for i, item in ipairs(shop) do
+        local priceTag = "?"
+        if item.price and P1DG.FormatAhPrice then
+            priceTag = P1DG.FormatAhPrice(item.price)
         end
+        local affordTag = item.affordable and "|cff00ff00buy|r"
+            or ("|cffff4444+" .. (P1DG.FormatGoldShort and P1DG.FormatGoldShort(item.shortfall) or "?") .. "|r")
         local ilvlTag = ""
-        if ah.haveIlvl and ah.needIlvl then
-            ilvlTag = string.format(" ilvl %d→%d", ah.haveIlvl, ah.needIlvl)
+        if item.haveIlvl and item.needIlvl then
+            ilvlTag = string.format(" %d→%d", item.haveIlvl, item.needIlvl)
         end
-        AddLine(lines, string.format("  %d. |cffffcc00AH|r %s%s — %s",
-            lineNum, Truncate(ah.itemName or ah.label or "?", 16), ilvlTag, priceTag),
-            ah.itemId and { type = "auction", itemId = ah.itemId, label = ah.label } or nil)
+        AddLine(lines, string.format("  %d. %s%s — %s %s",
+            i, Truncate(item.itemName or item.key or "?", 16), ilvlTag, priceTag, affordTag),
+            item.itemId and { type = "auction", itemId = item.itemId } or nil)
     end
-    local questSlots = math.max(0, 3 - #ahList)
-    local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(questSlots) or {}) or {}
-    if #entries == 0 and questSlots > 0 then
-        local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
-        entries = st and st.tracked or {}
-        while #entries > questSlots do table.remove(entries) end
+end
+
+local function BuildNextLines(playerLevel, lines)
+    lastRanked = {}
+    if P1DG.RankNextActions then
+        lastRanked = P1DG.RankNextActions(playerLevel, 5) or {}
     end
-    for i, e in ipairs(entries) do
-        lineNum = lineNum + 1
-        local dir = e.dirLabel or (e.dist and (e.dist .. "y") or "")
-        local xpTag = e.xp and e.xp > 0 and string.format("[%dxp", e.xp) or "[?"
-        local gearTag = e.gearLabel and (", " .. e.gearLabel .. "]") or "]"
-        local gearFlag = e.gearLabel and " |cff44ff44↑|r" or ""
-        AddLine(lines, string.format("  %d. %s%s%s — %s%s",
-            lineNum, Truncate(e.questName, 18), xpTag, gearTag, dir, gearFlag),
-            { type = "quest", index = i })
+    if #lastRanked == 0 then
+        AddLine(lines, "  |cff888888No ranked actions — /p1scan|r")
+        AddLine(lines, "  |cff666666Accept quests or check SHOP for AH buys|r")
+        return
     end
-    if lineNum == 0 then
-        AddLine(lines, "  |cff888888No AH upgrades or quests pending|r")
-        AddLine(lines, "  |cff666666Accept a quest — Questie icons ON|r")
-        AddLine(lines, "  |cff666666Open AH + click [AH] line to search|r")
-    elseif #ahList > 0 then
-        AddLine(lines, "  |cff666666Open AH · click AH line to search Auctionator|r")
+    AddLine(lines, "  |cff666666Fused rank: gear ROI + quest xp/min|r")
+    for i, action in ipairs(lastRanked) do
+        if action.type == "auction" then
+            local priceTag = action.price and P1DG.FormatAhPrice and P1DG.FormatAhPrice(action.price) or "?"
+            local tag = action.affordable and "|cffffcc00AH|r" or "|cffff8800SAVE|r"
+            AddLine(lines, string.format("  %d. %s %s — %s",
+                i, tag, Truncate(action.itemName or "?", 16), priceTag),
+                action.itemId and { type = "ranked", index = i } or nil)
+        else
+            local e = action.entry or {}
+            local dir = e.dirLabel or (e.dist and (e.dist .. "y") or "")
+            local xpTag = e.xp and e.xp > 0 and string.format("[%dxp]", e.xp) or ""
+            AddLine(lines, string.format("  %d. |cff00ff00Q|r %s %s — %s",
+                i, Truncate(action.questName or "?", 16), xpTag, dir),
+                { type = "ranked", index = i })
+        end
     end
 end
 
@@ -732,6 +729,7 @@ local function BuildBody()
             if not collapsed then
                 if key == "path" then BuildPathLines(lvl, lines)
                 elseif key == "next" then BuildNextLines(lvl, lines)
+                elseif key == "shop" then BuildShopLines(lvl, lines)
                 elseif key == "tips" then BuildTipsLines(lvl, lines)
                 elseif key == "mats" then BuildMatsLines(lvl, lines)
                 elseif key == "gather" then BuildGatherLines(lvl, lines)
@@ -749,18 +747,20 @@ local function ToggleSection(key)
     BuildBody()
 end
 
+local function ActivateRanked(index)
+    local action = lastRanked[index]
+    if not action then return end
+    if action.type == "auction" and action.itemId and P1DG.SearchAuctionItem then
+        P1DG.SearchAuctionItem(action.itemId)
+    elseif action.type == "quest" and action.entry and P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+        P1QuestNav_API.SetWaypoint(action.entry)
+        print("|cff00ccffP1 Guide|r TomTom → " .. (action.questName or "?"))
+    end
+end
+
 local function HandleBodyClick(key, idx)
     if key == "next" and idx then
-        local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
-        if #entries == 0 then
-            local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
-            entries = st and st.tracked or {}
-        end
-        local e = entries[idx]
-        if e and P1QuestNav_API and P1QuestNav_API.SetWaypoint then
-            P1QuestNav_API.SetWaypoint(e)
-            print("|cff00ccffP1 Guide|r TomTom → " .. (e.questName or "?"))
-        end
+        ActivateRanked(idx)
         return
     end
     if key then ToggleSection(key) end
@@ -768,7 +768,9 @@ end
 
 local function HandleClickTarget(target)
     if not target then return end
-    if target.type == "auction" and target.itemId and P1DG.SearchAuctionItem then
+    if target.type == "ranked" and target.index then
+        ActivateRanked(target.index)
+    elseif target.type == "auction" and target.itemId and P1DG.SearchAuctionItem then
         P1DG.SearchAuctionItem(target.itemId)
     elseif target.type == "quest" then
         HandleBodyClick("next", target.index)
@@ -1130,6 +1132,7 @@ init:SetScript("OnEvent", function(_, event)
         P1DruidGuide_SetAutoWaypoint(ReadAutoWaypoint())
         P1DruidGuide_SetVisible(guideVisible)
         if DB.minimized then SetMinimized(true) end
+        if P1DG.ResetSessionBaseline then P1DG.ResetSessionBaseline() end
         if P1DG.ScanCharacter then P1DG.ScanCharacter() end
     else
         if event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE"

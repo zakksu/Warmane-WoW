@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.6.4-druid"
+local PACK_VERSION = "2.0.0-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.4|r — character scan · AH priority · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v2.0|r — SHOP + fused NEXT · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -385,9 +385,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.6.4:|r Character scan — /p1scan · AH before quests in guide")
-            print("|cff00ccffP1 v1.6.4:|r Auctionator ON · open AH then click [AH] or /p1ah")
-            print("|cff00ccffP1 v1.6.4:|r Arrow in P1QuestNav (TomTom not required)")
+            print("|cff00ccffP1 v2.0:|r SHOP section — affordable AH list from your gear scan")
+            print("|cff00ccffP1 v2.0:|r Fused NEXT — gear ROI + quests ranked together")
+            print("|cff00ccffP1 v2.0:|r /p1scan shows delta since login")
         end)
     end
 

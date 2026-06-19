@@ -2,7 +2,26 @@
 
 Use **separate Cursor Agent / Cloud tasks** on the same repo. All read `AGENTS.md`. You merge via git + **PLAY.bat** → `/reload`.
 
-Last updated: v1.6.4 sprint (2026-06-18)
+Last updated: v2.0.0 sprint (2026-06-18)
+
+---
+
+## v2.0.0 — druid coach (done)
+
+Parallel lanes via **`tools/orchestrator/`** — see [CURSOR_ORCHESTRATION.md](CURSOR_ORCHESTRATION.md).
+
+| Lane | File(s) | Shipped |
+|------|---------|---------|
+| brain | `Brain.lua` | Scan history + session delta on `/p1scan` |
+| ah | `AhAutopilot.lua` | SHOP section — afford / shortfall |
+| rank | `NextRank.lua` | Fused NEXT — gear ROI + quests |
+| integrate | `Core.lua`, toc, loader | SHOP section, v2.0.0, login baseline |
+| release | `RELEASE.txt`, `README.md` | v2.0.0 changelog |
+
+```powershell
+.\tools\orchestrator\emit-prompt.ps1 -All   # next sprint
+.\tools\orchestrator\set-status.ps1 -Lane brain -Status in_progress
+```
 
 ---
 

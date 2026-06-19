@@ -60,6 +60,7 @@ function P1DG.ScanCharacter()
 
     P1DruidGuideDB = P1DruidGuideDB or {}
     P1DruidGuideDB.characterScan = scan
+    if P1DG.RecordScan then P1DG.RecordScan(scan) end
     return scan
 end
 
@@ -151,4 +152,5 @@ function P1DG.PrintCharacterScan()
                 i, g.itemName or g.key, g.haveIlvl, g.needIlvl, priceTag))
         end
     end
+    if P1DG.PrintScanDelta then P1DG.PrintScanDelta() end
 end

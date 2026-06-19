@@ -1,9 +1,18 @@
-Phase One Warmane Leveling Packs - v1.6.4
+Phase One Warmane Leveling Packs - v2.0.0
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v2.0.0) — druid pack
+  - P1 Druid Guide v2.0: personal coach overlay (druid pack only)
+  - SHOP section — affordable AH buys from gear scan; click line → Auctionator
+  - Fused NEXT — AH gear ROI + quest xp/min ranked together; click → AH or waypoint
+  - Brain.lua — scan history; /p1scan shows gold/quest/weapon ilvl delta since login
+  - AhAutopilot.lua — BuildShopList with CanAfford + shortfall tags
+  - NextRank.lua — RankNextActions fuses SHOP + quest path entries
+  - Cursor orchestration: tools/orchestrator/ + Docs/CURSOR_ORCHESTRATION.md
 
 CHANGELOG (v1.6.4)
   - Default install: 7 addons — Loader, AutoQuest, QuestNav, DruidGuide, Questie, Astrolabe, Auctionator
