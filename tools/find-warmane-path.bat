@@ -37,4 +37,4 @@ for /d %%D in ("C:\Games\Warmane\*" "D:\Games\Warmane\*") do (
 )
 
 :found
-endlocal & if defined WOWPATH set "WOWPATH=%WOWPATH%"
+for %%A in ("!WOWPATH!") do endlocal & set "WOWPATH=%%~A"

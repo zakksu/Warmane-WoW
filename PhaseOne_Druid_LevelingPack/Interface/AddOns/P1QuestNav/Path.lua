@@ -306,6 +306,8 @@ local function AnchorPanel()
     end
     if P1DruidGuideFrame and P1DruidGuideFrame:IsShown() then
         panel:SetPoint("TOPLEFT", P1DruidGuideFrame, "BOTTOMLEFT", 0, -6)
+    elseif P1AdventureGuideFrame and P1AdventureGuideFrame:IsShown() then
+        panel:SetPoint("TOPLEFT", P1AdventureGuideFrame, "BOTTOMLEFT", 0, -6)
     elseif P1QuestNavLegend and P1QuestNavLegend:IsShown() then
         panel:SetPoint("TOPLEFT", P1QuestNavLegend, "BOTTOMLEFT", 0, -6)
     else

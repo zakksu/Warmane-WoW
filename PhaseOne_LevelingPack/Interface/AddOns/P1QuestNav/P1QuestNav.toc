@@ -2,7 +2,7 @@
 ## Title: |cff00ccffP1 Quest Nav|r
 ## Notes: Multi-quest minimap arrows, dotted path, TomTom arrow for priority target. Phase One pack.
 ## Author: zakksu
-## Version: 1.4.0
+## Version: 1.5.0
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## SavedVariables: P1QuestNavDB, P1QuestPathDB

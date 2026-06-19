@@ -796,7 +796,7 @@ SlashCmdList["P1QUEST"] = function()
     P1AutoQuest_Refresh(true)
     local s = P1AutoQuest_GetStatus()
     local on = s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
-    print("|cff00ccffP1 Auto Quest|r v1.2.2 — " .. on)
+    print("|cff00ccffP1 Auto Quest|r v1.5.0 — " .. on)
     print("  Questie: " .. (s.questieLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  TomTom:  " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Astrolabe: " .. (s.astrolabeLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))

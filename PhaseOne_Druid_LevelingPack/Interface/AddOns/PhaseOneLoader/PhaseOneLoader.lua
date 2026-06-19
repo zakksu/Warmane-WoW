@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.4.0-druid"
+local PACK_VERSION = "1.6.0-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide ready|r — |cff00ff00/p1guide|r · |cff00ff00/p1glow|r · |cff00ff00/p1settings|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.5|r — PATH · icons · |cff00ff00/p1guide|r (minimize title bar)"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -84,8 +84,8 @@ local function PrintSettings()
     print("|cff00ccffP1 Settings|r v" .. PACK_VERSION)
     print("  Auto Q:  " .. Yn(IsFeatureOn("autoQuestEnabled")) .. "  — /p1auto")
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
-    print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (in guide NEXT)")
-    print("  Guide:   " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
+    print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (feeds guide NEXT)")
+    print("  Guide:   " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide  (new: PATH + BIS icons + min btn)")
     print("  Tips:    " .. Yn(IsFeatureOn("tipsVisible")) .. "  — /p1tips")
     print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
@@ -100,6 +100,13 @@ local function SetAllFeatures(on)
     db.tipsVisible = on
     db.questGlowEnabled = on
     ApplyFeatureDefaults(1)
+    -- ensure new v1.5 PATH section visible when powering on
+    if P1DruidGuide_SetPathCollapsed then
+        P1DruidGuide_SetPathCollapsed(false)
+    elseif P1DruidGuideDB and on then
+        P1DruidGuideDB.collapsed = P1DruidGuideDB.collapsed or {}
+        P1DruidGuideDB.collapsed.path = false
+    end
     print("|cff00ccffP1 Settings:|r all features " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"))
 end
 
@@ -198,6 +205,18 @@ function ApplyFeatureDefaults(attempt)
     elseif P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
     if P1DruidGuide_SetTipsVisible then P1DruidGuide_SetTipsVisible(IsFeatureOn("tipsVisible")) end
     if P1QuestGlow_SetEnabled then P1QuestGlow_SetEnabled(IsFeatureOn("questGlowEnabled")) end
+    -- default new PATH section visible (for old DBs or retries)
+    if IsFeatureOn("guideVisible") then
+        if P1DruidGuide_SetPathCollapsed then
+            -- only force if not explicitly set; caller can leave as-is for user collapsed state
+            if P1DruidGuideDB and P1DruidGuideDB.collapsed and P1DruidGuideDB.collapsed.path == nil then
+                P1DruidGuide_SetPathCollapsed(false)
+            end
+        elseif P1DruidGuideDB then
+            P1DruidGuideDB.collapsed = P1DruidGuideDB.collapsed or {}
+            if P1DruidGuideDB.collapsed.path == nil then P1DruidGuideDB.collapsed.path = false end
+        end
+    end
     ApplyQuestiePresets()
     if P1AutoQuest_Refresh then P1AutoQuest_Refresh(true) end
     if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
@@ -315,9 +334,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.4.0:|r Quest mob glow — soft gold pulse on nameplates (/p1glow)")
-            print("|cff00ccffP1 v1.4.0:|r Druid TIPS section lvl 10-50 — rotation, talents, BIS to 50")
-            print("|cff00ccffP1 v1.4.0:|r /p1tips toggle · glow clears when objective completes")
+            print("|cff00ccffP1 v1.6.0:|r Drag fixed — left-drag title bar, right-drag header")
+            print("|cff00ccffP1 v1.6.0:|r BIS upgraded — why/flavor/alt, click → TomTom")
+            print("|cff00ccffP1 v1.6.0:|r [GO] header · /p1guide autogo · fun cat tips")
         end)
     end
 

@@ -36,7 +36,7 @@ The HUD does not pick abilities for you — it highlights what is **missing** so
 ## Commands
 
 - `/p1hud` — show or hide the Feral HUD
-- `/p1guide` — show or hide the Adventure Guide
+- `/p1guide` — show or hide the Druid Guide (v1.5: PATH steps, BIS icons, minimize)
 - **Drag** the HUD with left-click; drag the guide with right-click
 
 ## Install

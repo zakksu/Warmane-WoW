@@ -3,10 +3,10 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.4.0"
+local PACK_VERSION = "1.6.0"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
-local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Glow ON. |cff00ff00/p1settings|r"
+local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Glow, Guide v1.5. |cff00ff00/p1settings|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -84,7 +84,7 @@ local function PrintSettings()
     print("|cff00ccffP1 Settings|r v" .. PACK_VERSION)
     print("  Auto Q:  " .. Yn(IsFeatureOn("autoQuestEnabled")) .. "  — /p1auto")
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
-    print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path")
+    print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (feeds guide NEXT)")
     print("  Mats:    " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
     print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
@@ -300,8 +300,8 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.4.0:|r Quest mob glow — soft gold pulse on nameplates (/p1glow)")
-            print("|cff00ccffP1 v1.4.0:|r Glow clears when kill/collect objective completes")
+            print("|cff00ccffP1 v1.5.0:|r Shared nav + guide fixes (QuestNav anchors, spell compat)")
+            print("|cff00ccffP1 v1.5.0:|r Druid pack: new PATH section + BIS icons + minimize in guide")
         end)
     end
 

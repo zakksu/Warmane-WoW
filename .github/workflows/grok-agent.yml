@@ -1,0 +1,47 @@
+# Optional Grok Build headless job — manual dispatch only.
+# Requires repository secret: XAI_API_KEY
+# See Docs/GROK_INTEGRATION.md
+
+name: Grok Agent (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Prompt for grok -p (read-only default)'
+        required: false
+        default: 'Summarize this repo structure and list P1 custom addons. Do not modify files.'
+      yolo:
+        description: 'Auto-approve tool use (dangerous — default false)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  grok:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Grok CLI
+        run: curl -fsSL https://x.ai/cli/install.sh | bash
+
+      - name: Add Grok to PATH
+        run: echo "$HOME/.grok/bin" >> "$GITHUB_PATH"
+
+      - name: Run headless Grok
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GROK_DISABLE_AUTOUPDATER: '1'
+        run: |
+          ARGS=(-p "${{ inputs.prompt }}" -m grok-build --cwd "${{ github.workspace }}" --output-format json --no-auto-update)
+          if [ "${{ inputs.yolo }}" = "true" ]; then ARGS+=(--yolo); fi
+          grok "${ARGS[@]}" | tee grok-output.json
+
+      - name: Upload Grok JSON output
+        uses: actions/upload-artifact@v4
+        with:
+          name: grok-output
+          path: grok-output.json
+          if-no-files-found: error

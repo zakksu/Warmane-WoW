@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v1.4.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.6.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, waypoint arrow, and a unified **P1 Druid Guide** overlay. **No class HUD, range HUD, damage numbers, Leatrix, or WeakAuras** in the default install.
 
@@ -30,7 +30,7 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 | Warlock only | `INSTALL_WARLOCK.bat` |
 | Feral Druid only | `INSTALL_DRUID.bat` |
 
-**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
 
 ---
 
@@ -53,8 +53,9 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 
 | Command | Action |
 |---------|--------|
-| `/p1` or `/p1guide` | Toggle druid guide overlay |
+| `/p1` or `/p1guide` | Toggle druid guide overlay (v1.5: PATH steps, BIS icons, title minimize) |
 | `/p1guide reset` | Reset guide position/size |
+| `/p1guide min` / `max` | Minimize / restore guide |
 | `/p1guide scale 0.8` | Scale overlay |
 | `/p1auto` | Toggle Auto Q (accept/turn-in + arrows) |
 | `/p1nav` | Toggle quest nav pins |

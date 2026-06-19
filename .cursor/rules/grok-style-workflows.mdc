@@ -1,0 +1,51 @@
+---
+description: Grok Build-style agent workflows adapted for Cursor (plan-first, parallel subagents, headless handoff)
+alwaysApply: false
+globs: PhaseOne_*/Interface/AddOns/**/*
+---
+
+# Grok-style workflows (Cursor)
+
+Use these patterns when tasks resemble Grok Build's plan mode, parallel subagents, or headless automation.
+
+## Plan-first (complex changes)
+
+For refactors, new slash commands, or cross-addon behavior:
+
+1. **Explore** — read loader, target addon `.toc`, and one similar addon for conventions.
+2. **Plan** — list files to touch, in-game test steps (`PLAY.bat` → `/reload` → slash command).
+3. **Execute** — minimal diff; one concern per commit.
+4. **Verify** — grep for typos, confirm `.toc` lists new files, note manual in-game checks.
+
+Do not edit vendored Questie/TomTom unless the task explicitly requires it.
+
+## Parallel subagents (Cursor Task tool)
+
+Delegate in parallel when branches are independent:
+
+| Subagent | Use for |
+|----------|---------|
+| `explore` | Find slash commands, event registration, pack differences |
+| `generalPurpose` | Implement isolated addon features |
+| `shell` | Run `PLAY.bat`, build zips, git status |
+
+Merge results before changing shared files (`PhaseOneLoader`, manifest, `PLAY.bat`).
+
+## Hand off to Grok Build (terminal / sidebar)
+
+When Grok's CLI or VS Code sidebar extension is available:
+
+- Same repo rules apply via root `AGENTS.md` and this `.cursor/rules/` tree (Grok reads both).
+- Terminal: `grok` in repo root, or `tools\grok-headless.ps1 -Prompt "..."`.
+- Sidebar: Grok Build extension spawns `grok agent stdio` (ACP) — separate from Cursor Agent chat.
+
+## Headless / CI
+
+- Local: `tools\grok-headless.ps1` wraps `grok -p` with repo `--cwd`.
+- CI: `.github/workflows/grok-agent.yml` (manual dispatch; needs `XAI_API_KEY` secret).
+
+## WoW-specific guardrails
+
+- Never delete player `WTF/` or `SavedVariables` paths.
+- `PLAY.bat` syncs **to** the Warmane client; it does not run WoW.
+- Prefer `P1AutoQuest`, `P1QuestNav`, etc. over duplicating Questie logic.

@@ -1,0 +1,13 @@
+# Project-scoped Grok Build config (committed; no secrets here).
+# User settings remain in ~/.grok/config.toml
+#
+# Grok auto-loads:
+#   - AGENTS.md (repo root)
+#   - .cursor/rules/*.mdc (Cursor compat)
+#   - .cursor/mcp.json (if present)
+#
+# Add MCP servers with: grok mcp add --scope project ...
+
+[permission]
+# Allow routine dev commands in this repo; tighten for your environment.
+default_mode = "acceptEdits"

@@ -27,7 +27,7 @@ local SLOT_HUES = {
     { 0.75, 0.55, 1.0 },
 }
 
-local VERSION = "1.4.0"
+local VERSION = "1.5.0"
 
 local function SyncLoaderNav(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.navEnabled = on end

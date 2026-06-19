@@ -1,9 +1,27 @@
-Phase One Warmane Leveling Packs — v1.4.0
+Phase One Warmane Leveling Packs — v1.6.0
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.6.0)
+  - P1DruidGuide v1.6: drag fix (SetMovable + title bar / right-drag header)
+  - BIS / BUILD overhaul: why, flavor, alt, price tier, slot progress, NEXT UPGRADE
+  - Click BIS/PATH lines or icon bar → TomTom waypoint for quest farms
+  - [GO] header click + /p1guide go · autogo toggle (/p1guide autogo on|off)
+  - Fun cat-voice flavor on PATH, TIPS, and BIS sections
+  - BIS expanded by default; nav hint (arrow + minimap dots + mob glow)
+  - No auto-walk (addon points — you steer)
+
+CHANGELOG (v1.5.0)
+  - P1DruidGuide PATH section: optimal feral leveling bullets (impact order, lvl 10-50)
+  - Gold-budget AH BIS — buy at level gate; pending upgrades show as item icons
+  - Minimize button on guide title bar (/p1guide min|max); draggable + resizable
+  - Wowhead-style rotation hints: FF → Rake → Mangle → Rip; Travel Form @20
+  - Docs/CURSOR_CLOUD.md — easy Cursor Cloud Agent setup
+  - Path.lua engine: spell/gear/profession step completion tracking
+  - Maintenance: QuestNav Path anchor for AdventureGuide compat synced to both packs; reliable 3.3.5 HasSpell in guide Path; loader wiring for new collapsed.path + SetPathCollapsed; clickCatcher local + minimize point fix; versions bumped to 1.5 across loaders/tocs/guide
 
 CHANGELOG (v1.4.0)
   - P1QuestNav Glow: soft gold pulse on quest kill/collect mob nameplates (/p1glow)
@@ -52,7 +70,9 @@ AUTO ON FIRST LOGIN
   P1AutoQuest (accept/turn-in assist when Auto Q on)
 
 TROUBLESHOOTING
-  No guide?                   /p1guide — ensure ON; drag title bar to reposition
+  No guide?                   /p1guide — ensure ON; left-drag title, right-drag header
+  Overlay won't drag?         /p1guide reset then /reload — v1.6 fixes SetMovable
+  Want TomTom on quest?       Click [GO] in header or /p1guide go
   No glow on mobs?              /p1glow — ensure ON; need incomplete kill objective
   Glow stuck?                   /reload — clears on objective complete or mob death
   No NEXT quests?               /p1path refresh — needs Questie loaded
@@ -65,6 +85,8 @@ COMMANDS
   /p1tips             Toggle TIPS section (lvl bracket advice)
   /p1glow             Toggle quest mob nameplate glow
   /p1guide reset      Reset position and size
+  /p1guide go         TomTom arrow to top ranked quest
+  /p1guide autogo on  Auto-set TomTom when top quest changes
   /p1guide scale 0.8  Scale overlay
   /p1settings         Feature toggles (Auto Q, Nav, Path, Guide, Glow, Tips)
   /p1nav              Toggle minimap pins + TomTom

@@ -1,4 +1,4 @@
-# P1 Adventure Guide — v1.1
+# P1 Adventure Guide — v1.1 (warlock pack; druid pack uses enhanced P1DruidGuide v1.5 with PATH)
 
 Docked below the combat HUD (same Phase One style). Auto-loads on install — no setup.
 

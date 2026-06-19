@@ -1,6 +1,6 @@
 # Phase One Quest Pack (Minimal)
 
-v1.3.2 ships a **quest-only** addon set focused on druid leveling. No class HUDs, no range/damage clutter.
+v1.5.0 ships a **quest-only** addon set focused on druid leveling (with v1.5 PATH + BIS icons in druid guide). No class HUDs, no range/damage clutter.
 
 ## Installed (7 addons — druid pack)
 
@@ -37,8 +37,9 @@ Then log in and type **`/reload`**.
 
 | Command | Action |
 |---------|--------|
-| `/p1` or `/p1guide` | Toggle druid guide overlay |
+| `/p1` or `/p1guide` | Toggle druid guide overlay (PATH + BIS icons + min) |
 | `/p1guide reset` | Reset guide position/size |
+| `/p1guide min|max` | Minimize/restore the panel |
 | `/p1guide scale 0.8` | Scale overlay |
 | `/p1auto` | Toggle Auto Q |
 | `/p1nav` | Toggle quest pins / TomTom |

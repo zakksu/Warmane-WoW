@@ -3,23 +3,35 @@
 P1DruidGuideDB = P1DruidGuideDB or {
     point = "TOPLEFT", relPoint = "TOPLEFT", x = 12, y = -80,
     width = 280, height = 220, scale = 1.0,
-    collapsed = { next = false, tips = false, mats = false, gather = false, bis = true },
+    collapsed = { path = false, next = false, tips = false, mats = false, gather = false, bis = false },
+    minimized = false,
     tipsVisible = true,
+    autoWaypoint = true,
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.4.0"
-local panel, headerText, bodyText, resizeGrip
+local VERSION = "1.6.0"
+local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
+local iconFrames = {}
 local guideVisible = true
 local tipsVisible = true
+local clickTargets = {}
+local lastAutoQuestKey = nil
 
-local SECTIONS = { "next", "tips", "mats", "gather", "bis" }
+local SECTIONS = { "path", "next", "tips", "mats", "gather", "bis" }
 local SECTION_LABELS = {
+    path = "PATH",
     next = "NEXT",
     tips = "TIPS",
     mats = "MATS",
     gather = "GATHER",
     bis = "BIS / BUILD",
+}
+
+local PRICE_TAGS = {
+    free = "|cff00ff00[free]|r",
+    cheap = "|cffffff00[~5g]|r",
+    splurge = "|cffff8800[splurge]|r",
 }
 
 local function MigrateLegacyDB()
@@ -30,6 +42,7 @@ local function MigrateLegacyDB()
         DB.y = DB.y or P1AdventureGuideDB.y
         DB.migrated = true
     end
+    if DB.autoWaypoint == nil then DB.autoWaypoint = true end
 end
 
 local function SyncLoaderGuide(on)
@@ -138,12 +151,15 @@ local function PickOreMilestone(playerLevel)
 end
 
 local function PickBisBracket(playerLevel)
-    for _, bracket in ipairs(P1DG.BIS_BRACKETS) do
-        if playerLevel >= bracket.levelMin and playerLevel <= bracket.levelMax then
-            return bracket
-        end
-    end
-    return P1DG.BIS_BRACKETS[#P1DG.BIS_BRACKETS]
+    return P1DG.GetBisBracket and P1DG.GetBisBracket(playerLevel)
+        or (function()
+            for _, bracket in ipairs(P1DG.BIS_BRACKETS) do
+                if playerLevel >= bracket.levelMin and playerLevel <= bracket.levelMax then
+                    return bracket
+                end
+            end
+            return P1DG.BIS_BRACKETS[#P1DG.BIS_BRACKETS]
+        end)()
 end
 
 local function PickTipsBracket(playerLevel)
@@ -166,46 +182,55 @@ local function PickTipsBracket(playerLevel)
     return current, nextBracket
 end
 
+local function AddLine(lines, text, click)
+    table.insert(lines, text)
+    if click then clickTargets[#lines] = click end
+end
+
 local function AppendTipsBlock(lines, bracket, gray)
     if not bracket then return end
     local prefix = gray and "|cff666666" or "|cffffffff"
     local close = "|r"
-    table.insert(lines, string.format("  %s[%d-%d] %s%s",
+    AddLine(lines, string.format("  %s[%d-%d] %s%s",
         prefix, bracket.levelMin, bracket.levelMax, bracket.zone or "", close))
+    if bracket.flavor and not gray then
+        AddLine(lines, "  |cffccaa00" .. bracket.flavor .. "|r")
+    end
     if bracket.rotation then
         for rotLine in bracket.rotation:gmatch("[^\n]+") do
-            table.insert(lines, "  " .. prefix .. rotLine .. close)
+            AddLine(lines, "  " .. prefix .. rotLine .. close)
         end
     end
     if bracket.talents then
-        table.insert(lines, "  " .. prefix .. "Talents: " .. bracket.talents .. close)
+        AddLine(lines, "  " .. prefix .. "Talents: " .. bracket.talents .. close)
     end
     if bracket.survival then
-        table.insert(lines, "  " .. prefix .. "Survive: " .. bracket.survival .. close)
+        AddLine(lines, "  " .. prefix .. "Survive: " .. bracket.survival .. close)
     end
     if bracket.quests then
-        table.insert(lines, "  " .. prefix .. "Quests: " .. bracket.quests .. close)
+        AddLine(lines, "  " .. prefix .. "Quests: " .. bracket.quests .. close)
     end
     if bracket.gather then
-        table.insert(lines, "  " .. prefix .. "Gather: " .. bracket.gather .. close)
+        AddLine(lines, "  " .. prefix .. "Gather: " .. bracket.gather .. close)
     end
 end
 
 local function BuildTipsLines(playerLevel, lines)
     if not tipsVisible then
-        table.insert(lines, "  |cff888888Tips hidden — /p1tips to show|r")
+        AddLine(lines, "  |cff888888Tips hidden — /p1tips to show|r")
         return
     end
     local current, nextBracket = PickTipsBracket(playerLevel)
     if current then
         AppendTipsBlock(lines, current, false)
     elseif playerLevel < 10 then
-        table.insert(lines, "  |cff888888Reach lvl 10 for cat form tips|r")
+        AddLine(lines, "  |cff888888Reach lvl 10 for cat form tips|r")
     end
     if nextBracket then
-        table.insert(lines, "  |cff666666--- next (" .. nextBracket.levelMin .. "-" .. nextBracket.levelMax .. ") ---|r")
+        AddLine(lines, "  |cff666666--- next (" .. nextBracket.levelMin .. "-" .. nextBracket.levelMax .. ") ---|r")
         AppendTipsBlock(lines, nextBracket, true)
     end
+    AddLine(lines, "  |cff666666Nav: TomTom arrow + minimap dots · mobs glow|r")
 end
 
 local function ColorRatio(have, goal)
@@ -263,17 +288,153 @@ local function BisStatusColor(equipped, minIlvl, slotDef)
     return "|cffff4444"
 end
 
-local function BuildHeaderLine()
-    local primary
+local function IsBisSlotDone(slot)
+    if P1DG.IsBisSlotDone then return P1DG.IsBisSlotDone(slot) end
+    if slot.itemId and slot.equipSlot and GetEquippedItemId(slot.equipSlot) == slot.itemId then
+        return true
+    end
+    if slot.equipSlot and slot.minIlvl and slot.minIlvl > 0 then
+        return GetEquippedIlvl(slot.equipSlot) >= slot.minIlvl
+    end
+    return false
+end
+
+local function PriceTierTag(tier)
+    if not tier then return "" end
+    return PRICE_TAGS[tier] or ""
+end
+
+local function BuildWaypointTarget(waypoint, label)
+    if not waypoint or not waypoint.zone then return nil end
+    return {
+        zone = waypoint.zone,
+        spawn = { (waypoint.x or 0) * 100, (waypoint.y or 0) * 100 },
+        title = waypoint.title or label or "Guide waypoint",
+        questName = label or waypoint.title,
+    }
+end
+
+local function SetGuideWaypoint(waypoint, label)
+    local target = BuildWaypointTarget(waypoint, label)
+    if not target then return false end
+    if P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+        P1QuestNav_API.SetWaypoint(target)
+        print("|cff00ccffP1 Guide|r TomTom → " .. (label or target.title or "?"))
+        return true
+    end
+    return false
+end
+
+local function GetPrimaryQuestEntry()
     if P1QuestPath_GetTop then
         local top = P1QuestPath_GetTop(1)
-        primary = top and top[1]
+        if top and top[1] then return top[1] end
     end
-    if not primary and P1QuestNav_GetPrimary then
-        primary = P1QuestNav_GetPrimary()
-    end
+    if P1QuestNav_GetPrimary then return P1QuestNav_GetPrimary() end
+    return nil
+end
+
+local function NavigateToPrimary()
+    local primary = GetPrimaryQuestEntry()
     if not primary then
-        return "|cff00ccffP1 Druid Guide|r |cff666666— no active quest|r"
+        print("|cff00ccffP1 Guide|r — accept a quest first (Questie icons ON)")
+        return false
+    end
+    if P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+        P1QuestNav_API.SetWaypoint(primary)
+        print("|cff00ccffP1 Guide|r TomTom → " .. (primary.questName or "?"))
+        return true
+    end
+    return false
+end
+
+local function MaybeAutoWaypoint()
+    if not DB.autoWaypoint then return end
+    local primary = GetPrimaryQuestEntry()
+    if not primary then return end
+    local key = (primary.questId or primary.questName or "?") .. ":" .. (primary.zone or 0)
+    if key == lastAutoQuestKey then return end
+    lastAutoQuestKey = key
+    if P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+        P1QuestNav_API.SetWaypoint(primary)
+    end
+end
+
+local function BuildPathLines(playerLevel, lines)
+    local steps = P1DG.GetOptimalSteps and P1DG.GetOptimalSteps(playerLevel, 5) or {}
+    if #steps == 0 then
+        AddLine(lines, "  |cff888888On track — check NEXT quests|r")
+        return
+    end
+    for _, step in ipairs(steps) do
+        local tag = (step.goldAh or (step.text and step.text:find("AH", 1, true))) and " |cffffcc00[AH]|r" or ""
+        local cat = step.type == "gear" and "|cff44ff44" or (step.type == "spell" and "|cff88ccff" or "|cffffffff")
+        AddLine(lines, string.format("  %s•|r %s%s", cat, step.text or "?", tag),
+            step.waypoint and { type = "waypoint", waypoint = step.waypoint, label = step.text }
+            or (P1DG.FindBisSlotForStep and P1DG.FindBisSlotForStep(step) and {
+                type = "waypoint",
+                waypoint = P1DG.FindBisSlotForStep(step).waypoint,
+                label = step.text,
+            } or nil))
+        if step.flavor then
+            AddLine(lines, "    |cffccaa00" .. step.flavor .. "|r")
+        end
+    end
+end
+
+local function RefreshIconBar()
+    if not iconBar then return end
+    local lvl = UnitLevel("player")
+    local icons = P1DG.GetPendingBisIcons and P1DG.GetPendingBisIcons(lvl, 4) or {}
+    for i = 1, 4 do
+        local f = iconFrames[i]
+        if f then
+            local data = icons[i]
+            f.iconData = data
+            if data and data.itemId then
+                f.tex:SetTexture(P1DG.GetItemIcon(data.itemId))
+                f.tex:SetVertexColor(1, 0.85, 0.2)
+                f.border:Show()
+                f.label:SetText(data.label or "")
+                f:Show()
+                if not GetItemInfo(data.itemId) then
+                    GameTooltip:SetHyperlink("item:" .. data.itemId .. ":0:0:0:0:0:0:0")
+                    GameTooltip:Hide()
+                end
+            else
+                f.iconData = nil
+                f:Hide()
+            end
+        end
+    end
+    if #icons > 0 then iconBar:Show() else iconBar:Hide() end
+end
+
+local function SetMinimized(on)
+    DB.minimized = on and true or false
+    if not panel then return end
+    if DB.minimized then
+        if bodyText then bodyText:Hide() end
+        if iconBar then iconBar:Hide() end
+        if resizeGrip then resizeGrip:Hide() end
+        if clickCatcher then clickCatcher:Hide() end
+        if headerBtn then headerBtn:Hide() end
+        panel:SetHeight(44)
+    else
+        if bodyText then bodyText:Show() end
+        if resizeGrip then resizeGrip:Show() end
+        if clickCatcher then clickCatcher:Show() end
+        if headerBtn then headerBtn:Show() end
+        panel:SetHeight(DB.height or 220)
+        RefreshIconBar()
+        P1DruidGuide_Refresh()
+    end
+end
+
+local function BuildHeaderLine()
+    local primary = GetPrimaryQuestEntry()
+    if not primary then
+        return "|cff888888No quest — accept one|r |cff666666· arrow + dots guide you|r"
     end
     local dir = primary.dirLabel or ""
     if dir == "" and P1QuestNav_API and P1QuestNav_API.GetDirectionLabel then
@@ -282,14 +443,15 @@ local function BuildHeaderLine()
     if dir == "" and primary.dist then dir = string.format("%dy", primary.dist) end
     local xpTag = primary.xp and primary.xp > 0 and string.format(" [%dxp]", primary.xp) or ""
     local gearTag = primary.gearLabel and " |cff44ff44↑gear|r" or ""
-    return string.format("|cff00ccffNEXT:|r %s — %s%s%s",
+    return string.format("|cff00ff00[GO]|r %s — %s%s%s",
         Truncate(primary.questName, 22), dir, xpTag, gearTag)
 end
 
 local function BuildNextLines(lines)
     local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
     if #entries == 0 then
-        table.insert(lines, "  |cff888888Accept a quest — Questie icons ON|r")
+        AddLine(lines, "  |cff888888Accept a quest — Questie icons ON|r")
+        AddLine(lines, "  |cff666666Click [GO] in header for TomTom arrow|r")
         return
     end
     for i, e in ipairs(entries) do
@@ -297,8 +459,9 @@ local function BuildNextLines(lines)
         local xpTag = e.xp and e.xp > 0 and string.format("[%dxp", e.xp) or "[?"
         local gearTag = e.gearLabel and (", " .. e.gearLabel .. "]") or "]"
         local gearFlag = e.gearLabel and " |cff44ff44↑|r" or ""
-        table.insert(lines, string.format("  %d. %s%s%s — %s%s",
-            i, Truncate(e.questName, 18), xpTag, gearTag, dir, gearFlag))
+        AddLine(lines, string.format("  %d. %s%s%s — %s%s",
+            i, Truncate(e.questName, 18), xpTag, gearTag, dir, gearFlag),
+            { type = "quest", index = i })
     end
 end
 
@@ -307,18 +470,18 @@ local function BuildMatsLines(playerLevel, lines)
     if tier then
         local cloth = CountItemInBags(tier.clothId)
         local total = cloth + CountBandageCredit(tier.bandageIds)
-        table.insert(lines, "  FA " .. tier.clothName .. " " .. FormatRatio(total, tier.goalTotal)
+        AddLine(lines, "  FA " .. tier.clothName .. " " .. FormatRatio(total, tier.goalTotal)
             .. LevelMilestoneTag(tier.levelMin, tier.levelMax, playerLevel))
     end
     for _, item in ipairs(PickHerbMilestone(playerLevel).items) do
-        table.insert(lines, "  " .. FormatRatio(CountItemInBags(item.id), item.goal) .. " " .. item.name)
+        AddLine(lines, "  " .. FormatRatio(CountItemInBags(item.id), item.goal) .. " " .. item.name)
     end
     for _, item in ipairs(PickOreMilestone(playerLevel).items) do
-        table.insert(lines, "  " .. FormatRatio(CountItemInBags(item.id), item.goal) .. " " .. item.name)
+        AddLine(lines, "  " .. FormatRatio(CountItemInBags(item.id), item.goal) .. " " .. item.name)
     end
     for _, mat in ipairs(P1DG.MAT_WATCH) do
         if playerLevel <= mat.levelMax + 5 then
-            table.insert(lines, "  " .. FormatRatio(CountItemInBags(mat.id), mat.goal) .. " " .. mat.name)
+            AddLine(lines, "  " .. FormatRatio(CountItemInBags(mat.id), mat.goal) .. " " .. mat.name)
         end
     end
 end
@@ -337,7 +500,7 @@ local function BuildGatherLines(playerLevel, lines)
             if farm and farm.farms then
                 for _, f in ipairs(farm.farms) do
                     if playerLevel >= f.levelMin and playerLevel <= f.levelMax + 5 then
-                        table.insert(lines, string.format("  Farm: %s — %s %s", farm.name, f.zone, f.dir))
+                        AddLine(lines, string.format("  Farm: %s — %s %s", farm.name, f.zone, f.dir))
                         shown = shown + 1
                         break
                     end
@@ -352,7 +515,7 @@ local function BuildGatherLines(playerLevel, lines)
             if farm and farm.farms then
                 for _, f in ipairs(farm.farms) do
                     if playerLevel >= f.levelMin and playerLevel <= f.levelMax + 5 then
-                        table.insert(lines, string.format("  Mine: %s — %s %s", farm.name, f.zone, f.dir))
+                        AddLine(lines, string.format("  Mine: %s — %s %s", farm.name, f.zone, f.dir))
                         shown = shown + 1
                         break
                     end
@@ -368,32 +531,64 @@ local function BuildGatherLines(playerLevel, lines)
                 if tip.itemId and tip.goal and CountItemInBags(tip.itemId) >= tip.goal then skip = true end
                 if tip.itemId and matsLow and CountItemInBags(tip.itemId) >= (tip.goal or 999) * 0.5 then skip = true end
                 if not skip then
-                    table.insert(lines, "  |cff666666AH: " .. tip.tip .. "|r")
+                    AddLine(lines, "  |cff666666AH: " .. tip.tip .. "|r")
                     shown = shown + 1
                 end
             end
         end
     end
     if shown == 0 then
-        table.insert(lines, "  |cff888888Mats stocked — Questie node icons on map|r")
+        AddLine(lines, "  |cff888888Mats stocked — Questie node icons on map|r")
     end
 end
 
 local function BuildBisLines(playerLevel, lines)
     local bracket = PickBisBracket(playerLevel)
     if not bracket then return end
-    table.insert(lines, string.format("  |cff666666Lvl %d-%d — impact order|r",
-        bracket.levelMin, bracket.levelMax))
+
     local slots = {}
     for _, slot in ipairs(bracket.slots) do slots[#slots + 1] = slot end
     table.sort(slots, function(a, b) return (a.order or 99) < (b.order or 99) end)
+
+    local green, total = 0, 0
     for _, slot in ipairs(slots) do
+        total = total + 1
+        if IsBisSlotDone(slot) then green = green + 1 end
+    end
+
+    local nextUp = P1DG.GetNextBisUpgrade and P1DG.GetNextBisUpgrade(playerLevel)
+    if nextUp then
+        local name = nextUp.itemName or nextUp.suggest or nextUp.key
+        AddLine(lines, string.format("  |cffffcc00NEXT UPGRADE|r → %s (%s)",
+            name, nextUp.key),
+            nextUp.waypoint and { type = "waypoint", waypoint = nextUp.waypoint, label = name } or nil)
+        if nextUp.waypoint then
+            AddLine(lines, "  |cff666666(click line → TomTom)|r")
+        end
+    end
+    AddLine(lines, string.format("  |cff666666Lvl %d-%d — %d/%d slots|r",
+        bracket.levelMin, bracket.levelMax, green, total))
+
+    for _, slot in ipairs(slots) do
+        local done = IsBisSlotDone(slot)
+        local mark = done and "|cff00ff00✓|r" or "|cffff4444✗|r"
         local equipped = GetEquippedIlvl(slot.equipSlot)
         local color = BisStatusColor(equipped, slot.minIlvl, slot)
         local ilvlTag = slot.equipSlot and string.format(" (eq %d)", equipped) or ""
+        local priceTag = PriceTierTag(slot.priceTier)
         local nameTag = slot.itemName and (" — " .. slot.itemName) or ""
-        table.insert(lines, string.format("  %s%s:|r %s%s%s |cff666666[%s]|r",
-            color, slot.key, slot.suggest, nameTag, ilvlTag, slot.source or ""))
+        AddLine(lines, string.format("  %s %s%s:|r %s%s%s %s",
+            mark, color, slot.key, slot.suggest, nameTag, ilvlTag, priceTag),
+            (not done and slot.waypoint) and { type = "waypoint", waypoint = slot.waypoint, label = slot.itemName or slot.key } or nil)
+        if slot.why then
+            AddLine(lines, "    |cff888888" .. slot.why .. "|r")
+        end
+        if slot.flavor then
+            AddLine(lines, "    |cffccaa00" .. slot.flavor .. "|r")
+        end
+        if slot.alt and not done then
+            AddLine(lines, "    |cff666666Alt: " .. slot.alt .. "|r")
+        end
     end
 end
 
@@ -401,20 +596,22 @@ local function BuildBody()
     if not bodyText then return end
     local lvl = UnitLevel("player")
     DB.collapsed = DB.collapsed or {}
+    clickTargets = {}
     local lines = {}
     for _, key in ipairs(SECTIONS) do
         if key == "tips" and not tipsVisible then
             -- skip section header when tips toggled off via /p1tips
         else
             local collapsed = DB.collapsed[key]
-            table.insert(lines, (collapsed and "[+]" or "[-]") .. " |cff00ccff" .. SECTION_LABELS[key] .. "|r")
+            AddLine(lines, (collapsed and "[+]" or "[-]") .. " |cff00ccff" .. SECTION_LABELS[key] .. "|r")
             if not collapsed then
-                if key == "next" then BuildNextLines(lines)
+                if key == "path" then BuildPathLines(lvl, lines)
+                elseif key == "next" then BuildNextLines(lvl, lines)
                 elseif key == "tips" then BuildTipsLines(lvl, lines)
                 elseif key == "mats" then BuildMatsLines(lvl, lines)
                 elseif key == "gather" then BuildGatherLines(lvl, lines)
                 elseif key == "bis" then BuildBisLines(lvl, lines) end
-                table.insert(lines, "")
+                AddLine(lines, "")
             end
         end
     end
@@ -427,12 +624,41 @@ local function ToggleSection(key)
     BuildBody()
 end
 
+local function HandleBodyClick(key, idx)
+    if key == "next" and idx then
+        local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
+        if #entries == 0 then
+            local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
+            entries = st and st.tracked or {}
+        end
+        local e = entries[idx]
+        if e and P1QuestNav_API and P1QuestNav_API.SetWaypoint then
+            P1QuestNav_API.SetWaypoint(e)
+            print("|cff00ccffP1 Guide|r TomTom → " .. (e.questName or "?"))
+        end
+        return
+    end
+    if key then ToggleSection(key) end
+end
+
+local function HandleClickTarget(target)
+    if not target then return end
+    if target.type == "quest" then
+        HandleBodyClick("next", target.index)
+    elseif target.type == "waypoint" then
+        SetGuideWaypoint(target.waypoint, target.label)
+    end
+end
+
 local function ClickTargetFromBody(y)
     if not bodyText then return nil, nil end
     local text = bodyText:GetText() or ""
     local lineH = 11
     local top = bodyText:GetTop()
     local lineNum = math.floor((top - y) / lineH) + 1
+    if clickTargets[lineNum] then
+        return "click", clickTargets[lineNum]
+    end
     local current = 0
     for line in text:gmatch("[^\n]+") do
         current = current + 1
@@ -446,6 +672,17 @@ local function ClickTargetFromBody(y)
         end
     end
     return nil, nil
+end
+
+local function SetupDragRegion(frame)
+    frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", function() panel:StartMoving() end)
+    frame:SetScript("OnDragStop", function()
+        panel:StopMovingOrSizing()
+        local p, _, rp, x, y = panel:GetPoint()
+        DB.point, DB.relPoint, DB.x, DB.y = p, rp, x, y
+    end)
 end
 
 local function BuildUI()
@@ -462,6 +699,7 @@ local function BuildUI()
     panel:SetBackdropColor(0.04, 0.04, 0.06, 0.82)
     panel:SetBackdropBorderColor(0.25, 0.5, 0.7, 0.75)
     panel:SetClampedToScreen(true)
+    panel:SetMovable(true)
     panel:SetResizable(true)
     panel:SetMinResize(220, 140)
     panel:SetMaxResize(420, 480)
@@ -470,50 +708,119 @@ local function BuildUI()
     titleBar:SetPoint("TOPLEFT", panel, "TOPLEFT", 4, -4)
     titleBar:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -4, -4)
     titleBar:SetHeight(18)
-    titleBar:EnableMouse(true)
-    titleBar:RegisterForDrag("LeftButton")
-    titleBar:SetScript("OnDragStart", function() panel:StartMoving() end)
-    titleBar:SetScript("OnDragStop", function()
+    titleBar:SetFrameLevel(panel:GetFrameLevel() + 5)
+    SetupDragRegion(titleBar)
+
+    local titleLabel = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    titleLabel:SetPoint("LEFT", titleBar, "LEFT", 4, 0)
+    titleLabel:SetText("|cff00ccffDRUID GUIDE|r |cff666666(drag title)|r")
+
+    minimizeBtn = CreateFrame("Button", nil, titleBar)
+    minimizeBtn:SetSize(16, 16)
+    minimizeBtn:SetPoint("TOPRIGHT", titleBar, "TOPRIGHT", -2, -1)
+    minimizeBtn:SetFrameLevel(titleBar:GetFrameLevel() + 2)
+    minimizeBtn:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+    minimizeBtn:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+    minimizeBtn:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+    minimizeBtn:SetScript("OnClick", function()
+        SetMinimized(not DB.minimized)
+    end)
+
+    iconBar = CreateFrame("Frame", nil, panel)
+    iconBar:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -38)
+    iconBar:SetSize(200, 36)
+    for i = 1, 4 do
+        local f = CreateFrame("Button", nil, iconBar)
+        f:SetSize(32, 32)
+        f:SetPoint("LEFT", iconBar, "LEFT", (i - 1) * 36, 0)
+        f.border = f:CreateTexture(nil, "OVERLAY")
+        f.border:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+        f.border:SetBlendMode("ADD")
+        f.border:SetPoint("CENTER", f, "CENTER", 0, 0)
+        f.border:SetSize(42, 42)
+        f.border:SetAlpha(0.5)
+        f.tex = f:CreateTexture(nil, "ARTWORK")
+        f.tex:SetPoint("TOPLEFT", f, "TOPLEFT", 2, -2)
+        f.tex:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -2, 2)
+        f.label = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        f.label:SetPoint("BOTTOM", f, "BOTTOM", 0, -2)
+        f.label:SetTextColor(1, 0.85, 0.3)
+        f:SetScript("OnEnter", function(self)
+            local data = self.iconData
+            if not data or not data.itemId then return end
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetHyperlink("item:" .. data.itemId .. ":0:0:0:0:0:0:0")
+            if data.why then GameTooltip:AddLine(data.why, 0.7, 0.7, 0.7, true) end
+            if data.flavor then GameTooltip:AddLine(data.flavor, 0.8, 0.67, 0.0, true) end
+            if data.source then GameTooltip:AddLine(data.source, 0.5, 0.8, 0.5) end
+            if data.waypoint then GameTooltip:AddLine("Click: TomTom waypoint", 0.5, 1, 0.5) end
+            GameTooltip:Show()
+        end)
+        f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        f:SetScript("OnClick", function(self)
+            local data = self.iconData
+            if data and data.waypoint then
+                SetGuideWaypoint(data.waypoint, data.label)
+            end
+        end)
+        iconFrames[i] = f
+        f:Hide()
+    end
+
+    headerText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    headerText:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -22)
+    headerText:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -28, -22)
+    headerText:SetJustifyH("LEFT")
+    headerText:SetWordWrap(true)
+
+    headerBtn = CreateFrame("Button", nil, panel)
+    headerBtn:SetPoint("TOPLEFT", headerText, "TOPLEFT", -2, 2)
+    headerBtn:SetPoint("BOTTOMRIGHT", headerText, "BOTTOMRIGHT", 2, -2)
+    headerBtn:SetFrameLevel(panel:GetFrameLevel() + 4)
+    headerBtn:SetScript("OnClick", function() NavigateToPrimary() end)
+    headerBtn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Click [GO] — TomTom arrow to top quest", 1, 1, 1)
+        GameTooltip:AddLine("Minimap dots + mob glow guide the way", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine("No auto-walk — you steer, we point", 0.6, 0.8, 1)
+        GameTooltip:Show()
+    end)
+    headerBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    local headerDrag = CreateFrame("Frame", nil, panel)
+    headerDrag:SetPoint("TOPLEFT", headerText, "TOPLEFT", 0, 0)
+    headerDrag:SetPoint("BOTTOMRIGHT", headerText, "BOTTOMRIGHT", 0, 0)
+    headerDrag:SetFrameLevel(panel:GetFrameLevel() + 3)
+    headerDrag:EnableMouse(true)
+    headerDrag:RegisterForDrag("RightButton")
+    headerDrag:SetScript("OnDragStart", function() panel:StartMoving() end)
+    headerDrag:SetScript("OnDragStop", function()
         panel:StopMovingOrSizing()
         local p, _, rp, x, y = panel:GetPoint()
         DB.point, DB.relPoint, DB.x, DB.y = p, rp, x, y
     end)
 
-    headerText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    headerText:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -22)
-    headerText:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -8, -22)
-    headerText:SetJustifyH("LEFT")
-    headerText:SetWordWrap(true)
-
     bodyText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     bodyText:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
-    bodyText:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -40)
+    bodyText:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -76)
     bodyText:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -10, 10)
     bodyText:SetJustifyH("LEFT")
     bodyText:SetWordWrap(true)
 
-    local clickCatcher = CreateFrame("Button", nil, panel)
+    clickCatcher = CreateFrame("Button", nil, panel)
     clickCatcher:SetPoint("TOPLEFT", bodyText, "TOPLEFT", 0, 0)
     clickCatcher:SetPoint("BOTTOMRIGHT", bodyText, "BOTTOMRIGHT", 0, 0)
+    clickCatcher:SetFrameLevel(panel:GetFrameLevel() + 2)
     clickCatcher:SetScript("OnClick", function(_, button)
         if button ~= "LeftButton" then return end
         local _, cy = GetCursorPosition()
         local scale = panel:GetEffectiveScale()
         local key, idx = ClickTargetFromBody(cy / scale)
-        if key == "next" and idx then
-            local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
-            if #entries == 0 then
-                local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
-                entries = st and st.tracked or {}
-            end
-            local e = entries[idx]
-            if e and P1QuestNav_API and P1QuestNav_API.SetWaypoint then
-                P1QuestNav_API.SetWaypoint(e)
-                print("|cff00ccffP1 Guide|r TomTom → " .. (e.questName or "?"))
-            end
+        if key == "click" then
+            HandleClickTarget(idx)
             return
         end
-        if key then ToggleSection(key) end
+        HandleBodyClick(key, idx)
     end)
 
     resizeGrip = CreateFrame("Frame", nil, panel)
@@ -534,12 +841,22 @@ end
 function P1DruidGuide_Refresh()
     if not panel or not guideVisible then return end
     if headerText then headerText:SetText(BuildHeaderLine()) end
-    BuildBody()
+    if not DB.minimized then
+        BuildBody()
+        RefreshIconBar()
+        MaybeAutoWaypoint()
+    end
 end
 
 function P1DruidGuide_SetTipsVisible(show)
     tipsVisible = show and true or false
     SyncLoaderTips(tipsVisible)
+    P1DruidGuide_Refresh()
+end
+
+function P1DruidGuide_SetPathCollapsed(collapsed)
+    DB.collapsed = DB.collapsed or {}
+    DB.collapsed.path = not not collapsed
     P1DruidGuide_Refresh()
 end
 
@@ -550,6 +867,14 @@ function P1DruidGuide_SetVisible(show)
     if guideVisible then panel:Show() else panel:Hide() end
     P1DruidGuide_Refresh()
     if P1QuestNav_Refresh then P1QuestNav_Refresh(true) end
+end
+
+function P1DruidGuide_SetAutoWaypoint(on)
+    DB.autoWaypoint = on and true or false
+    if DB.autoWaypoint then
+        lastAutoQuestKey = nil
+        MaybeAutoWaypoint()
+    end
 end
 
 function P1DruidGuide_ResetLayout()
@@ -570,12 +895,22 @@ function P1DruidGuide_SetScale(s)
 end
 
 P1AdventureGuide_SetVisible = P1DruidGuide_SetVisible
+P1AdventureGuide_SetPathCollapsed = P1DruidGuide_SetPathCollapsed
 
 local function HandleGuideSlash(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
     if msg == "on" then P1DruidGuide_SetVisible(true)
     elseif msg == "off" then P1DruidGuide_SetVisible(false)
     elseif msg == "reset" then P1DruidGuide_ResetLayout()
+    elseif msg == "min" or msg == "minimize" then SetMinimized(true)
+    elseif msg == "max" or msg == "restore" then SetMinimized(false)
+    elseif msg == "go" then NavigateToPrimary()
+    elseif msg == "autogo on" then
+        P1DruidGuide_SetAutoWaypoint(true)
+        print("|cff00ccffP1 Guide|r autogo |cff00ff00ON|r — top quest auto-sets TomTom")
+    elseif msg == "autogo off" then
+        P1DruidGuide_SetAutoWaypoint(false)
+        print("|cff00ccffP1 Guide|r autogo |cffaaaaaaOFF|r")
     elseif msg:match("^scale ") then
         local s = tonumber(msg:match("^scale%s+(.+)$"))
         if s then P1DruidGuide_SetScale(s) end
@@ -621,6 +956,7 @@ init:SetScript("OnEvent", function(_, event)
         tipsVisible = ReadTipsVisible()
         SyncLoaderTips(tipsVisible)
         P1DruidGuide_SetVisible(guideVisible)
+        if DB.minimized then SetMinimized(true) end
     else
         P1DruidGuide_Refresh()
     end
