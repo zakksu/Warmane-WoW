@@ -34,6 +34,18 @@ if ($wowPath) {
         & (Join-Path $PSScriptRoot 'sync-addons.ps1') -WowPath $wowPath -Pack DRUID
         & (Join-Path $PSScriptRoot 'cleanup-wow-addons.ps1') -WowPath $wowPath
         & (Join-Path $PSScriptRoot 'write-addons-txt.ps1') -WowPath $wowPath
+        $autoTest = Join-Path $PSScriptRoot 'automation\run-autonomous.ps1'
+        if (Test-Path $autoTest) {
+            Write-HandoffLog 'Running autonomous in-game harness (skip sync)'
+            try {
+                & $autoTest -SkipSync -Suite smoke -MaxCycles 2
+                if ($LASTEXITCODE -ne 0) {
+                    Write-HandoffLog 'WARN: autonomous harness failed — see tools/automation/reports/harness-latest.json'
+                }
+            } catch {
+                Write-HandoffLog "WARN: autonomous harness: $($_.Exception.Message)"
+            }
+        }
     }
 } else {
     Write-HandoffLog 'WARN: tools/wow-path.cfg missing  - skipped addon sync'

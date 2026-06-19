@@ -1,0 +1,457 @@
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a .
+
+... (output truncated) ...
+
+e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.CommandLine : O termo '.CommandLine' nao � reconhecido como nome de cmdlet, fun�ao, arquivo de script ou programa 
+oper�vel. Verifique a grafia do nome ou, se um caminho tiver sido inclu�do, veja se o caminho est� correto e tente 
+novamente.
+No linha:1 caractere:48
++ Get-CimInstance Win32_Process | Where-Object { .CommandLine -match 'a ...
++                                                ~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.CommandLine:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

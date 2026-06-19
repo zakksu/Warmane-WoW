@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v2.0.4** (Jun 19, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v2.1.0** (Jun 19, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, embedded waypoint arrow, Auctionator AH search, and **P1 Druid Guide v2** — SHOP + fused NEXT coach overlay. **No class HUD, range HUD, damage numbers, Leatrix, WeakAuras, or TomTom** in the default install.
 

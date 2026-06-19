@@ -16,6 +16,22 @@ function Get-P1DruidGuideSavedVarsPath {
     return $files[0].FullName
 }
 
+function Wait-P1HarnessSavedVars {
+    param(
+        [int]$TimeoutSec = 30,
+        [int]$MinPass = 0
+    )
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        $sv = Read-P1HarnessSavedVars
+        if ($sv.lastTestPass -ne $null -and $sv.lastTestTotal -ne $null) {
+            if ($MinPass -le 0 -or $sv.lastTestPass -ge $MinPass) { return $sv }
+        }
+        Start-Sleep -Milliseconds 800
+    }
+    return Read-P1HarnessSavedVars
+}
+
 function Read-P1HarnessSavedVars {
     $path = Get-P1DruidGuideSavedVarsPath
     if (-not $path -or -not (Test-Path $path)) {
@@ -26,6 +42,7 @@ function Read-P1HarnessSavedVars {
             lastTestTotal = $null
             lastTestAt = $null
             devLogCount = 0
+            harnessLogCount = 0
         }
     }
     $text = Get-Content -Path $path -Raw -Encoding UTF8
@@ -36,6 +53,7 @@ function Read-P1HarnessSavedVars {
     if ($text -match '\["lastTestTotal"\]\s*=\s*(\d+)') { $total = [int]$Matches[1] }
     if ($text -match '\["lastTestAt"\]\s*=\s*([\d.]+)') { $at = [double]$Matches[1] }
     $devCount = ([regex]::Matches($text, '\["devLog"\]')).Count
+    $harnessCount = ([regex]::Matches($text, '\["harnessLog"\]')).Count
     return @{
         path = $path
         exists = $true
@@ -43,7 +61,54 @@ function Read-P1HarnessSavedVars {
         lastTestTotal = $total
         lastTestAt = $at
         devLogCount = $devCount
+        harnessLogCount = $harnessCount
     }
+}
+
+function Read-P1HarnessLog {
+    param([int]$LastN = 100)
+    $path = Get-P1DruidGuideSavedVarsPath
+    if (-not $path -or -not (Test-Path $path)) { return @() }
+    $text = Get-Content -Path $path -Raw -Encoding UTF8
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($m in [regex]::Matches($text, '\["line"\]\s*=\s*"([^"]*)"')) {
+        $val = $m.Groups[1].Value
+        if ($val -match '\[P1TEST\]') {
+            $lines.Add($val) | Out-Null
+        }
+    }
+    if ($lines.Count -eq 0) {
+        foreach ($m in [regex]::Matches($text, '\["msg"\]\s*=\s*"([^"]*)"')) {
+            $val = $m.Groups[1].Value
+            if ($val -match 'summary|PASS|FAIL|addon:') {
+                $lines.Add("[P1TEST] SV $val") | Out-Null
+            }
+        }
+    }
+    if ($lines.Count -le $LastN) { return @($lines) }
+    return @($lines | Select-Object -Last $LastN)
+}
+
+function Get-P1TestLines {
+    param(
+        [int]$Lines = 150,
+        [switch]$PreferSavedVars
+    )
+    $chat = @(Get-P1TestLinesFromChat -Lines $Lines)
+    $sv = @(Read-P1HarnessLog -LastN $Lines)
+    if ($PreferSavedVars -and $sv.Count -gt 0) { return $sv }
+    if ($chat.Count -gt 0) { return $chat }
+    return $sv
+}
+
+function Get-CombinedChatTail {
+    param([int]$Lines = 150)
+    $chat = @(Get-ChatLogTail -Lines $Lines)
+    if ($chat.Count -gt 0) { return $chat }
+    if ($script:WowOcrChatLines -and $script:WowOcrChatLines.Count -gt 0) {
+        return @($script:WowOcrChatLines | Select-Object -Last $Lines)
+    }
+    return @(Read-P1HarnessLog -LastN $Lines)
 }
 
 function Get-P1AddonsTxtStatus {
@@ -72,21 +137,28 @@ function New-HarnessRecommendations {
     if ($Report.addonsTxt) {
         foreach ($key in $Report.addonsTxt.Keys) {
             if ([int]$Report.addonsTxt[$key] -eq 0) {
-                $tips.Add("P1DruidGuide is OFF in $key - log out to character select and enable it") | Out-Null
+                $tips.Add("P1DruidGuide OFF in $key - write-addons-txt failed or WoW overwrote AddOns.txt on exit") | Out-Null
             }
         }
     }
     if ($Report.frameXml.errors.Count -gt 0) {
-        $tips.Add("FrameXML shows P1 load errors - run PLAY.bat then /reload (or relog)") | Out-Null
+        $tips.Add("FrameXML P1 load errors - fix Lua syntax in repo, re-run run-autonomous.ps1") | Out-Null
     }
     if (-not $Report.chatLog.exists) {
-        $tips.Add("WoWChatLog.txt missing - run /chatlog in game once while logged in") | Out-Null
+        if ($Report.harnessLog -and $Report.harnessLog.count -gt 0) {
+            $tips.Add("WoWChatLog.txt missing - using P1DruidGuideDB.harnessLog from SavedVariables") | Out-Null
+        } else {
+            $tips.Add("WoWChatLog.txt missing - enable /chatlog or rely on harnessLog in SavedVariables") | Out-Null
+        }
     }
     if ($Report.savedVars.exists -and $null -eq $Report.savedVars.lastTestPass) {
-        $tips.Add("No lastTestPass in SavedVariables - TestHarness did not run (/p1test run)") | Out-Null
+        $tips.Add("TestHarness never ran - P1DruidGuide likely not loaded (check FrameXML + AddOns.txt)") | Out-Null
+    }
+    if ($Report.error) {
+        $tips.Add("Automation exception: $($Report.error)") | Out-Null
     }
     if ($tips.Count -eq 0 -and -not $Report.success) {
-        $tips.Add("Use windowed mode, druid toon, then /p1test run manually and check chat") | Out-Null
+        $tips.Add("Check harness-latest.json screenshots and step p1testLines for failing assertion") | Out-Null
     }
     return $tips
 }

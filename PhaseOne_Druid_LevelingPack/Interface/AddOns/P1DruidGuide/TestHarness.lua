@@ -11,6 +11,14 @@ local function EnsureDevLog()
     return P1DruidGuideDB.devLog
 end
 
+local function MirrorHarnessLog(level, msg)
+    P1DruidGuideDB = P1DruidGuideDB or {}
+    P1DruidGuideDB.harnessLog = P1DruidGuideDB.harnessLog or {}
+    local line = string.format("%s %s %s", LOG_PREFIX, string.upper(level or "INFO"), msg or "")
+    P1DruidGuideDB.harnessLog[#P1DruidGuideDB.harnessLog + 1] = { t = GetTime(), line = line }
+    while #P1DruidGuideDB.harnessLog > 100 do table.remove(P1DruidGuideDB.harnessLog, 1) end
+end
+
 function P1DG.DevLog(level, msg)
     level = string.upper(level or "INFO")
     local line = string.format("%s %s %s", LOG_PREFIX, level, msg or "")
@@ -26,6 +34,7 @@ function P1DG.DevLog(level, msg)
     else
         print("|cff888888" .. line .. "|r")
     end
+    MirrorHarnessLog(level, msg)
     return line
 end
 
@@ -53,6 +62,9 @@ function P1DG.RunModuleTests()
     check("fn:PrintCharacterScan", P1DG.PrintCharacterScan ~= nil)
     check("fn:SearchAuctionItem", P1DG.SearchAuctionItem ~= nil)
     check("fn:PrintAhDiagnostics", P1DG.PrintAhDiagnostics ~= nil)
+    check("fn:GetRealmPrice", P1DG.GetRealmPrice ~= nil)
+    check("fn:ScanBrowseList", P1DG.ScanBrowseList ~= nil)
+    check("fn:BuildRelistSuggestions", P1DG.BuildRelistSuggestions ~= nil)
     check("fn:BuildShopList", P1DG.BuildShopList ~= nil)
     check("fn:RankNextActions", P1DG.RankNextActions ~= nil)
     check("fn:RecordScan", P1DG.RecordScan ~= nil)
@@ -110,6 +122,13 @@ function P1DG.RunAhTests()
     if P1DG.BuildShopList then
         local shop = P1DG.BuildShopList(UnitLevel("player"), 3)
         check("ah:shop_list", type(shop) == "table")
+    end
+    if P1DG.GetRealmKey then
+        check("ah:realm_key", P1DG.GetRealmKey() ~= "")
+    end
+    if P1DG.BuildRelistSuggestions then
+        local relist = P1DG.BuildRelistSuggestions(3)
+        check("ah:relist_table", type(relist) == "table")
     end
     return pass, total
 end

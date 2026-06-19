@@ -36,3 +36,89 @@ Follow AGENTS.md and Docs/AUTONOMOUS_LOOP.md. Do not ask the user.
 [2026-06-19 00:29:51] Starting ship cycle
 [2026-06-19 00:29:51] Ship cycle starting
 [2026-06-19 00:29:51] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow
+[2026-06-19 00:29:51] Committed handoff changes
+[2026-06-19 00:29:52] ERROR loop step: You are not logged into any GitHub hosts. To log in, run: gh auth login
+[2026-06-19 00:32:02] Ship cycle starting
+[2026-06-19 00:32:02] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow
+[2026-06-19 00:32:02] STATE -> SHIPPED
+[2026-06-19 00:32:02] Ship cycle complete
+[2026-06-19 00:33:06] Agent loop started (poll=45s, once=False, dryRun=False)
+[2026-06-19 00:33:06] Repo: C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 00:33:06] STATE -> GROK_PENDING
+[2026-06-19 00:33:51] Starting Grok cycle
+[2026-06-19 00:33:51] STATE -> GROK_WORKING
+[2026-06-19 00:33:51] STATE -> GROK_WORKING
+[2026-06-19 00:36:46] STATE -> GROK_FAILED
+[2026-06-19 00:36:46] WARN Grok attempt 1/3 failed: grok exited 1
+[2026-06-19 00:36:46] Backoff 60s before retry...
+[2026-06-19 00:37:46] STATE -> GROK_WORKING
+[2026-06-19 00:40:41] STATE -> GROK_FAILED
+[2026-06-19 00:40:41] WARN Grok attempt 2/3 failed: grok exited 1
+[2026-06-19 00:40:41] Backoff 120s before retry...
+[2026-06-19 00:42:41] STATE -> GROK_WORKING
+[2026-06-19 00:45:13] STATE -> GROK_FAILED
+[2026-06-19 00:45:13] WARN Grok attempt 3/3 failed: grok exited 1
+[2026-06-19 00:45:13] STATE -> GROK_FAILED
+[2026-06-19 00:46:43] STATE -> GROK_PENDING
+[2026-06-19 00:47:28] Starting Grok cycle
+[2026-06-19 00:47:28] STATE -> GROK_WORKING
+[2026-06-19 00:47:28] STATE -> GROK_WORKING
+[2026-06-19 00:50:00] STATE -> GROK_FAILED
+[2026-06-19 00:50:00] WARN Grok attempt 1/3 failed: grok exited 1
+[2026-06-19 00:50:00] Backoff 60s before retry...
+[2026-06-19 00:51:00] STATE -> GROK_WORKING
+[2026-06-19 00:52:48] STATE -> GROK_FAILED
+[2026-06-19 00:52:48] WARN Grok attempt 2/3 failed: grok exited 1
+[2026-06-19 00:52:48] Backoff 120s before retry...
+[2026-06-19 00:54:48] STATE -> GROK_WORKING
+[2026-06-19 00:57:11] STATE -> GROK_FAILED
+[2026-06-19 00:57:11] WARN Grok attempt 3/3 failed: grok exited 1
+[2026-06-19 00:57:11] STATE -> GROK_FAILED
+[2026-06-19 00:58:41] STATE -> GROK_PENDING
+[2026-06-19 00:59:26] Starting Grok cycle
+[2026-06-19 00:59:26] STATE -> GROK_WORKING
+[2026-06-19 00:59:26] STATE -> GROK_WORKING
+[2026-06-19 01:01:46] STATE -> GROK_FAILED
+[2026-06-19 01:01:46] WARN Grok attempt 1/3 failed: grok exited 1
+[2026-06-19 01:01:46] Backoff 60s before retry...
+[2026-06-19 01:02:46] STATE -> GROK_WORKING
+[2026-06-19 01:04:22] STATE -> GROK_FAILED
+[2026-06-19 01:04:22] WARN Grok attempt 2/3 failed: grok exited 1
+[2026-06-19 01:04:22] Backoff 120s before retry...
+[2026-06-19 01:06:23] STATE -> GROK_WORKING
+[2026-06-19 01:09:01] STATE -> GROK_FAILED
+[2026-06-19 01:09:01] WARN Grok attempt 3/3 failed: grok exited 1
+[2026-06-19 01:09:01] STATE -> GROK_FAILED
+[2026-06-19 01:10:31] STATE -> GROK_PENDING
+[2026-06-19 01:11:16] Starting Grok cycle
+[2026-06-19 01:11:16] STATE -> GROK_WORKING
+[2026-06-19 01:11:16] STATE -> GROK_WORKING
+[2026-06-19 01:13:41] STATE -> GROK_FAILED
+[2026-06-19 01:13:41] WARN Grok attempt 1/3 failed: grok exited 1
+[2026-06-19 01:13:41] Backoff 60s before retry...
+[2026-06-19 01:14:41] STATE -> GROK_WORKING
+[2026-06-19 01:17:06] STATE -> GROK_FAILED
+[2026-06-19 01:17:06] WARN Grok attempt 2/3 failed: grok exited 1
+[2026-06-19 01:17:06] Backoff 120s before retry...
+[2026-06-19 01:19:06] STATE -> GROK_WORKING
+[2026-06-19 01:21:23] STATE -> GROK_DONE
+[2026-06-19 01:21:23] STATE -> GROK_DONE
+[2026-06-19 01:22:08] Starting Cursor cycle
+[2026-06-19 01:22:08] STATE -> CURSOR_PENDING
+[2026-06-19 01:22:08] Wrote CURSOR_WAKE.md (hook / IDE pickup)
+[2026-06-19 01:22:08] Trying: C:\Users\godin\AppData\Local\Programs\cursor\resources\app\bin\cursor.cmd agent --print --workspace C:\Users\godin\Documents\GitHub\Warmane WoW You are the Cursor agent on Warmane-WoW. Autonomous handoff cycle.
+
+Read Docs/grok-handoff/STATUS.md, grok-response.md, and CURSOR_TASKS.md.
+Set STATUS State to CURSOR_WORKING, implement every unchecked CURSOR_TASKS item,
+sync addons (tools/sync-addons.ps1 + tools/wow-path.cfg), commit when done,
+mark all CURSOR_TASKS [x], set STATUS to CURSOR_SHIPPED, queue next GROK_TASKS.md.
+Follow AGENTS.md and Docs/AUTONOMOUS_LOOP.md. Do not ask the user.
+[2026-06-19 01:22:10] Cursor CLI pattern failed: Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium.
+[2026-06-19 01:22:10] Trying: C:\Users\godin\AppData\Local\Programs\cursor\resources\app\bin\cursor.cmd --new-window C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 01:22:13] Cursor CLI invoked
+[2026-06-19 01:22:13] STATE -> CURSOR_WORKING
+[2026-06-19 01:25:30] Starting ship cycle
+[2026-06-19 01:25:30] Ship cycle starting
+[2026-06-19 01:25:30] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow
+[2026-06-19 01:25:30] Running autonomous in-game harness (skip sync)
+[2026-06-19 01:27:23] WARN: autonomous harness failed â€” see tools/automation/reports/harness-latest.json

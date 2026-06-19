@@ -1,0 +1,41 @@
+---
+pid: 19860
+cwd: "C:\Users\godin\Documents\GitHub\Warmane WoW"
+command: "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\godin\\Documents\\GitHub\\Warmane WoW\\tools\\automation\\run-autonomous.ps1\" -Suite smoke -MaxCycles 3 -SkipRelog"
+started_at: 2026-06-19T04:10:40.795Z
+running_for_ms: 565006   
+---
+========================================
+ P1 Autonomous Harness
+========================================
+P1 Lua static validation OK
+Syncing client ...
+Quest pack sync (DRUID) -> C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow\Interface\AddOns
+Synced: PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide, Questie-335, !Astrolabe, Auctionator
+No conflicting addons to disable.
+Updated 2 AddOns.txt files from manifest.
+Sync done.
+Ensuring WoW is running ...
+WoW ready: World of Warcraft
+
+Cycle 1 / 3
+FAIL cycle 1 - C:\Users\godin\Documents\GitHub\Warmane WoW\tools\automation\reports\harness-latest.json
+Re-syncing before retry ...
+Quest pack sync (DRUID) -> C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow\Interface\AddOns
+Synced: PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide, Questie-335, !Astrolabe, Auctionator
+No conflicting addons to disable.
+Updated 2 AddOns.txt files from manifest.
+
+Cycle 2 / 3
+FAIL cycle 2 - C:\Users\godin\Documents\GitHub\Warmane WoW\tools\automation\reports\harness-latest.json
+Re-syncing before retry ...
+Quest pack sync (DRUID) -> C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow\Interface\AddOns
+Synced: PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide, Questie-335, !Astrolabe, Auctionator
+No conflicting addons to disable.
+Updated 2 AddOns.txt files from manifest.
+
+Cycle 3 / 3
+FAIL cycle 3 - C:\Users\godin\Documents\GitHub\Warmane WoW\tools\automation\reports\harness-latest.json
+
+Autonomous harness failed after 3 cycles.
+Report: C:\Users\godin\Documents\GitHub\Warmane WoW\tools\automation\reports\harness-latest.json

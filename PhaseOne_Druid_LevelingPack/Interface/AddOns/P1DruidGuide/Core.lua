@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "2.0.4"
+local VERSION = "2.1.0"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -587,6 +587,17 @@ local function BuildShopLines(playerLevel, lines)
             i, Truncate(item.itemName or item.key or "?", 16), ilvlTag, priceTag, affordTag),
             item.itemId and { type = "auction", itemId = item.itemId } or nil)
     end
+    if P1DG.BuildRelistSuggestions then
+        local relist = P1DG.BuildRelistSuggestions(3)
+        if #relist > 0 then
+            AddLine(lines, "  |cff666666Relist hints (assist)|r")
+            for j, row in ipairs(relist) do
+                local sug = P1DG.FormatAhPrice and P1DG.FormatAhPrice(row.suggestPrice) or "?"
+                AddLine(lines, string.format("  R%d. %s — post ~%s",
+                    j, Truncate(row.name or "?", 14), sug))
+            end
+        end
+    end
 end
 
 local function BuildNextLines(playerLevel, lines)
@@ -1128,6 +1139,23 @@ local function HandleP1Ah(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
     if msg == "debug" or msg == "status" then
         if P1DG.PrintAhDiagnostics then P1DG.PrintAhDiagnostics() end
+        if P1DG.PrintMarketSummary then P1DG.PrintMarketSummary() end
+        return
+    end
+    if msg == "scan" then
+        local n = P1DG.ScanBrowseList and P1DG.ScanBrowseList() or 0
+        print(string.format("|cff00ccffP1 AH scan|r — %d listings on %s (assist-only)",
+            n, P1DG.GetRealmKey and P1DG.GetRealmKey() or "?"))
+        if P1DG.PrintMarketSummary then P1DG.PrintMarketSummary() end
+        return
+    end
+    if msg == "relist" then
+        if P1DG.PrintRelistSuggestions then P1DG.PrintRelistSuggestions() end
+        return
+    end
+    if msg == "watch" then
+        local q = P1DG.ScanShopWatchlist and P1DG.ScanShopWatchlist(5) or 0
+        print("|cff00ccffP1 AH watch|r — queued " .. q .. " SHOP searches (open AH)")
         return
     end
     local testId = tonumber(msg:match("^test%s+(%d+)$"))

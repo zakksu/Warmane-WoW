@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "2.0.4-druid"
+local PACK_VERSION = "2.1.0-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide v2.0|r — SHOP + fused NEXT · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v2.1|r — realm AH cache + relist assist · |cff00ff00/p1guide|r · |cff00ff00/p1ah scan|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -441,9 +441,9 @@ loader:SetScript("OnEvent", function()
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v2.0.2:|r PATH through 80 · TIPS Outland/Northrend · /p1scan")
-            print("|cff00ccffP1 v2.0.2:|r Click SHOP/NEXT [AH] lines → Auctionator search")
-            print("|cff00ccffP1 v2.0.2:|r /p1test run for self-test · /p1ah debug for AH bridge")
+            print("|cff00ccffP1 v2.1.0:|r Realm market DB (Icecrown prices) · assist-only scanner")
+            print("|cff00ccffP1 v2.1.0:|r /p1ah scan|relist|watch — suggestions only, no auto-buy")
+            print("|cff00ccffP1 v2.1.0:|r /p1test run · harnessLog in SavedVariables for agents")
         end)
     end
 

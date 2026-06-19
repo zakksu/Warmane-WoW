@@ -51,10 +51,148 @@ function Get-WowPath {
     throw "Missing tools/wow-path.cfg - run PLAY.bat once"
 }
 
+function Test-WowRunning {
+    return [bool](Get-Process -Name "Wow" -ErrorAction SilentlyContinue | Select-Object -First 1)
+}
+
 function Get-WowProcess {
     $proc = Get-Process -Name "Wow" -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $proc) { throw "Wow.exe not running - log in first" }
+    if (-not $proc) { throw "Wow.exe not running" }
     return $proc
+}
+
+function Get-WowWindowTitle {
+    try {
+        return (Get-WowProcess).MainWindowTitle
+    } catch {
+        return ""
+    }
+}
+
+function Send-WowKey {
+    param([uint16]$Vk)
+    Focus-WowWindow | Out-Null
+    [WowWin32]::KeyTap($Vk)
+}
+
+function Start-WowClient {
+    param([int]$WaitSec = 240)
+    if (Test-WowRunning) { return $true }
+    $wow = Get-WowPath
+    $exe = Join-Path $wow "Wow.exe"
+    if (-not (Test-Path $exe)) { throw "Wow.exe not found: $exe" }
+    Start-Process -FilePath $exe -WorkingDirectory $wow | Out-Null
+    $deadline = (Get-Date).AddSeconds($WaitSec)
+    while ((Get-Date) -lt $deadline) {
+        $proc = Get-Process -Name "Wow" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($proc -and $proc.MainWindowHandle -ne [IntPtr]::Zero) {
+            Start-Sleep -Seconds 3
+            return $true
+        }
+        Start-Sleep -Seconds 2
+    }
+    throw "WoW window not ready within ${WaitSec}s (log in at character select if needed)"
+}
+
+function Wait-FrameXmlUpdated {
+    param(
+        [int]$TimeoutSec = 45,
+        [long]$SinceLength = -1
+    )
+    $path = Get-FrameXmlLogPath
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        if (Test-Path $path) {
+            $len = (Get-Item $path).Length
+            if ($SinceLength -lt 0 -or $len -gt $SinceLength) { return $len }
+        }
+        Start-Sleep -Milliseconds 500
+    }
+    if (Test-Path $path) { return (Get-Item $path).Length }
+    return 0
+}
+
+function Wait-WowPlayerInWorld {
+    param([int]$TimeoutSec = 90)
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        Send-WowSlashCommand "/p1scan"
+        Start-Sleep -Milliseconds 1500
+        foreach ($line in (Get-CombinedChatTail -Lines 40)) {
+            if ($line -match 'P1 Scan') { return "ok" }
+            if ($line -match '\[P1TEST\]') { return "ok" }
+        }
+        $sv = Read-P1HarnessSavedVars
+        if ($sv.lastTestPass -ne $null -and $sv.lastTestTotal -ne $null) { return "ok" }
+        Start-Sleep -Seconds 2
+    }
+    return $null
+}
+
+function Invoke-WowRelogCycle {
+    param(
+        [int]$CampSec = 26,
+        [int]$LoadSec = 45,
+        [int]$ReloadSec = 14
+    )
+    Focus-WowWindow | Out-Null
+    Send-WowKey ([uint16]0x1B) | Out-Null  # Escape - close dialogs
+    Start-Sleep -Milliseconds 300
+    Send-WowKey ([uint16]0x1B) | Out-Null
+    Start-Sleep -Milliseconds 300
+
+    $xmlBefore = Wait-FrameXmlUpdated -TimeoutSec 2
+    Send-WowSlashCommand "/camp"
+    Start-Sleep -Seconds $CampSec
+
+    Focus-WowWindow | Out-Null
+    Send-WowKey ([uint16]0x0D) | Out-Null  # Enter - enter world from character select
+    Enable-WowChatLog
+    $toon = Wait-WowPlayerInWorld -TimeoutSec $LoadSec
+    if (-not $toon) {
+        Start-Sleep -Seconds 8
+    }
+
+    $xmlMid = Wait-FrameXmlUpdated -TimeoutSec 5 -SinceLength $xmlBefore
+    Send-WowSlashCommand "/reload"
+    Start-Sleep -Seconds $ReloadSec
+    Wait-FrameXmlUpdated -TimeoutSec 25 -SinceLength $xmlMid | Out-Null
+    $null = Wait-WowPlayerInWorld -TimeoutSec 40
+}
+
+function Enable-WowChatLogConfig {
+    $wow = Get-WowPath
+    $files = New-Object System.Collections.Generic.List[string]
+    $cfg = Join-Path $wow "WTF\Config.wtf"
+    if (Test-Path $cfg) { [void]$files.Add($cfg) }
+    $acct = Join-Path $wow "WTF\Account"
+    if (Test-Path $acct) {
+        Get-ChildItem -Path $acct -Recurse -Filter "config-cache.wtf" -ErrorAction SilentlyContinue |
+            ForEach-Object { [void]$files.Add($_.FullName) }
+    }
+    foreach ($file in $files) {
+        $lines = @(Get-Content $file -Encoding UTF8)
+        $has = $false
+        $out = New-Object System.Collections.Generic.List[string]
+        foreach ($line in $lines) {
+            if ($line -match '^SET chatLog ') {
+                $out.Add('SET chatLog "1"') | Out-Null
+                $has = $true
+            } else {
+                $out.Add($line) | Out-Null
+            }
+        }
+        if (-not $has) { $out.Add('SET chatLog "1"') | Out-Null }
+        Set-Content -Path $file -Value $out -Encoding ASCII
+    }
+}
+
+function Enable-WowChatLog {
+    Enable-WowChatLogConfig
+    $logDir = Join-Path (Get-WowPath) "Logs"
+    if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+    Send-WowSlashCommand "/chatlog"
+    Start-Sleep -Milliseconds 500
 }
 
 function Focus-WowWindow {
@@ -70,29 +208,49 @@ function Focus-WowWindow {
     return $hwnd
 }
 
+function Escape-SendKeysChar {
+    param([char]$Ch)
+    $special = '+^%~{}()[]'
+    if ($special.IndexOf($Ch) -ge 0) {
+        return '{' + $Ch + '}'
+    }
+    return [string]$Ch
+}
+
 function Send-WowKeys {
     param([string]$Text)
     Add-Type -AssemblyName System.Windows.Forms
-    foreach ($ch in $Text.ToCharArray()) {
-        [System.Windows.Forms.SendKeys]::SendWait([string]$ch)
-        Start-Sleep -Milliseconds 12
+    $escaped = -join ($Text.ToCharArray() | ForEach-Object { Escape-SendKeysChar $_ })
+    [System.Windows.Forms.SendKeys]::SendWait($escaped)
+}
+
+function Dismiss-WowUI {
+    param([int]$EscapeCount = 4)
+    Focus-WowWindow | Out-Null
+    for ($i = 0; $i -lt $EscapeCount; $i++) {
+        [WowWin32]::KeyTap(0x1B)
+        Start-Sleep -Milliseconds 180
     }
 }
 
 function Send-WowSlashCommand {
     param(
         [string]$Command,
-        [int]$PreDelayMs = 250
+        [int]$PreDelayMs = 250,
+        [switch]$NoDismiss
     )
     if (-not $Command.StartsWith("/")) { $Command = "/" + $Command }
     Focus-WowWindow | Out-Null
+    if (-not $NoDismiss) { Dismiss-WowUI -EscapeCount 3 }
     Start-Sleep -Milliseconds $PreDelayMs
-    [WowWin32]::KeyTap(0x0D) # Enter — open chat
-    Start-Sleep -Milliseconds 120
-    Send-WowKeys $Command
-    Start-Sleep -Milliseconds 80
-    [WowWin32]::KeyTap(0x0D) # Enter — execute
-    Start-Sleep -Milliseconds 80
+    Set-Clipboard -Value $Command
+    Add-Type -AssemblyName System.Windows.Forms
+    [WowWin32]::KeyTap(0x0D)
+    Start-Sleep -Milliseconds 280
+    [System.Windows.Forms.SendKeys]::SendWait("^v")
+    Start-Sleep -Milliseconds 160
+    [WowWin32]::KeyTap(0x0D)
+    Start-Sleep -Milliseconds 160
 }
 
 function Click-WowScreen {
@@ -106,11 +264,6 @@ function Get-WowChatLogPath {
     $wow = Get-WowPath
     $path = Join-Path $wow "Logs\WoWChatLog.txt"
     return $path
-}
-
-function Enable-WowChatLog {
-    Send-WowSlashCommand "/chatlog"
-    Start-Sleep -Milliseconds 400
 }
 
 function Get-ChatLogTail {
@@ -162,10 +315,31 @@ function Get-FrameXmlTail {
     return @(Get-Content -Path $path -Tail $Lines -Encoding UTF8 -ErrorAction SilentlyContinue)
 }
 
-function Get-P1FrameErrors {
-    param([int]$TailLines = 200)
+function Get-FrameXmlOffset {
+    $path = Get-FrameXmlLogPath
+    if (-not (Test-Path $path)) { return 0 }
+    return [long](Get-Item $path).Length
+}
+
+function Get-P1FrameErrorsSince {
+    param([long]$Offset = 0)
+    $path = Get-FrameXmlLogPath
+    if (-not (Test-Path $path)) { return @() }
+    $len = (Get-Item $path).Length
+    if ($len -le $Offset) { return @() }
+    $fs = [System.IO.File]::Open($path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    try {
+        $null = $fs.Seek($Offset, [System.IO.SeekOrigin]::Begin)
+        $buf = New-Object byte[] ($len - $Offset)
+        $read = $fs.Read($buf, 0, $buf.Length)
+        $text = [System.Text.Encoding]::UTF8.GetString($buf, 0, $read)
+    } finally {
+        $fs.Close()
+    }
     $errors = New-Object System.Collections.Generic.List[string]
-    foreach ($line in (Get-FrameXmlTail -Lines $TailLines)) {
+    foreach ($line in ($text -split "`n")) {
+        $line = $line.TrimEnd("`r")
+        if (-not $line) { continue }
         if ($line -match 'Error loading Interface\\AddOns\\P1') {
             $errors.Add($line) | Out-Null
             continue
@@ -175,6 +349,11 @@ function Get-P1FrameErrors {
         }
     }
     return $errors
+}
+
+function Get-P1FrameErrors {
+    param([int]$TailLines = 120)
+    return @(Get-P1FrameErrorsSince -Offset 0) | Select-Object -Last 20
 }
 
 function Capture-WowWindow {

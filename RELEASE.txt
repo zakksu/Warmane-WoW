@@ -1,6 +1,17 @@
-Phase One Warmane Leveling Packs - v2.0.4
+Phase One Warmane Leveling Packs - v2.1.0
 Released: 2026-06-19
 ==========================================
+
+CHANGELOG (v2.1.0) — druid assist + market moat
+  - MarketDB.lua — realm-keyed AH price cache (Icecrown per-realm; assist-only)
+  - AhScanner.lua — browse scan on AUCTION_ITEM_LIST_UPDATE; no auto-buy
+  - RelistAssist.lua — bag relist suggestions; you post manually
+  - /p1ah scan|relist|watch — scanner + SHOP watch queue
+  - SHOP section shows relist hints when market data exists
+  - TestHarness harnessLog mirror in SavedVariables for agent harness
+  - Harness: clipboard commands + harnessLog/OCR chat fallback when WoWChatLog missing
+  - Docs/TOS_WARMANE.md — assist-only policy; HWND + addon defensible line
+  - Druid pack stays free; gold sales are your website business, not tool monetization
 
 CHANGELOG (v2.0.4) — Grok cycle
   - Feral ICC/AH ilvl 264: Bloodfall, Legwraps, Footpads, Tiny Abomination
@@ -143,6 +154,9 @@ TROUBLESHOOTING
 COMMANDS
   /p1guide or /p1     Toggle druid guide overlay (character-aware per toon)
   /p1ah               Search top pending AH upgrade in Auctionator (open AH first)
+  /p1ah scan          Cache visible AH browse listings to realm market DB (assist-only)
+  /p1ah relist        Print relist suggestions from bag + cached prices (you post)
+  /p1ah watch         Queue SHOP item searches when AH opens
   /p1scan             List pending AH upgrades + refresh buyout prices
   /p1tips             Toggle TIPS section (lvl bracket advice)
   /p1glow             Toggle quest mob nameplate glow

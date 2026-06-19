@@ -126,7 +126,11 @@ end
 
 function P1DG.PrintCharacterScan()
     local s = P1DG.ScanCharacter()
-    print("|cff00ccffP1 Scan|r — " .. (s.name or "?") .. " L" .. (s.level or 0)
+    local scanLine = "|cff00ccffP1 Scan|r — " .. (s.name or "?") .. " L" .. (s.level or 0)
+    if P1DG.DevLog then
+        P1DG.DevLog("INFO", "scan ok toon=" .. (s.name or "?") .. " L" .. (s.level or 0))
+    end
+    print(scanLine ..
         .. " · " .. (s.zone or "?") .. " · " .. P1DG.FormatGoldShort(s.gold)
         .. " · " .. (s.activeQuests or 0) .. " quests")
     for slot, name in pairs(SLOT_NAMES) do

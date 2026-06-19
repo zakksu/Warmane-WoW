@@ -1,0 +1,18 @@
+---
+pid: 17184
+cwd: "C:\Users\godin\Documents\GitHub\Warmane WoW"
+command: "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\godin\\Documents\\GitHub\\Warmane WoW\\tools\\automation\\run-autonomous.ps1\" -Suite smoke -MaxCycles 2 -SkipSync -SkipRelog"
+started_at: 2026-06-19T04:19:45.129Z
+running_for_ms: 80000    
+---
+========================================
+ P1 Autonomous Harness
+========================================
+P1 Lua static validation OK
+Ensuring WoW is running ...
+WoW ready: World of Warcraft
+
+Cycle 1 / 2
+FAIL cycle 1 - C:\Users\godin\Documents\GitHub\Warmane WoW\tools\automation\reports\harness-latest.json
+
+Cycle 2 / 2

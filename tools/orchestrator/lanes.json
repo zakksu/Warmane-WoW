@@ -1,52 +1,62 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "pack": "druid",
+  "step": 10,
   "lanes": [
     {
-      "id": "orchestrator",
-      "owner": "Orchestrator",
-      "paths": ["tools/orchestrator/*", "Docs/CURSOR_ORCHESTRATION.md", "Docs/v2.0/*", ".cursor/rules/orchestrator.mdc"],
-      "forbidden": ["PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/*.lua"],
-      "status": "done"
-    },
-    {
-      "id": "brain",
-      "owner": "Cursor Agent — Brain",
-      "paths": ["PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Brain.lua"],
-      "forbidden": ["Core.lua", "AhAutopilot.lua", "NextRank.lua"],
+      "id": "market",
+      "owner": "Cursor Agent — Market",
+      "paths": [
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/MarketDB.lua",
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/AhScanner.lua",
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/RelistAssist.lua"
+      ],
       "status": "done",
-      "task": "Scan history, session delta, P1DG.RecordScan, P1DG.GetScanDelta — extend CharacterScan.lua patterns"
-    },
-    {
-      "id": "ah",
-      "owner": "Cursor Agent — AH",
-      "paths": ["PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/AhAutopilot.lua"],
-      "forbidden": ["Core.lua", "Brain.lua"],
-      "status": "done",
-      "task": "Shopping list from gaps, CanAfford(gold), BuildShopLines for guide SHOP section"
-    },
-    {
-      "id": "rank",
-      "owner": "Cursor Agent — Rank",
-      "paths": ["PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/NextRank.lua"],
-      "forbidden": ["Core.lua"],
-      "status": "done",
-      "task": "P1DG.RankNextActions — fuse AH gear ROI + quest path entries, return sorted list"
+      "task": "Realm-specific price cache, browse scanner, relist suggestions — assist-only, no auto-buy"
     },
     {
       "id": "integrate",
       "owner": "Orchestrator",
-      "paths": ["PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Core.lua", "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/P1DruidGuide.toc", "PhaseOne_Druid_LevelingPack/Interface/AddOns/PhaseOneLoader/PhaseOneLoader.lua"],
+      "paths": [
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Core.lua",
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/Auction.lua",
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/P1DruidGuide.toc"
+      ],
       "status": "done",
-      "task": "Wire v2 modules, SHOP section, version 2.0.0, /p1scan delta output"
+      "task": "Wire /p1ah scan|relist|watch, SHOP relist hints, v2.1.0"
+    },
+    {
+      "id": "harness",
+      "owner": "Cursor Agent — Harness",
+      "paths": [
+        "tools/automation/harness-common.ps1",
+        "tools/automation/run-autonomous.ps1",
+        "tools/automation/WowOcr.ps1",
+        "PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/TestHarness.lua"
+      ],
+      "status": "done",
+      "task": "Phase 2.1 harnessLog SavedVariables fallback + optional chat OCR"
+    },
+    {
+      "id": "policy",
+      "owner": "Cursor Agent — Docs",
+      "paths": ["Docs/TOS_WARMANE.md"],
+      "status": "done",
+      "task": "Assist-only ToS; HWND + addon defensible line; free pack / gold business separate"
+    },
+    {
+      "id": "export",
+      "owner": "Cursor Agent — Market export",
+      "paths": ["tools/market/export-prices.ps1"],
+      "status": "done",
+      "task": "Icecrown price export CSV for SQLite / website moat"
     },
     {
       "id": "release",
       "owner": "Cursor Agent — Release",
-      "paths": ["RELEASE.txt", "README.md", "Docs/TASK_DIVISION.md"],
-      "forbidden": ["*.lua"],
+      "paths": ["RELEASE.txt", "README.md", "PhaseOne_Druid_LevelingPack/Interface/AddOns/PhaseOneLoader/PhaseOneLoader.lua"],
       "status": "done",
-      "task": "v2.0.0 changelog and orchestration docs cross-link"
+      "task": "v2.1.0 tag, sync, autonomous harness green"
     }
   ]
 }

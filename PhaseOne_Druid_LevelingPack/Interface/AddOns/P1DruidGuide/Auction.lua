@@ -189,6 +189,10 @@ end
 
 function P1DG.GetItemBuyout(itemId)
     if not itemId then return nil end
+    if P1DG.GetRealmPrice then
+        local cached = P1DG.GetRealmPrice(itemId)
+        if cached and cached > 0 then return cached end
+    end
     if not P1DG.IsAuctionatorLoaded() then return nil end
     if Atr_GetAuctionBuyout then
         local price = Atr_GetAuctionBuyout(itemId)

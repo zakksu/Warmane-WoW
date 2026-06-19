@@ -1,0 +1,16 @@
+---
+description: Run autonomous WoW harness after addon changes — never ask the user to PLAY/reload/test manually
+alwaysApply: true
+---
+
+# P1 autonomous testing
+
+After editing `P1*` Lua/XML or automation scripts:
+
+1. **Run** `tools/automation/run-autonomous.ps1` (or `AUTO_TEST.bat`) yourself — do not tell the user to run PLAY, /reload, or /p1test.
+2. **Read** `tools/automation/reports/harness-latest.json` and the latest PNG in `tools/automation/reports/screenshots/`.
+3. **Fix** failures, then re-run the harness until `success: true` or you are blocked (e.g. WoW not installed).
+
+The harness auto-syncs addons, starts WoW if needed, `/camp` → enter world → `/reload`, enables chat log, runs `/p1test`, and writes JSON + screenshots.
+
+Legit HWND automation only — not a gameplay bot.
