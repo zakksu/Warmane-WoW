@@ -29,12 +29,12 @@ function P1DG.ScanCharacter()
         mapId = GetCurrentMapAreaID(),
         activeQuests = 0,
         slots = {},
-        scannedAt = time(),
+        scannedAt = GetTime(),
     }
 
     for i = 1, GetNumQuestLogEntries() do
-        local _, _, _, _, _, complete, _, _ = GetQuestLogTitle(i)
-        if complete == 0 or complete == -1 then
+        local _, _, _, isHeader, _, isComplete = GetQuestLogTitle(i)
+        if not isHeader and not isComplete then
             scan.activeQuests = scan.activeQuests + 1
         end
     end
@@ -44,6 +44,11 @@ function P1DG.ScanCharacter()
         if link then
             local id = tonumber(link:match("item:(%d+)"))
             local name, _, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(link)
+            if not name and id then
+                GameTooltip:SetHyperlink(link)
+                GameTooltip:Hide()
+                name, _, _, ilvl, _, _, _, _, equipLoc = GetItemInfo(id)
+            end
             scan.slots[slot] = {
                 id = id,
                 name = name,
@@ -135,8 +140,13 @@ function P1DG.PrintCharacterScan()
     else
         print("  |cffffcc00AH gaps:|r")
         for i, g in ipairs(gaps) do
-            local price = g.itemId and P1DG.GetItemBuyout and P1DG.GetItemBuyout(g.itemId)
-            local priceTag = price and (" — " .. P1DG.FormatAhPrice(price)) or ""
+            local priceTag = ""
+            if g.itemId and P1DG.GetItemBuyout then
+                local price = P1DG.GetItemBuyout(g.itemId)
+                if price and P1DG.FormatAhPrice then
+                    priceTag = " — " .. P1DG.FormatAhPrice(price)
+                end
+            end
             print(string.format("  %d. %s (have ilvl %d, want %d+)%s",
                 i, g.itemName or g.key, g.haveIlvl, g.needIlvl, priceTag))
         end

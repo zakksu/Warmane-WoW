@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.6.4"
+local VERSION = "1.6.4.1"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -1074,13 +1074,27 @@ SlashCmdList["P1AH"] = function()
     end
 end
 
-SLASH_P1SCAN1 = "/p1scan"
-SlashCmdList["P1SCAN"] = function()
-    if P1DG.PrintCharacterScan then
+local function HandleP1Scan()
+    local _, class = UnitClass("player")
+    if class ~= "DRUID" then
+        print("|cff00ccffP1 Scan|r — druid characters only")
+        return
+    end
+    if not P1DG or not P1DG.PrintCharacterScan then
+        print("|cff00ccffP1 Scan|r — enable |cff00ff00P1DruidGuide|r at character select, then /reload")
+        return
+    end
+    local ok, err = pcall(function()
         P1DG.PrintCharacterScan()
-        P1DruidGuide_Refresh()
+        if P1DruidGuide_Refresh then P1DruidGuide_Refresh() end
+    end)
+    if not ok then
+        print("|cffff0000P1 Scan error:|r " .. tostring(err))
     end
 end
+
+SLASH_P1SCAN1 = "/p1scan"
+SlashCmdList["P1SCAN"] = HandleP1Scan
 
 SLASH_P1TIPS1 = "/p1tips"
 SlashCmdList["P1TIPS"] = function(msg)

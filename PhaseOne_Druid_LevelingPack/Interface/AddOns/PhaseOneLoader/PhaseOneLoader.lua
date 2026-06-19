@@ -272,6 +272,26 @@ local function EnsureSlash()
         P1_AutoQuest_Toggle()
     end
 
+    SLASH_P1SCAN1 = "/p1scan"
+    SlashCmdList["P1SCAN"] = function()
+        local _, class = UnitClass("player")
+        if class ~= "DRUID" then
+            print("|cff00ccffP1 Scan|r — druid characters only")
+            return
+        end
+        if P1DG and P1DG.PrintCharacterScan then
+            local ok, err = pcall(function()
+                P1DG.PrintCharacterScan()
+                if P1DruidGuide_Refresh then P1DruidGuide_Refresh() end
+            end)
+            if not ok then
+                print("|cffff0000P1 Scan error:|r " .. tostring(err))
+            end
+        else
+            print("|cff00ccffP1 Scan|r — enable |cff00ff00P1DruidGuide|r at character select, then /reload")
+        end
+    end
+
     SLASH_P1SETTINGS1 = "/p1settings"
     SlashCmdList["P1SETTINGS"] = function(msg)
         msg = string.lower(Trim(msg))
