@@ -951,7 +951,10 @@ local function BuildUI()
             local data = self.iconData
             if not data then return end
             if data.goldAh and data.itemId and P1DG.SearchAuctionItem then
-                P1DG.SearchAuctionItem(data.itemId)
+                local ok = P1DG.SearchAuctionItem(data.itemId)
+                if not ok and P1DG.IsAuctionHouseOpen and not P1DG.IsAuctionHouseOpen() then
+                    print("|cff666666(icon click queued — open AH)|r")
+                end
             elseif data.waypoint then
                 SetGuideWaypoint(data.waypoint, data.label)
             end
@@ -1121,8 +1124,28 @@ SlashCmdList["P1GUIDE"] = HandleGuideSlash
 SLASH_P1DRUID1 = "/p1"
 SlashCmdList["P1DRUID"] = HandleGuideSlash
 
-SLASH_P1AH1 = "/p1ah"
-SlashCmdList["P1AH"] = function()
+local function HandleP1Ah(msg)
+    msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
+    if msg == "debug" or msg == "status" then
+        if P1DG.PrintAhDiagnostics then P1DG.PrintAhDiagnostics() end
+        return
+    end
+    local testId = tonumber(msg:match("^test%s+(%d+)$"))
+    if msg == "test" or testId then
+        local itemId = testId
+        if not itemId then
+            local top = P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(UnitLevel("player"))
+            itemId = top and top.itemId
+        end
+        if not itemId then
+            print("|cff00ccffP1 Guide|r — /p1ah test 10410 (Leggings of the Fang)")
+            return
+        end
+        print("|cff00ccffP1 AH test|r — firing SearchAuctionItem(" .. itemId .. ")")
+        if P1DG.SearchAuctionItem then P1DG.SearchAuctionItem(itemId) end
+        if P1DG.PrintAhDiagnostics then P1DG.PrintAhDiagnostics() end
+        return
+    end
     local ahTop = P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(UnitLevel("player"))
     if not ahTop or not ahTop.itemId then
         print("|cff00ccffP1 Guide|r — no pending AH upgrades (gear looks good)")
@@ -1132,6 +1155,9 @@ SlashCmdList["P1AH"] = function()
         P1DG.SearchAuctionItem(ahTop.itemId)
     end
 end
+
+SLASH_P1AH1 = "/p1ah"
+SlashCmdList["P1AH"] = HandleP1Ah
 
 local function HandleP1Scan()
     local _, class = UnitClass("player")

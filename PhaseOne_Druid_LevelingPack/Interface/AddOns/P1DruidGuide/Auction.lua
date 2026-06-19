@@ -207,28 +207,93 @@ function P1DG.GetNextAhPriority(playerLevel)
     return list[1]
 end
 
+function P1DG.GetAhSearchStatus()
+    local itemId = P1DG._pendingAhItemId
+    local pendingName = itemId and CacheItem(itemId) or nil
+    return {
+        auctionatorLoaded = IsAddOnLoaded("Auctionator"),
+        bridgeReady = P1DG.IsAuctionatorLoaded(),
+        ahOpen = P1DG.IsAuctionHouseOpen(),
+        hasSearchBox = Atr_Search_Box ~= nil,
+        hasSearchFn = Atr_Search_Onclick ~= nil,
+        hasSelectPane = Atr_SelectPane ~= nil,
+        buyTabActive = (Atr_IsTabSelected and Atr_IsModeBuy and Atr_IsModeBuy()) or false,
+        searchBoxText = Atr_Search_Box and Atr_Search_Box:GetText() or "",
+        pendingItemId = itemId,
+        pendingName = pendingName,
+        lastItemId = P1DG._lastAhItemId,
+        lastName = P1DG._lastAhName,
+        lastResult = P1DG._lastAhResult,
+        lastAt = P1DG._lastAhAt,
+    }
+end
+
+function P1DG.PrintAhDiagnostics()
+    print("|cff00ccffP1 AH debug|r — Auctionator bridge status")
+    local st = P1DG.GetAhSearchStatus()
+    local function yn(v) return v and "|cff00ff00yes|r" or "|cffff4444no|r" end
+    print("  Auctionator loaded: " .. yn(st.auctionatorLoaded))
+    print("  Bridge ready: " .. yn(st.bridgeReady))
+    print("  AH frame open: " .. yn(st.ahOpen))
+    print("  Atr_Search_Box: " .. yn(st.hasSearchBox))
+    print("  Atr_Search_Onclick: " .. yn(st.hasSearchFn))
+    print("  Buy tab active: " .. yn(st.buyTabActive))
+    if st.searchBoxText ~= "" then
+        print("  Search box: |cffffcc00" .. st.searchBoxText .. "|r")
+    end
+    if st.pendingItemId then
+        print("  Queued: " .. (st.pendingName or "?") .. " (id " .. st.pendingItemId .. ")")
+    else
+        print("  Queued: |cff888888(none)|r")
+    end
+    if st.lastItemId then
+        local ago = st.lastAt and string.format("%.1fs ago", GetTime() - st.lastAt) or "?"
+        print("  Last search: " .. (st.lastName or "?") .. " → " .. (st.lastResult or "?") .. " (" .. ago .. ")")
+    end
+    local top = P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(UnitLevel("player"))
+    if top and top.itemId then
+        local price = P1DG.GetItemBuyout(top.itemId)
+        local priceTag = price and P1DG.FormatAhPrice(price) or "no scan data"
+        print("  Top priority: " .. (top.itemName or top.label or "?") .. " (id " .. top.itemId .. ") — " .. priceTag)
+    else
+        print("  Top priority: |cff888888(none)|r")
+    end
+    print("  |cff666666Tests: /p1ah test · /p1ah test 10410 · open AH then retry|r")
+end
+
+function P1DG.RecordAhSearchAttempt(itemId, name, result)
+    P1DG._lastAhItemId = itemId
+    P1DG._lastAhName = name
+    P1DG._lastAhResult = result
+    P1DG._lastAhAt = GetTime()
+end
+
 function P1DG.SearchAuctionItem(itemId, fromQueue)
     if not itemId then return false end
     local name = CacheItem(itemId)
     if not name then
+        P1DG.RecordAhSearchAttempt(itemId, nil, "uncached")
         print("|cff00ccffP1 Guide|r — item not cached. Mouse over it once, then retry.")
         return false
     end
     if not P1DG.IsAuctionatorLoaded() then
+        P1DG.RecordAhSearchAttempt(itemId, name, "no_addon")
         print("|cff00ccffP1 Guide|r — Auctionator not loaded. Run PLAY.bat and /reload.")
         return false
     end
     if not P1DG.IsAuctionHouseOpen() then
         P1DG.QueueAuctionSearch(itemId)
+        P1DG.RecordAhSearchAttempt(itemId, name, "queued")
         if not fromQueue then
-            print("|cff00ccffP1 Guide|r — open the Auction House, then click |cffffcc00[AH]|r again.")
-            print("  Queued search: " .. name)
+            print("|cff00ccffP1 Guide|r — |cffff8800QUEUED|r (open AH to search)")
+            print("  Item: |cffffcc00" .. name .. "|r — will auto-search on AH open")
         end
         return false
     end
     Atr_SelectPane(BUY_TAB)
     Atr_Search_Box:SetText(name)
     Atr_Search_Onclick()
-    print("|cff00ccffP1 Guide|r Auctionator → " .. name)
+    P1DG.RecordAhSearchAttempt(itemId, name, "searched")
+    print("|cff00ccffP1 Guide|r — |cff00ff00SEARCHED|r Auctionator Buy tab → |cffffcc00" .. name .. "|r")
     return true
 end
