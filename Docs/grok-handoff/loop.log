@@ -24,3 +24,10 @@ Follow AGENTS.md and Docs/AUTONOMOUS_LOOP.md. Do not ask the user.
 [2026-06-19 00:28:06] Starting ship cycle
 [2026-06-19 00:28:09] Ship cycle starting
 [2026-06-19 00:28:11] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow
+[2026-06-19 00:28:28] Committed handoff changes
+[2026-06-19 00:28:33] ERROR loop step: You are not logged into any GitHub hosts. To log in, run: gh auth login
+[2026-06-19 00:29:04] Agent loop started (poll=45s, once=False, dryRun=False)
+[2026-06-19 00:29:04] Repo: C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 00:29:04] Starting ship cycle
+[2026-06-19 00:29:04] Ship cycle starting
+[2026-06-19 00:29:04] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow
