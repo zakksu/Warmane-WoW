@@ -28,7 +28,7 @@ local SLOT_HUES = {
     { 0.75, 0.55, 1.0 },
 }
 
-local VERSION = "1.5.0"
+local VERSION = "1.6.2"
 
 local function SyncLoaderNav(on)
     if PhaseOneLoaderDB then PhaseOneLoaderDB.navEnabled = on end
@@ -172,13 +172,36 @@ end
 
 local function ClearTomTomWaypoint()
     if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint then
-        if TomTom and TomTom.RemoveWaypoint then
-            TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
+        if P1Waypoint and P1Waypoint.RemoveWaypoint then
+            P1Waypoint:RemoveWaypoint(Questie.db.char._tom_waypoint)
         end
         Questie.db.char._tom_waypoint = nil
     end
-    if TomTom and TomTom.SetActiveWaypoint then
-        TomTom:SetActiveWaypoint(nil)
+    if P1Waypoint and P1Waypoint.ClearActive then
+        P1Waypoint:ClearActive()
+    end
+end
+
+local function ClearStuckArrowIfWrongZone(zoneId)
+    if not P1Waypoint or not P1Waypoint.GetActiveWaypoint or not P1Waypoint.ClearActive then
+        return
+    end
+    local wp = P1Waypoint:GetActiveWaypoint()
+    if not wp then return end
+
+    local mismatch = false
+    local ast = GetAstrolabe()
+    if ast and ast.GetCurrentPlayerPosition and wp.c and wp.z then
+        local pc, pz = ast:GetCurrentPlayerPosition()
+        if pc and (wp.c ~= pc or wp.z ~= pz) then
+            mismatch = true
+        end
+    end
+    if not mismatch and zoneId and lastTomZoneId and zoneId ~= lastTomZoneId then
+        mismatch = true
+    end
+    if mismatch then
+        P1Waypoint:ClearActive()
     end
 end
 
@@ -468,9 +491,9 @@ local function CollectTrackedQuests()
 end
 
 local function SetTomTomWaypoint(target)
-    if not TomTom or not target or not target.spawn or not target.zone then return nil end
-    if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint and TomTom.RemoveWaypoint then
-        TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
+    if not P1Waypoint or not target or not target.spawn or not target.zone then return nil end
+    if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint and P1Waypoint.RemoveWaypoint then
+        P1Waypoint:RemoveWaypoint(Questie.db.char._tom_waypoint)
     end
     local uid
     local uiMapId = target.zone
@@ -480,18 +503,18 @@ local function SetTomTomWaypoint(target)
     if QuestieCompat and QuestieCompat.TomTom_AddWaypoint then
         uid = QuestieCompat.TomTom_AddWaypoint(target.title, uiMapId, target.spawn[1], target.spawn[2])
     else
-        uid = TomTom:AddWaypoint(uiMapId, target.spawn[1] / 100, target.spawn[2] / 100, {
+        uid = P1Waypoint:AddWaypoint(uiMapId, target.spawn[1] / 100, target.spawn[2] / 100, {
             title = target.title, crazy = true,
         })
     end
     if Questie and Questie.db and Questie.db.char then
         Questie.db.char._tom_waypoint = uid
     end
-    if uid and TomTom.SetActiveWaypoint then
-        TomTom:SetActiveWaypoint(uid)
-        if TomTom.arrow then
-            TomTom.arrow:SetFrameStrata("HIGH")
-            TomTom.arrow:Show()
+    if uid and P1Waypoint.SetActiveWaypoint then
+        P1Waypoint:SetActiveWaypoint(uid)
+        if P1Waypoint.arrow then
+            P1Waypoint.arrow:SetFrameStrata("HIGH")
+            P1Waypoint.arrow:Show()
         end
     end
     return uid
@@ -1013,7 +1036,7 @@ function P1QuestNav_GetStatus()
         tracked = tracked,
         questieLoaded = LoadQuestieModules(),
         astrolabeLoaded = not not GetAstrolabe(),
-        tomtomLoaded = not not (TomTom and TomTom.AddWaypoint),
+        tomtomLoaded = not not (P1Waypoint and P1Waypoint.AddWaypoint),
         primaryPlacement = primaryPlacement,
     }
 end
@@ -1047,9 +1070,15 @@ eventFrame:SetScript("OnEvent", function(self, event)
             P1QuestNav_Refresh(true)
         end
     end
-    if event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" then
+    if event == "ZONE_CHANGED" then
+        availCache = nil
+        if IsNavEnabled() then P1QuestNav_Refresh(true) end
+        return
+    end
+    if event == "ZONE_CHANGED_NEW_AREA" then
         availCache = nil
         local zoneId = GetCurrentMapAreaID and GetCurrentMapAreaID() or nil
+        ClearStuckArrowIfWrongZone(zoneId)
         if zoneId and lastTomZoneId and zoneId ~= lastTomZoneId then
             ClearTomTomWaypoint()
             lastTomPrimaryId = nil

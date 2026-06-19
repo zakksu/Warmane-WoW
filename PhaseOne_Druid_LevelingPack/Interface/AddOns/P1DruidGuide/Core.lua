@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.6.3"
+local VERSION = "1.6.4"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -75,6 +75,16 @@ local function SyncLoaderTips(on)
     DB.tipsVisible = on
     if PhaseOneLoaderDB then PhaseOneLoaderDB.tipsVisible = on end
     if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.tipsVisible = on end
+end
+
+local function ReadAhPriority()
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.guideAhPriority ~= nil then
+        return PhaseOneDruidLoaderDB.guideAhPriority
+    end
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.guideAhPriority ~= nil then
+        return PhaseOneLoaderDB.guideAhPriority
+    end
+    return true
 end
 
 local function ReadAutoWaypoint()
@@ -356,9 +366,20 @@ local function GetPrimaryQuestEntry()
 end
 
 local function NavigateToPrimary()
+    local lvl = UnitLevel("player")
+    local ahTop = P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(lvl)
+    if ahTop and P1DG.SearchAuctionItem then
+        if P1DG.SearchAuctionItem(ahTop.itemId) then
+            return true
+        end
+    end
     local primary = GetPrimaryQuestEntry()
     if not primary then
-        print("|cff00ccffP1 Guide|r — accept a quest first (Questie icons ON)")
+        if ahTop then
+            print("|cff00ccffP1 Guide|r — open AH to search |cffffcc00" .. (ahTop.itemName or ahTop.label or "?") .. "|r")
+        else
+            print("|cff00ccffP1 Guide|r — accept a quest (Questie ON) or check BIS slots")
+        end
         return false
     end
     if P1QuestNav_API and P1QuestNav_API.SetWaypoint then
@@ -463,9 +484,37 @@ local function SetMinimized(on)
 end
 
 local function BuildHeaderLine()
+    local lvl = UnitLevel("player")
+    if P1DG.ScanCharacter then P1DG.ScanCharacter() end
+    local scan = P1DG.GetScan and P1DG.GetScan()
+    local ahTop = ReadAhPriority() and P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(lvl)
     local primary = GetPrimaryQuestEntry()
+    local scanTag = ""
+    if scan then
+        scanTag = string.format("|cff555555%s L%d · %s · %dq|r ",
+            Truncate(scan.name or "?", 10), scan.level or lvl,
+            P1DG.FormatGoldShort and P1DG.FormatGoldShort(scan.gold) or "?",
+            scan.activeQuests or 0)
+    end
+    if ahTop and ReadAhPriority() then
+        local priceTag = ""
+        if ahTop.itemId and P1DG.GetItemBuyout and P1DG.FormatAhPrice then
+            local price = P1DG.GetItemBuyout(ahTop.itemId)
+            if price then priceTag = " — " .. P1DG.FormatAhPrice(price) end
+        end
+        local ilvlTag = ""
+        if ahTop.haveIlvl and ahTop.needIlvl then
+            ilvlTag = string.format(" |cff888888(eq %d→%d)|r", ahTop.haveIlvl, ahTop.needIlvl)
+        end
+        local questHint = ""
+        if primary then
+            questHint = string.format(" |cff666666· then %s|r", Truncate(primary.questName, 14))
+        end
+        return scanTag .. string.format("|cffffcc00[AH]|r %s%s%s%s",
+            Truncate(ahTop.itemName or ahTop.label or "upgrade", 18), ilvlTag, priceTag, questHint)
+    end
     if not primary then
-        return "|cff888888No quest — accept one|r |cff666666· arrow + dots guide you|r"
+        return scanTag .. "|cff888888No quest — check BIS/AH|r |cff666666· /p1scan|r"
     end
     local dir = primary.dirLabel or ""
     if dir == "" and P1QuestNav_API and P1QuestNav_API.GetDirectionLabel then
@@ -474,25 +523,70 @@ local function BuildHeaderLine()
     if dir == "" and primary.dist then dir = string.format("%dy", primary.dist) end
     local xpTag = primary.xp and primary.xp > 0 and string.format(" [%dxp]", primary.xp) or ""
     local gearTag = primary.gearLabel and " |cff44ff44↑gear|r" or ""
-    return string.format("|cff00ff00[GO]|r %s — %s%s%s",
+    return scanTag .. string.format("|cff00ff00[GO]|r %s — %s%s%s",
         Truncate(primary.questName, 22), dir, xpTag, gearTag)
 end
 
 local function BuildNextLines(lines)
-    local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(3) or {}) or {}
-    if #entries == 0 then
-        AddLine(lines, "  |cff888888Accept a quest — Questie icons ON|r")
-        AddLine(lines, "  |cff666666Click [GO] in header for TomTom arrow|r")
-        return
+    local lvl = UnitLevel("player")
+    local lineNum = 0
+    local ahList = {}
+    if ReadAhPriority() and P1DG.GetPersonalGaps then
+        for _, g in ipairs(P1DG.GetPersonalGaps(lvl, 2)) do
+            ahList[#ahList + 1] = {
+                itemId = g.itemId,
+                itemName = g.itemName,
+                label = g.key,
+                haveIlvl = g.haveIlvl,
+                needIlvl = g.needIlvl,
+            }
+        end
+    end
+    if #ahList < 2 and P1DG.GetPendingAhUpgrades then
+        for _, ah in ipairs(P1DG.GetPendingAhUpgrades(lvl, 2 - #ahList)) do
+            local dup = false
+            for _, x in ipairs(ahList) do if x.itemId and x.itemId == ah.itemId then dup = true break end end
+            if not dup then ahList[#ahList + 1] = ah end
+        end
+    end
+    for _, ah in ipairs(ahList) do
+        lineNum = lineNum + 1
+        local priceTag = "scan AH"
+        if ah.itemId and P1DG.GetItemBuyout and P1DG.FormatAhPrice then
+            local price = P1DG.GetItemBuyout(ah.itemId)
+            if price then priceTag = P1DG.FormatAhPrice(price) end
+        end
+        local ilvlTag = ""
+        if ah.haveIlvl and ah.needIlvl then
+            ilvlTag = string.format(" ilvl %d→%d", ah.haveIlvl, ah.needIlvl)
+        end
+        AddLine(lines, string.format("  %d. |cffffcc00AH|r %s%s — %s",
+            lineNum, Truncate(ah.itemName or ah.label or "?", 16), ilvlTag, priceTag),
+            ah.itemId and { type = "auction", itemId = ah.itemId, label = ah.label } or nil)
+    end
+    local questSlots = math.max(0, 3 - #ahList)
+    local entries = P1QuestPath_GetTop and (P1QuestPath_GetTop(questSlots) or {}) or {}
+    if #entries == 0 and questSlots > 0 then
+        local st = P1QuestNav_GetStatus and P1QuestNav_GetStatus()
+        entries = st and st.tracked or {}
+        while #entries > questSlots do table.remove(entries) end
     end
     for i, e in ipairs(entries) do
+        lineNum = lineNum + 1
         local dir = e.dirLabel or (e.dist and (e.dist .. "y") or "")
         local xpTag = e.xp and e.xp > 0 and string.format("[%dxp", e.xp) or "[?"
         local gearTag = e.gearLabel and (", " .. e.gearLabel .. "]") or "]"
         local gearFlag = e.gearLabel and " |cff44ff44↑|r" or ""
         AddLine(lines, string.format("  %d. %s%s%s — %s%s",
-            i, Truncate(e.questName, 18), xpTag, gearTag, dir, gearFlag),
+            lineNum, Truncate(e.questName, 18), xpTag, gearTag, dir, gearFlag),
             { type = "quest", index = i })
+    end
+    if lineNum == 0 then
+        AddLine(lines, "  |cff888888No AH upgrades or quests pending|r")
+        AddLine(lines, "  |cff666666Accept a quest — Questie icons ON|r")
+        AddLine(lines, "  |cff666666Open AH + click [AH] line to search|r")
+    elseif #ahList > 0 then
+        AddLine(lines, "  |cff666666Open AH · click AH line to search Auctionator|r")
     end
 end
 
@@ -674,7 +768,9 @@ end
 
 local function HandleClickTarget(target)
     if not target then return end
-    if target.type == "quest" then
+    if target.type == "auction" and target.itemId and P1DG.SearchAuctionItem then
+        P1DG.SearchAuctionItem(target.itemId)
+    elseif target.type == "quest" then
         HandleBodyClick("next", target.index)
     elseif target.type == "waypoint" then
         SetGuideWaypoint(target.waypoint, target.label)
@@ -784,13 +880,20 @@ local function BuildUI()
             if data.why then GameTooltip:AddLine(data.why, 0.7, 0.7, 0.7, true) end
             if data.flavor then GameTooltip:AddLine(data.flavor, 0.8, 0.67, 0.0, true) end
             if data.source then GameTooltip:AddLine(data.source, 0.5, 0.8, 0.5) end
-            if data.waypoint then GameTooltip:AddLine("Click: TomTom waypoint", 0.5, 1, 0.5) end
+            if data.goldAh and data.itemId then
+                GameTooltip:AddLine("Click: search Auctionator", 1, 0.82, 0)
+            elseif data.waypoint then
+                GameTooltip:AddLine("Click: TomTom waypoint", 0.5, 1, 0.5)
+            end
             GameTooltip:Show()
         end)
         f:SetScript("OnLeave", function() GameTooltip:Hide() end)
         f:SetScript("OnClick", function(self)
             local data = self.iconData
-            if data and data.waypoint then
+            if not data then return end
+            if data.goldAh and data.itemId and P1DG.SearchAuctionItem then
+                P1DG.SearchAuctionItem(data.itemId)
+            elseif data.waypoint then
                 SetGuideWaypoint(data.waypoint, data.label)
             end
         end)
@@ -811,9 +914,9 @@ local function BuildUI()
     headerBtn:SetScript("OnClick", function() NavigateToPrimary() end)
     headerBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Click [AH] — search top upgrade in Auctionator", 1, 0.82, 0)
         GameTooltip:AddLine("Click [GO] — TomTom arrow to top quest", 1, 1, 1)
-        GameTooltip:AddLine("Minimap dots + mob glow guide the way", 0.7, 0.7, 0.7)
-        GameTooltip:AddLine("No auto-walk — you steer, we point", 0.6, 0.8, 1)
+        GameTooltip:AddLine("AH lines in NEXT — click to search (open AH first)", 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     headerBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -959,6 +1062,26 @@ SlashCmdList["P1GUIDE"] = HandleGuideSlash
 SLASH_P1DRUID1 = "/p1"
 SlashCmdList["P1DRUID"] = HandleGuideSlash
 
+SLASH_P1AH1 = "/p1ah"
+SlashCmdList["P1AH"] = function()
+    local ahTop = P1DG.GetNextAhPriority and P1DG.GetNextAhPriority(UnitLevel("player"))
+    if not ahTop or not ahTop.itemId then
+        print("|cff00ccffP1 Guide|r — no pending AH upgrades (gear looks good)")
+        return
+    end
+    if P1DG.SearchAuctionItem then
+        P1DG.SearchAuctionItem(ahTop.itemId)
+    end
+end
+
+SLASH_P1SCAN1 = "/p1scan"
+SlashCmdList["P1SCAN"] = function()
+    if P1DG.PrintCharacterScan then
+        P1DG.PrintCharacterScan()
+        P1DruidGuide_Refresh()
+    end
+end
+
 SLASH_P1TIPS1 = "/p1tips"
 SlashCmdList["P1TIPS"] = function(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
@@ -975,6 +1098,9 @@ init:RegisterEvent("BAG_UPDATE")
 init:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 init:RegisterEvent("SKILL_LINES_CHANGED")
 init:RegisterEvent("QUEST_LOG_UPDATE")
+init:RegisterEvent("AUCTION_HOUSE_CLOSED")
+init:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
+init:RegisterEvent("PLAYER_MONEY")
 init:SetScript("OnEvent", function(_, event)
     MigrateLegacyDB()
     if not panel then BuildUI() end
@@ -990,7 +1116,12 @@ init:SetScript("OnEvent", function(_, event)
         P1DruidGuide_SetAutoWaypoint(ReadAutoWaypoint())
         P1DruidGuide_SetVisible(guideVisible)
         if DB.minimized then SetMinimized(true) end
+        if P1DG.ScanCharacter then P1DG.ScanCharacter() end
     else
+        if event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE"
+            or event == "PLAYER_MONEY" or event == "QUEST_LOG_UPDATE" then
+            if P1DG.ScanCharacter then P1DG.ScanCharacter() end
+        end
         P1DruidGuide_Refresh()
     end
 end)

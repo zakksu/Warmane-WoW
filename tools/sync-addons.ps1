@@ -48,9 +48,9 @@ $packName = Detect-Pack -TargetRoot $dest -ForcedPack $Pack
 $srcRoot = if ($packName -eq "DRUID") { $druidSrc } else { $warlockSrc }
 
 $minimalFolders = if ($packName -eq "WARLOCK") {
-    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1WarlockGuide", "P1AdventureGuide", "Questie-335", "TomTom", "!Astrolabe")
+    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1WarlockGuide", "P1AdventureGuide", "Questie-335", "!Astrolabe", "Auctionator")
 } else {
-    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1DruidGuide", "P1AdventureGuide", "Questie-335", "TomTom", "!Astrolabe")
+    @("PhaseOneLoader", "P1AutoQuest", "P1QuestNav", "P1DruidGuide", "P1AdventureGuide", "Questie-335", "!Astrolabe", "Auctionator")
 }
 
 if (-not (Test-Path $srcRoot)) { throw "Pack source not found: $srcRoot" }

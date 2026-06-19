@@ -9,7 +9,7 @@ P1DruidGuide: 1
 P1AdventureGuide: 0
 P1WarlockGuide: 0
 Questie-335: 1
-TomTom: 1
+TomTom: 0
 !Astrolabe: 1
 
 P1RangeDisplay: 0
@@ -23,4 +23,4 @@ WeakAurasOptions: 0
 WeakAurasArchive: 0
 WeakAurasModelPaths: 0
 Bagnon*: 0
-Auctionator: 0
+Auctionator: 1

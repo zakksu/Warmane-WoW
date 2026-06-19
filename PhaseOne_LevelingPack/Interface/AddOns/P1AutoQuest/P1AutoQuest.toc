@@ -2,10 +2,10 @@
 ## Title: |cff00ccffP1 Auto Quest|r
 ## Notes: Questie auto accept/turn-in + target assist. Visual nav via P1QuestNav.
 ## Author: zakksu
-## Version: 1.5.0
+## Version: 1.6.0
 ## LoadOnDemand: 0
 ## DefaultState: enabled
-## Dependencies: Questie-335, TomTom, !Astrolabe
-## LoadAfter: Questie-335, TomTom, PhaseOneLoader
+## Dependencies: Questie-335, !Astrolabe, P1QuestNav
+## LoadAfter: Questie-335, PhaseOneLoader, P1QuestNav
 
 Core.lua

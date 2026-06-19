@@ -2,7 +2,7 @@
 
 Use **separate Cursor Agent / Cloud tasks** on the same repo. All read `AGENTS.md`. You merge via git + **PLAY.bat** → `/reload`.
 
-Last updated: v1.6.2
+Last updated: v1.6.4 sprint (2026-06-18)
 
 ---
 
@@ -21,69 +21,167 @@ Grok writes `Docs/grok-handoff/grok-response.md` → Cursor implements → PLAY.
 
 | Agent | Owns | Never touches |
 |-------|------|---------------|
-| **Guide** | `P1DruidGuide/*` | `P1QuestNav`, loader |
-| **Nav** | `P1QuestNav/*` (both packs, keep identical) | `P1DruidGuide` |
-| **Loader** | `PhaseOneLoader/*` | Questie/TomTom vendored |
-| **Release** | `tools/*.ps1`, `RELEASE.txt`, `README.md`, git tag | Addon Lua |
+| **Guide** | `P1DruidGuide/*`, `P1AdventureGuide/*`, `P1WarlockGuide/*` | `P1QuestNav`, loader |
+| **Nav** | `P1QuestNav/*`, `P1AutoQuest/*` (both packs — keep identical) | `P1DruidGuide` |
+| **Loader** | `PhaseOneLoader/*` (both packs) | Questie vendored |
+| **Auction** | `Auctionator/*` (Warmane fixes only), `tools/addons-manifest.txt` (Auctionator line) | P1* guide logic |
+| **Release** | `tools/*.ps1`, `RELEASE.txt`, `README.md`, `Docs/MINIMAL_PACK.md`, git tag | Addon Lua |
 | **Orchestrator** | Merge + version bump + final ship | — |
 
 **Rule:** Parallel agents must not edit the same file. Orchestrator runs last.
 
+**Note:** TomTom is **not** in the default install anymore — arrow lives in `P1QuestNav/Waypoint.lua` (`P1Waypoint`). Do not re-enable vendored TomTom unless fixing Questie shim bugs.
+
 ---
 
-## v1.6.1 — completed by parallel agents
+## v1.6.3 — completed
 
 | Agent | Task | Status |
 |-------|------|--------|
-| Guide | v1.6 drag, BIS, flavor, GO, autogo | Done (v1.6.0) |
-| Nav | Multi-hop minimap trails (top 3 path) | Done |
-| Loader | `guideAutoWaypoint` in `/p1settings` | Done |
-| Release | Build zips, push, tag | Done (v1.6.1) |
+| Nav | Clone TomTom+Arrow → `P1QuestNav/Waypoint.lua` (`P1Waypoint`) | Done |
+| Nav | P1QuestNav + P1AutoQuest use `P1Waypoint`; TomTom off in manifest | Done |
+| Guide | `P1DruidGuide/Auction.lua` — AH priority, Auctionator search | Done |
+| Guide | NEXT section: AH lines before quests; header `[AH]` | Done |
+| Auction | Enable Auctionator in manifest + sync-addons.ps1 | Done |
+| Loader | `/p1fix` + `/p1minimal` mention Auctionator, not TomTom | Done |
 
 ---
 
-## Next sprint — split
+## v1.6.4 sprint — split (parallel)
 
-### Cursor Agent A (Guide polish)
+### Cursor Agent A — Guide (AH polish + endgame)
+
+**Scope:** `PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/*` only.
+
+**Tasks:**
+1. Add BIS bracket / `GOLD_AH_BIS` rows for **58–80** (feral pre-raid AH buys) so level-80 toons see `[AH]` in header when gear is missing.
+2. Refresh guide when `AUCTION_ITEM_LIST_UPDATE` fires (price lines in NEXT).
+3. Optional: `/p1guide ah` toggle to pin AH-first vs quest-first header.
+4. Bump `P1DruidGuide.toc` version → `1.6.4` if you ship changes.
+
+**Do not edit:** `P1QuestNav`, `PhaseOneLoader`, `tools/*`.
+
+---
+
+### Cursor Agent B — Nav (waypoint hardening)
+
+**Scope:** `P1QuestNav/*` + `P1AutoQuest/*` in **both** `PhaseOne_LevelingPack` and `PhaseOne_Druid_LevelingPack` (files must stay identical).
+
+**Tasks:**
+1. Verify `Waypoint.lua` is byte-identical in both packs; fix drift if any.
+2. Questie ctrl+click: confirm `_G.TomTom` shim still works when external TomTom is disabled.
+3. Edge case: stuck arrow after zone change — clear `P1Waypoint` on `ZONE_CHANGED_NEW_AREA` if needed.
+4. Optional: world-map dotted trail for path #2/#3 (minimap trails already exist).
+
+**Do not edit:** `P1DruidGuide`, vendored Questie.
+
+---
+
+### Cursor Agent C — Loader + settings
+
+**Scope:** `PhaseOneLoader/*` both packs only.
+
+**Tasks:**
+1. Add `/p1settings` row: **AH priority in guide** (mirror `guideAhPriority` in loader DB).
+2. Wire setting to `P1DruidGuide` (read from `PhaseOneLoaderDB` / `PhaseOneDruidLoaderDB`).
+3. Update welcome line: “7 addons” → list Auctionator, no TomTom.
+
+**Do not edit:** Guide Lua beyond reading loader DB keys (coordinate with Agent A if Guide must read new key).
+
+---
+
+### Cursor Agent D — Release + docs
+
+**Scope:** `tools/*`, `RELEASE.txt`, `README.md`, `Docs/MINIMAL_PACK.md`, `Docs/DEV_WORKFLOW.md` only.
+
+**Tasks:**
+1. Update install table: **6 core + Auctionator** (no TomTom folder).
+2. Document `/p1ah`, AH click flow, “open AH first”.
+3. `RELEASE.txt` v1.6.4 changelog from merged agent work.
+4. Run `build-all.ps1` / tag after orchestrator merge.
+
+**Do not edit:** Addon Lua.
+
+---
+
+### Cursor Agent E — Grok research (no Lua)
+
+**Scope:** `Docs/grok-handoff/` output only.
+
+**Tasks:**
+1. Table: **feral druid 58–80 AH upgrades** — `itemId`, slot, `minIlvl`, typical gold tier, source note.
+2. Verify consumable `itemId`s in `P1DG.AH_TIPS` for 3.3.5 Warmane.
+3. Output → `Docs/grok-handoff/grok-response.md` for Agent A to paste into `Data.lua`.
+
+**Do not edit:** Any `.lua` in `Interface/AddOns/`.
+
+---
+
+### Orchestrator (you or one final agent)
 
 ```
-Scope: P1DruidGuide only.
-Task: Fix BIS waypoint coords from in-game feedback [paste notes].
-Bump 1.6.1 -> 1.6.2 if needed.
-```
-
-### Cursor Agent B (Nav)
-
-```
-Scope: P1QuestNav both packs (sync).
-Task: World map trails for #2/#3 path quests (optional).
-```
-
-### Cursor Agent C (Research via Grok)
-
-```
-Do NOT edit Lua. Output tables only:
-- PATH 50-58 feral upgrades (itemId, source, impact)
-- Verify PATH_STEPS spell/item IDs for 3.3.5
-```
-
-### Orchestrator (ship)
-
-```
-Merge agent branches, bump PACK_VERSION, RELEASE.txt, build-all.ps1,
-commit, push, tag, gh release upload.
+1. git pull / merge agent branches (resolve only orchestrator-owned files)
+2. Bump PACK_VERSION in PhaseOneLoader (both packs)
+3. RELEASE.txt + tag v1.6.4
+4. git push + gh release upload
+5. Remind user: PLAY.bat + /reload
 ```
 
 ---
 
-## Copy-paste Cloud Agent prompt
+## Copy-paste Cloud Agent prompts
+
+### Agent A — Guide
 
 ```
-Repo: Warmane-WoW druid pack.
-Read AGENTS.md + Docs/TASK_DIVISION.md.
-Task: [ONE scoped task from table above]
-Do not edit vendored Questie/TomTom.
-User tests: PLAY.bat + /reload.
+Repo: Warmane WoW — druid pack.
+Read AGENTS.md + Docs/TASK_DIVISION.md (Agent A).
+Scope: PhaseOne_Druid_LevelingPack/Interface/AddOns/P1DruidGuide/* ONLY.
+Task: Endgame AH priority — add 58-80 BIS/GOLD_AH_BIS rows, refresh prices on AUCTION_ITEM_LIST_UPDATE, optional /p1guide ah toggle.
+Do not edit P1QuestNav, PhaseOneLoader, or tools.
+User tests: PLAY.bat + /reload + open AH in Orgrimmar.
+```
+
+### Agent B — Nav
+
+```
+Repo: Warmane WoW.
+Read AGENTS.md + Docs/TASK_DIVISION.md (Agent B).
+Scope: P1QuestNav + P1AutoQuest in BOTH packs (keep Waypoint.lua identical).
+Task: Harden P1Waypoint — Questie TomTom shim, zone-change arrow clear, sync both packs.
+Do not edit P1DruidGuide or vendored Questie.
+User tests: PLAY.bat + /reload + Questie ctrl+click map icon.
+```
+
+### Agent C — Loader
+
+```
+Repo: Warmane WoW.
+Read AGENTS.md + Docs/TASK_DIVISION.md (Agent C).
+Scope: PhaseOneLoader/* both packs ONLY.
+Task: /p1settings toggle for guide AH priority; update /p1minimal addon list (Auctionator yes, TomTom no).
+Coordinate: new DB key name for Agent A to read.
+Do not edit P1QuestNav or P1DruidGuide logic (loader DB only unless A asks).
+```
+
+### Agent D — Release
+
+```
+Repo: Warmane WoW.
+Read AGENTS.md + Docs/TASK_DIVISION.md (Agent D).
+Scope: tools/*, RELEASE.txt, README.md, Docs/MINIMAL_PACK.md, Docs/DEV_WORKFLOW.md ONLY.
+Task: Document v1.6.4 pack (P1Waypoint embedded, Auctionator on, /p1ah). No TomTom in default install.
+Do not edit Interface/AddOns Lua.
+```
+
+### Agent E — Grok data
+
+```
+Repo: Warmane WoW.
+Read Docs/TASK_DIVISION.md (Agent E).
+Do NOT edit Lua. Write Docs/grok-handoff/grok-response.md only.
+Task: 58-80 feral druid AH upgrade table (itemId, slot, minIlvl, gold tier) for Warmane 3.3.5a.
+Verify P1DG.AH_TIPS item IDs against vendored Questie item DB in repo.
 ```
 
 ---
@@ -94,7 +192,9 @@ User tests: PLAY.bat + /reload.
 flowchart LR
   A[Agent A: Guide] --> O[Orchestrator]
   B[Agent B: Nav] --> O
-  C[Grok: data tables] --> A
+  C[Agent C: Loader] --> O
+  D[Agent D: Release] --> O
+  E[Grok E: tables] --> A
   O -->|git push| R[main]
   R -->|PLAY.bat| You[You: /reload]
 ```

@@ -1,9 +1,21 @@
-Phase One Warmane Leveling Packs - v1.6.3
+Phase One Warmane Leveling Packs - v1.6.4
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.6.4)
+  - Default install: 7 addons — Loader, AutoQuest, QuestNav, DruidGuide, Questie, Astrolabe, Auctionator
+  - TomTom removed from default install; quest arrow embedded as P1Waypoint in P1QuestNav
+  - Auctionator ON in manifest + PLAY.bat sync; AH priority in guide header [AH] and NEXT lines
+  - /p1ah — search top pending AH upgrade in Auctionator (open AH first)
+  - /p1scan — list pending AH upgrades + refresh buyout prices from Auctionator scan data
+  - Character-aware guide: live scan (level, gold, equipped ilvl, quest count) — /p1scan
+  - BIS brackets 58-80; header shows eq ilvl gap (e.g. weapon 42→200)
+  - AH click flow: open AH → click [AH] header, NEXT line, or BIS icon → Auctionator search
+  - P1QuestNav/P1AutoQuest use P1Waypoint; Questie ctrl+click shim via _G.TomTom
+  - /p1minimal + welcome list Auctionator (not TomTom)
 
 CHANGELOG (v1.6.3)
   - Grok ID audit: Staff of Nobles 3902, Crescent Staff 6505, Mark of the Chosen 17774
@@ -85,33 +97,39 @@ INSTALL (players)
 
 AUTO ON FIRST LOGIN
   Questie (±4 levels, proximity sort, auto accept/turn-in, map ! icons + objectives)
-  P1QuestNav (numbered minimap pins + dotted line + TomTom arrow to #1)
+  P1QuestNav (numbered minimap pins + dotted line + P1Waypoint arrow to #1)
   P1QuestGlow (gold pulse on quest mob nameplates — /p1glow)
   P1QuestPath logic (xp + gear ranked NEXT in guide — /p1path still toggles data)
-  P1 Druid Guide — NEXT / TIPS / MATS / GATHER / BIS overlay (/p1 or /p1guide)
+  P1 Druid Guide — character-aware NEXT / TIPS / MATS / GATHER / BIS (/p1 or /p1guide)
+  Auctionator (AH search from guide — open AH before clicking [AH] lines)
   P1AutoQuest (accept/turn-in assist when Auto Q on)
 
 TROUBLESHOOTING
   No guide?                   /p1guide — ensure ON; left-drag title, right-drag header
   Overlay won't drag?         /p1guide reset then /reload — v1.6 fixes SetMovable
-  Want TomTom on quest?       Click [GO] in header or /p1guide go
+  Want arrow on quest?        Click [GO] in header or /p1guide go (P1Waypoint)
+  AH search does nothing?     Open Auction House first, then click [AH] or /p1ah
+  No AH prices in NEXT?       Run an Auctionator scan at AH, then /p1scan or /reload
   No glow on mobs?              /p1glow — ensure ON; need incomplete kill objective
   Glow stuck?                   /reload — clears on objective complete or mob death
   No NEXT quests?               /p1path refresh — needs Questie loaded
   No map icons?                 /p1questie  then open world map
   No quest pins?                /p1nav debug — zone, spawn, placement mode
+  Old TomTom addon?             Disabled by PLAY.bat — P1Waypoint is built into P1QuestNav
   Old range/damage addons?      PLAY.bat moves them to _disabled/
 
 COMMANDS
-  /p1guide or /p1     Toggle druid guide overlay
+  /p1guide or /p1     Toggle druid guide overlay (character-aware per toon)
+  /p1ah               Search top pending AH upgrade in Auctionator (open AH first)
+  /p1scan             List pending AH upgrades + refresh buyout prices
   /p1tips             Toggle TIPS section (lvl bracket advice)
   /p1glow             Toggle quest mob nameplate glow
   /p1guide reset      Reset position and size
-  /p1guide go         TomTom arrow to top ranked quest
-  /p1guide autogo on  Auto-set TomTom when top quest changes
+  /p1guide go         P1Waypoint arrow to top ranked quest (or [AH] if gear gap)
+  /p1guide autogo on  Auto-set waypoint when top quest changes
   /p1guide scale 0.8  Scale overlay
   /p1settings         Feature toggles (Auto Q, Nav, Path, Guide, Glow, Tips)
-  /p1nav              Toggle minimap pins + TomTom
+  /p1nav              Toggle minimap pins + P1Waypoint arrow
   /p1nav debug        Zone id, spawn coords, pin placement for #1
   /p1path             Toggle path scoring (feeds guide NEXT section)
   /p1auto             Toggle auto accept/turn-in

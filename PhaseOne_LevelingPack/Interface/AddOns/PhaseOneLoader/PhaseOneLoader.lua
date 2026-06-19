@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.6.1"
+local PACK_VERSION = "1.6.4"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Glow, Guide v1.5. |cff00ff00/p1settings|r"
@@ -70,9 +70,10 @@ end
 local function PrintMinimalAddons()
     print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
     print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1AdventureGuide")
-    print("  [x] Questie-335, TomTom, !Astrolabe")
+    print("  [x] Questie-335, !Astrolabe, Auctionator")
+    print("  [ ] TomTom — not required (quest arrow in P1QuestNav)")
     print("  [x] Load out of date AddOns")
-    print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
+    print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon")
     print("|cffaaaaaaToggle features:|r /p1settings")
 end
 
@@ -86,9 +87,22 @@ local function PrintSettings()
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (feeds guide NEXT)")
     print("  Mats:    " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide")
+    print("  AH pri:  " .. Yn(IsFeatureOn("guideAhPriority")) .. "  — /p1settings ah on|off")
     print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
     print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
+end
+
+local function SetGuideAhPriority(on, quiet)
+    db.guideAhPriority = on
+    PhaseOneLoaderDB = PhaseOneLoaderDB or {}
+    PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
+    PhaseOneLoaderDB.guideAhPriority = on
+    PhaseOneDruidLoaderDB.guideAhPriority = on
+    if not quiet then
+        print("|cff00ccffP1 Settings:|r AH priority " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r")
+            .. " — guide shows AH before quests")
+    end
 end
 
 local function SetAllFeatures(on)
@@ -234,16 +248,26 @@ SlashCmdList["P1SETTINGS"] = function(msg)
         SetAllFeatures(false)
         return
     end
+    if msg == "ah on" then
+        SetGuideAhPriority(true)
+        return
+    end
+    if msg == "ah off" then
+        SetGuideAhPriority(false)
+        return
+    end
     PrintSettings()
 end
 
 SLASH_P1FIX1 = "/p1fix"
 SlashCmdList["P1FIX"] = function()
-    if TomTom and TomTom.activeWaypoint then
+    if P1Waypoint and P1Waypoint.ClearActive then
+        P1Waypoint:ClearActive()
+    elseif TomTom and TomTom.activeWaypoint then
         TomTom.activeWaypoint = nil
         if TomTom.arrow then TomTom.arrow:Hide() end
     end
-    print("|cff00ccffP1 Fix:|r Cleared stuck TomTom arrow.")
+    print("|cff00ccffP1 Fix:|r Cleared stuck quest arrow.")
     if WeakAuras and WeakAuras.Toggle then
         if WeakAuras.IsPaused and not WeakAuras.IsPaused() then
             WeakAuras.Toggle()
@@ -296,6 +320,8 @@ loader:SetScript("OnEvent", function()
         print("|cff00ccff" .. PACK_NAME .. "|r updated to v" .. PACK_VERSION .. " — |cff00ff00/reload|r was enough.")
     end
     db.lastSeenVersion = PACK_VERSION
+
+    if db.guideAhPriority == nil then db.guideAhPriority = true end
 
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION

@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.6.3-druid"
+local PACK_VERSION = "1.6.4-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.3|r — Grok-verified IDs · PATH to 58 · |cff00ff00/p1guide|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.4|r — character scan · AH priority · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 
@@ -70,9 +70,10 @@ end
 local function PrintMinimalAddons()
     print("|cff00ccffP1 Quest Pack|r — enable ONLY these at Character Select → AddOns:")
     print("  [x] PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide")
-    print("  [x] Questie-335, TomTom, !Astrolabe")
+    print("  [x] Questie-335, !Astrolabe, Auctionator")
+    print("  [ ] TomTom — not required (quest arrow in P1QuestNav)")
     print("  [x] Load out of date AddOns")
-    print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon, Auctionator")
+    print("|cffaaaaaaDisabled by PLAY.bat:|r HUD, Leatrix, WeakAuras, Bagnon")
     print("|cffaaaaaaToggle features:|r /p1settings")
 end
 
@@ -87,10 +88,23 @@ local function PrintSettings()
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (feeds guide NEXT)")
     print("  Guide:   " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide  (new: PATH + BIS icons + min btn)")
     print("  Autogo:  " .. Yn(IsFeatureOn("guideAutoWaypoint")) .. "  — /p1guide autogo")
+    print("  AH pri:  " .. Yn(IsFeatureOn("guideAhPriority")) .. "  — /p1settings ah on|off")
     print("  Tips:    " .. Yn(IsFeatureOn("tipsVisible")) .. "  — /p1tips")
     print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
     print("|cffaaaaaaPower:|r /p1settings all on  ·  /p1settings all off")
+end
+
+local function SetGuideAhPriority(on, quiet)
+    db.guideAhPriority = on
+    PhaseOneLoaderDB = PhaseOneLoaderDB or {}
+    PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
+    PhaseOneLoaderDB.guideAhPriority = on
+    PhaseOneDruidLoaderDB.guideAhPriority = on
+    if not quiet then
+        print("|cff00ccffP1 Settings:|r AH priority " .. (on and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r")
+            .. " — guide shows AH before quests")
+    end
 end
 
 local function SetAllFeatures(on)
@@ -269,16 +283,26 @@ local function EnsureSlash()
             SetAllFeatures(false)
             return
         end
+        if msg == "ah on" then
+            SetGuideAhPriority(true)
+            return
+        end
+        if msg == "ah off" then
+            SetGuideAhPriority(false)
+            return
+        end
         PrintSettings()
     end
 
     SLASH_P1FIX1 = "/p1fix"
     SlashCmdList["P1FIX"] = function()
-        if TomTom and TomTom.activeWaypoint then
+        if P1Waypoint and P1Waypoint.ClearActive then
+            P1Waypoint:ClearActive()
+        elseif TomTom and TomTom.activeWaypoint then
             TomTom.activeWaypoint = nil
             if TomTom.arrow then TomTom.arrow:Hide() end
         end
-        print("|cff00ccffP1 Fix:|r Cleared stuck TomTom arrow.")
+        print("|cff00ccffP1 Fix:|r Cleared stuck quest arrow.")
         if WeakAuras and WeakAuras.Toggle then
             if WeakAuras.IsPaused and not WeakAuras.IsPaused() then
                 WeakAuras.Toggle()
@@ -336,13 +360,14 @@ loader:SetScript("OnEvent", function()
     db.lastSeenVersion = PACK_VERSION
 
     if db.guideAutoWaypoint == nil then db.guideAutoWaypoint = true end
+    if db.guideAhPriority == nil then db.guideAhPriority = true end
 
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.6.2:|r PATH to lvl 58 — Wildheart finish, BRD splurges, talent @lvl tips")
-            print("|cff00ccffP1 v1.6.2:|r Grok handoff: tools\\agent-handoff.ps1 · Docs\\grok-handoff\\")
-            print("|cff00ccffP1 v1.6.2:|r Warlock pack: P1WarlockGuide /p1wguide (scaffold)")
+            print("|cff00ccffP1 v1.6.4:|r Character scan — /p1scan · AH before quests in guide")
+            print("|cff00ccffP1 v1.6.4:|r Auctionator ON · open AH then click [AH] or /p1ah")
+            print("|cff00ccffP1 v1.6.4:|r Arrow in P1QuestNav (TomTom not required)")
         end)
     end
 

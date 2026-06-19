@@ -12,7 +12,7 @@ Fast loop for developing Phase One packs against a local Warmane 3.3.5 client.
 
 - Read your saved WoW path from `tools/wow-path.cfg`
 - `git pull origin main` (skips gracefully if not a git repo)
-- **Quest pack sync** — copies 7 core addons (Loader, AutoQuest, QuestNav, Guide, Questie, TomTom, Astrolabe)
+- **Quest pack sync** — copies 7 core addons (Loader, AutoQuest, QuestNav, Guide, Questie, Astrolabe, Auctionator)
 - Updates all `WTF/Account/**/AddOns.txt` from `tools/addons-manifest.txt` (pack-aware guide addon)
 - Moves manifest-OFF addons (HUD, Leatrix, WeakAuras, Bagnon, etc.) to `_disabled/`
 - Prints **"In game: /reload"**
@@ -46,9 +46,11 @@ Format: `AddonFolderName: 1` (on) or `: 0` (off).
 
 `tools/addons-manifest.txt` lists required ON/OFF addons. `tools/write-addons-txt.ps1` merges the manifest into every existing `AddOns.txt` under `WTF/Account`, preserving unknown addons as-is.
 
-**Required ON (7 addons):** PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide *or* P1AdventureGuide, Questie-335, TomTom, !Astrolabe
-
-**OFF (conflicts / optional):** P1RangeDisplay, P1DamageText, P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras*, Bagnon*, Auctionator
+**Required ON (7 addons):** PhaseOneLoader, P1AutoQuest, P1QuestNav, P1DruidGuide *or* P1AdventureGuide, Questie-335, !Astrolabe, Auctionator
+
+**OFF (conflicts / optional):** TomTom (arrow is **P1Waypoint** in P1QuestNav), P1RangeDisplay, P1DamageText, P1FeralHUD, P1WarlockHUD, Leatrix_Plus, WeakAuras*, Bagnon*
+
+**Waypoint note:** Do not re-enable vendored TomTom unless fixing Questie shim bugs. P1QuestNav exposes `_G.TomTom = P1Waypoint` for Questie ctrl+click.
 
 In game: **`/p1minimal`** prints the same checklist.
 

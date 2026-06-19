@@ -95,7 +95,7 @@ end
 
 local function UpdateDepStatus()
     status.questieLoaded = LoadQuestieModules()
-    status.tomtomLoaded = not not (TomTom and TomTom.AddWaypoint)
+    status.tomtomLoaded = not not (P1Waypoint and P1Waypoint.AddWaypoint)
     status.astrolabeLoaded = not not GetAstrolabe()
 end
 
@@ -413,9 +413,9 @@ local function FindBestQuestTarget()
 end
 
 local function SetTomTomWaypoint(title, areaId, x, y)
-    if not TomTom or not TomTom.AddWaypoint then return nil end
-    if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint and TomTom.RemoveWaypoint then
-        TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
+    if not P1Waypoint or not P1Waypoint.AddWaypoint then return nil end
+    if Questie and Questie.db and Questie.db.char and Questie.db.char._tom_waypoint and P1Waypoint.RemoveWaypoint then
+        P1Waypoint:RemoveWaypoint(Questie.db.char._tom_waypoint)
     end
     local uid
     local uiMapId = areaId
@@ -431,14 +431,14 @@ local function SetTomTomWaypoint(title, areaId, x, y)
     if QuestieCompat and QuestieCompat.Is335 and QuestieCompat.TomTom_AddWaypoint then
         uid = QuestieCompat.TomTom_AddWaypoint(title, uiMapId, x, y)
     else
-        uid = TomTom:AddWaypoint(uiMapId, x / 100, y / 100, { title = title, crazy = true })
+        uid = P1Waypoint:AddWaypoint(uiMapId, x / 100, y / 100, { title = title, crazy = true })
     end
     if Questie and Questie.db and Questie.db.char then
         Questie.db.char._tom_waypoint = uid
     end
-    if uid and TomTom.SetActiveWaypoint then
-        TomTom:SetActiveWaypoint(uid)
-        if TomTom.arrow then TomTom.arrow:Show() end
+    if uid and P1Waypoint.SetActiveWaypoint then
+        P1Waypoint:SetActiveWaypoint(uid)
+        if P1Waypoint.arrow then P1Waypoint.arrow:Show() end
     end
     return uid
 end
@@ -631,14 +631,14 @@ local function TryAutoMove()
         return
     end
 
-    if not TomTom or not TomTom.GetActiveWaypoint then
-        status.whyNotMoving = "TomTom missing"
+    if not P1Waypoint or not P1Waypoint.GetActiveWaypoint then
+        status.whyNotMoving = "P1 arrow missing"
         return
     end
 
-    local wp = TomTom:GetActiveWaypoint()
+    local wp = P1Waypoint:GetActiveWaypoint()
     if not wp or not wp.x or not wp.y then
-        status.whyNotMoving = "no TomTom waypoint"
+        status.whyNotMoving = "no P1 waypoint"
         return
     end
 
@@ -798,7 +798,7 @@ SlashCmdList["P1QUEST"] = function()
     local on = s.enabled and "|cff00ff00ON|r" or "|cffaaaaaaOFF|r"
     print("|cff00ccffP1 Auto Quest|r v1.5.0 — " .. on)
     print("  Questie: " .. (s.questieLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
-    print("  TomTom:  " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
+    print("  P1 Arrow: " .. (s.tomtomLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Astrolabe: " .. (s.astrolabeLoaded and "|cff00ff00loaded|r" or "|cffff0000MISSING|r"))
     print("  Active quests in log: " .. tostring(s.activeQuestCount or 0))
     print("  Mode: " .. (s.mode or "|cffaaaaaanone|r"))
