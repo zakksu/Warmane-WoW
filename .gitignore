@@ -4,6 +4,7 @@ tools/automation/reports/
 tools/automation/control/PAUSED
 tools/automation/control/state.json
 tools/automation/control/daemon.pid
+tools/wow-login.cfg
 *.zip
 
 # OS

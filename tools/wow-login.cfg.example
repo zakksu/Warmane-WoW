@@ -1,0 +1,3 @@
+# Copy to wow-login.cfg (gitignored). Used only by local harness auto-login.
+# account=YourAccount
+# password=YourPassword

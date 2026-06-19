@@ -77,6 +77,62 @@ function Get-WowPath {
     throw "Missing tools/wow-path.cfg - run PLAY.bat once"
 }
 
+function Get-WowLoginCredentials {
+    $cfg = Join-Path (Split-Path $PSScriptRoot -Parent) "wow-login.cfg"
+    if (-not (Test-Path $cfg)) { return $null }
+    $account = $null
+    $password = $null
+    foreach ($line in (Get-Content $cfg -Encoding UTF8)) {
+        $line = $line.Trim()
+        if ($line -match '^\s*#' -or -not $line) { continue }
+        if ($line -match '^account\s*=\s*(.+)$') { $account = $Matches[1].Trim() }
+        if ($line -match '^password\s*=\s*(.+)$') { $password = $Matches[1].Trim() }
+    }
+    if ($account -and $password) {
+        return @{ account = $account; password = $password }
+    }
+    return $null
+}
+
+function Send-WowUnicodeLine {
+    param([string]$Text)
+    Focus-WowWindow | Out-Null
+    [WowWin32]::UnicodeText($Text)
+    Start-Sleep -Milliseconds 120
+}
+
+function Invoke-WowLoginScreen {
+    param(
+        [string]$Account,
+        [string]$Password
+    )
+    if (-not $Account -or -not $Password) { return $false }
+    Focus-WowWindow | Out-Null
+    Start-Sleep -Milliseconds 800
+    $r = Get-WowWindowRect
+    $cx = $r.left + [int]($r.width * 0.50)
+    $cy = $r.top + [int]($r.height * 0.42)
+    Click-WowScreen -X $cx -Y $cy -DelayMs 200
+    Start-Sleep -Milliseconds 300
+    [WowWin32]::ChordTap(0x41, 0x11)
+    Start-Sleep -Milliseconds 100
+    Send-WowUnicodeLine $Account
+    [WowWin32]::KeyTap(0x09)
+    Start-Sleep -Milliseconds 200
+    Send-WowUnicodeLine $Password
+    Start-Sleep -Milliseconds 200
+    [WowWin32]::KeyTap(0x0D)
+    Start-Sleep -Seconds 6
+    return $true
+}
+
+function Invoke-WowEnterWorld {
+    Focus-WowWindow | Out-Null
+    Start-Sleep -Seconds 2
+    [WowWin32]::KeyTap(0x0D)
+    Start-Sleep -Seconds 10
+}
+
 function Test-WowRunning {
     return [bool](Get-Process -Name "Wow" -ErrorAction SilentlyContinue | Select-Object -First 1)
 }
@@ -124,16 +180,30 @@ function Ensure-WowReady {
     param(
         [int]$StartWaitSec = 240,
         [int]$InWorldTimeoutSec = 90,
-        [switch]$SkipInWorldCheck
+        [switch]$SkipInWorldCheck,
+        [switch]$SkipAutoLogin
     )
     if (-not (Test-WowRunning)) {
         Start-WowClient -WaitSec $StartWaitSec | Out-Null
     }
     Focus-WowWindow | Out-Null
     if ($SkipInWorldCheck) { return $true }
-    $inWorld = Wait-WowPlayerInWorld -TimeoutSec $InWorldTimeoutSec
+
+    $inWorld = Wait-WowPlayerInWorld -TimeoutSec 12
+    if (-not $inWorld -and -not $SkipAutoLogin) {
+        $creds = Get-WowLoginCredentials
+        if ($creds) {
+            Write-Host "Attempting WoW login (tools/wow-login.cfg) ..." -ForegroundColor DarkCyan
+            Invoke-WowLoginScreen -Account $creds.account -Password $creds.password | Out-Null
+            Invoke-WowEnterWorld
+            $inWorld = Wait-WowPlayerInWorld -TimeoutSec $InWorldTimeoutSec
+        }
+    }
     if (-not $inWorld) {
-        throw "WoW not in-world within ${InWorldTimeoutSec}s (log in and enter world)"
+        $inWorld = Wait-WowPlayerInWorld -TimeoutSec $InWorldTimeoutSec
+    }
+    if (-not $inWorld) {
+        throw "WoW not in-world within ${InWorldTimeoutSec}s (check wow-login.cfg or log in manually)"
     }
     return $true
 }
