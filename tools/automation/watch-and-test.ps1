@@ -39,7 +39,7 @@ function Queue-AutoTest {
         }
         Write-Host ""
         Write-Host "Change detected - running autonomous harness ..." -ForegroundColor Cyan
-        & $using:auto -Suite $using:Suite -MaxCycles 2 -SkipRelog:$false
+        & $using:auto -Suite scope -MaxCycles 1 -SkipRelog:$true -UntilScopeComplete
     } | Out-Null
     $script:timer.Start()
 }

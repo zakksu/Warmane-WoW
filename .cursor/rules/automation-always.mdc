@@ -7,7 +7,7 @@ alwaysApply: true
 
 After editing `P1*` Lua/XML or automation scripts:
 
-1. **Run** `tools/automation/run-autonomous.ps1` (or `AUTO_TEST.bat`) yourself — do not tell the user to run PLAY, /reload, or /p1test.
+1. **Run** `ITERATE.bat` or `tools/automation/run-iterate.ps1` until `scope-status.json` shows `allRequiredPass: true`. Fallback: `AUTO_TEST.bat` (smoke only).
 2. **Respect killswitch** — if `tools/automation/control/PAUSED` exists or user ran `STOP_AUTO.bat`, skip automation (use `-IgnorePause` only when user explicitly overrides).
 3. **Read** `tools/automation/reports/harness-latest.json` and the latest PNG in `tools/automation/reports/screenshots/`.
 4. **Fix** failures, then re-run the harness until `success: true` or you are blocked (e.g. WoW not installed).

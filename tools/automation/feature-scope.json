@@ -1,0 +1,79 @@
+{
+  "version": "2.1.0",
+  "description": "Required features must all pass before iteration stops. Optional features warn only.",
+  "features": [
+    {
+      "id": "core_loader",
+      "name": "Loader + guide loaded",
+      "required": true,
+      "checks": ["addon:P1DruidGuide", "addon:PhaseOneLoader", "table:P1DG"]
+    },
+    {
+      "id": "character_scan",
+      "name": "Live character scan",
+      "required": true,
+      "checks": ["fn:ScanCharacter", "scan:pcall", "scan:level", "scan:gold"]
+    },
+    {
+      "id": "market_db",
+      "name": "Realm market DB (Icecrown moat)",
+      "required": true,
+      "checks": ["fn:GetRealmPrice", "ah:realm_key"]
+    },
+    {
+      "id": "ah_scanner",
+      "name": "AH browse scanner (assist-only)",
+      "required": true,
+      "checks": ["fn:ScanBrowseList"]
+    },
+    {
+      "id": "relist_assist",
+      "name": "Relist suggestions (no auto-post)",
+      "required": true,
+      "checks": ["fn:BuildRelistSuggestions", "ah:relist_table"]
+    },
+    {
+      "id": "auction_bridge",
+      "name": "Auctionator bridge",
+      "required": true,
+      "checks": ["ah:Auctionator", "ah:EnsureAuctionator", "ah:IsAuctionatorLoaded", "fn:SearchAuctionItem"]
+    },
+    {
+      "id": "shop_rank",
+      "name": "SHOP list + NEXT rank",
+      "required": true,
+      "checks": ["fn:BuildShopList", "ah:shop_list", "fn:RankNextActions", "rank:list"]
+    },
+    {
+      "id": "brain_history",
+      "name": "Scan history / delta",
+      "required": true,
+      "checks": ["fn:RecordScan"]
+    },
+    {
+      "id": "guide_ui",
+      "name": "Guide overlay + druid gate",
+      "required": true,
+      "checks": ["ui:P1DruidGuide_Refresh", "class:druid"]
+    },
+    {
+      "id": "harness_mirror",
+      "name": "HarnessLog SavedVariables mirror",
+      "required": true,
+      "checks": ["harness:mirror"]
+    },
+    {
+      "id": "ah_live_open",
+      "name": "AH open live search",
+      "required": false,
+      "checks": ["ah:frame_open", "ah:shopPane", "ah:buyTabIndex"]
+    }
+  ],
+  "slashSmoke": [
+    { "cmd": "/p1scan", "expect": "P1 Scan", "feature": "slash_p1scan" },
+    { "cmd": "/p1ah debug", "expect": "P1 AH debug|P1 Market", "feature": "slash_p1ah_debug" },
+    { "cmd": "/p1ah scan", "expect": "P1 AH scan", "feature": "slash_p1ah_scan" },
+    { "cmd": "/p1ah relist", "expect": "P1 Relist", "feature": "slash_p1ah_relist" },
+    { "cmd": "/p1test scope", "expect": "\\[P1TEST\\].*scopeComplete=1", "feature": "slash_p1test_scope" }
+  ]
+}

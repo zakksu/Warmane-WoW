@@ -208,6 +208,33 @@ function Ensure-WowReady {
     return $true
 }
 
+function Invoke-WowRecover {
+    param([string]$Reason = "recover")
+    Write-Host "WoW recover: $Reason" -ForegroundColor DarkYellow
+    try {
+        if (-not (Test-WowRunning)) {
+            Start-WowClient | Out-Null
+            Start-Sleep -Seconds 4
+        }
+        Focus-WowWindow | Out-Null
+        Dismiss-WowUI -EscapeCount 6 -ClickWorld -ClickChat
+        Start-Sleep -Milliseconds 400
+        if (Wait-WowPlayerInWorld -TimeoutSec 8) { return $true }
+        $creds = Get-WowLoginCredentials
+        if ($creds) {
+            Invoke-WowLoginScreen -Account $creds.account -Password $creds.password | Out-Null
+            Invoke-WowEnterWorld
+            Start-Sleep -Seconds 8
+            if (Wait-WowPlayerInWorld -TimeoutSec 45) { return $true }
+        }
+        Send-WowSlashCommand "/reload" -NoDismiss
+        Start-Sleep -Seconds 16
+        return [bool](Wait-WowPlayerInWorld -TimeoutSec 50)
+    } catch {
+        return $false
+    }
+}
+
 function Wait-FrameXmlUpdated {
     param(
         [int]$TimeoutSec = 45,

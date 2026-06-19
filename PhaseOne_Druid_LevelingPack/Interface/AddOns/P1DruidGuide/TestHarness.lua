@@ -69,6 +69,9 @@ function P1DG.RunModuleTests()
     check("fn:RankNextActions", P1DG.RankNextActions ~= nil)
     check("fn:RecordScan", P1DG.RecordScan ~= nil)
     check("ui:P1DruidGuide_Refresh", P1DruidGuide_Refresh ~= nil)
+    P1DruidGuideDB = P1DruidGuideDB or {}
+    check("harness:mirror", P1DruidGuideDB.harnessLog ~= nil and #P1DruidGuideDB.harnessLog > 0,
+        "harnessLog empty — DevLog not mirroring")
 
     local _, class = UnitClass("player")
     check("class:druid", class == "DRUID", "got " .. tostring(class))
@@ -148,6 +151,77 @@ function P1DG.RunShopRankTests()
         check("rank:count", #ranked >= 0)
     end
     return pass, total
+end
+
+local SCOPE_FEATURES = {
+    core_loader = { "addon:P1DruidGuide", "addon:PhaseOneLoader", "table:P1DG" },
+    character_scan = { "fn:ScanCharacter", "scan:pcall", "scan:level", "scan:gold" },
+    market_db = { "fn:GetRealmPrice", "ah:realm_key" },
+    ah_scanner = { "fn:ScanBrowseList" },
+    relist_assist = { "fn:BuildRelistSuggestions", "ah:relist_table" },
+    auction_bridge = { "ah:Auctionator", "ah:EnsureAuctionator", "ah:IsAuctionatorLoaded", "fn:SearchAuctionItem" },
+    shop_rank = { "fn:BuildShopList", "ah:shop_list", "fn:RankNextActions", "rank:list" },
+    brain_history = { "fn:RecordScan" },
+    guide_ui = { "ui:P1DruidGuide_Refresh", "class:druid" },
+    harness_mirror = { "harness:mirror" },
+    ah_live_open = { "ah:frame_open", "ah:shopPane", "ah:buyTabIndex" },
+}
+
+local SCOPE_REQUIRED = {
+    core_loader = true,
+    character_scan = true,
+    market_db = true,
+    ah_scanner = true,
+    relist_assist = true,
+    auction_bridge = true,
+    shop_rank = true,
+    brain_history = true,
+    guide_ui = true,
+    harness_mirror = true,
+    ah_live_open = false,
+}
+
+function P1DG.RecordScopeResult(id, ok, detail)
+    P1DruidGuideDB = P1DruidGuideDB or {}
+    P1DruidGuideDB.scopeResults = P1DruidGuideDB.scopeResults or {}
+    P1DruidGuideDB.scopeResults[id] = { pass = ok and 1 or 0, detail = detail or "", at = GetTime() }
+    P1DG.EmitState("scope_" .. id, ok and 1 or 0)
+end
+
+function P1DG.RunScopeTests()
+    P1DG.DevLog("INFO", "=== scope ===")
+    P1DG.RunSelfTests("all")
+    local log = EnsureDevLog()
+    local allRequired = true
+    for fid, checks in pairs(SCOPE_FEATURES) do
+        local passed, total = 0, #checks
+        local fails = {}
+        for _, cname in ipairs(checks) do
+            local found = false
+            for i = #log, 1, -1 do
+                local e = log[i]
+                if e.msg == cname or (e.msg and e.msg:match("^" .. cname)) then
+                    found = true
+                    if e.level == "PASS" then passed = passed + 1 else fails[#fails + 1] = cname end
+                    break
+                end
+            end
+            if not found then fails[#fails + 1] = cname .. " (missing)" end
+        end
+        local ok = (passed == total) and (#fails == 0)
+        local detail = ok and "ok" or table.concat(fails, ", ")
+        P1DG.RecordScopeResult(fid, ok, detail)
+        if SCOPE_REQUIRED[fid] and not ok then allRequired = false end
+    end
+    P1DruidGuideDB.scopeComplete = allRequired and 1 or 0
+    P1DruidGuideDB.scopeAt = GetTime()
+    P1DG.EmitState("scopeComplete", allRequired and 1 or 0)
+    if allRequired then
+        P1DG.DevLog("PASS", "scope all required features pass")
+    else
+        P1DG.DevLog("FAIL", "scope incomplete — fix failed scope_* checks")
+    end
+    return allRequired
 end
 
 function P1DG.RunSelfTests(scope)
@@ -268,6 +342,8 @@ local function HandleP1Test(msg)
         P1DG.RunSelfTests("scan")
     elseif msg == "ah" or msg == "auction" then
         P1DG.RunSelfTests("ah")
+    elseif msg == "scope" then
+        P1DG.RunScopeTests()
     elseif msg == "log" then
         P1DG.PrintDevLog(60)
     elseif msg == "clear" then
@@ -278,7 +354,7 @@ local function HandleP1Test(msg)
     elseif msg == "state" or msg == "status" then
         P1DG.EmitHarnessState()
     else
-        P1DG.DevLog("INFO", "usage: /p1test run|mod|scan|ah|state|log|clear|calibrate")
+        P1DG.DevLog("INFO", "usage: /p1test run|scope|mod|scan|ah|state|log|clear|calibrate")
     end
 end
 

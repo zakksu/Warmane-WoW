@@ -1,9 +1,10 @@
 # Fully autonomous P1 dev loop: sync -> start WoW -> relog -> test -> report
 # Agents run this after Lua edits. No manual PLAY/reload/chatlog steps.
 param(
-    [ValidateSet("smoke", "modules", "scan", "full")]
+    [ValidateSet("smoke", "modules", "scan", "scope", "full")]
     [string]$Suite = "smoke",
     [int]$MaxCycles = 5,
+    [switch]$UntilScopeComplete,
     [switch]$SkipSync,
     [switch]$SkipRelog,
     [switch]$ForceRelog,
@@ -34,6 +35,7 @@ function Invoke-P1TestSuite {
 
     $stepPass = 0
     $stepFail = 0
+    $Report.scopeSlash = @{}
     foreach ($step in $steps) {
         $cmd = $step.cmd
         $wait = [int]($step.waitMs | ForEach-Object { if ($_){$_} else {2000} })
@@ -84,10 +86,14 @@ function Invoke-P1TestSuite {
         }
 
         if ($ok) { $stepPass++ } else { $stepFail++ }
+        if ($step.feature) {
+            $Report.scopeSlash[$step.feature] = $ok
+        }
         $Report.steps += @{
             cmd = $cmd
             expect = $expect
             pass = $ok
+            feature = $step.feature
             p1testLines = @($p1Lines | Select-Object -Last 10)
             verificationSource = if ($stepVerification) { $stepVerification.source } else { $null }
         }
@@ -133,8 +139,17 @@ function Invoke-P1TestSuite {
     }
     $Report.stepPass = $stepPass
     $Report.stepFail = $stepFail
-    # Step expects are advisory; SavedVariables/harnessLog summary is authoritative pre-reload.
-    $Report.success = $summaryOk
+    $scopeStatus = Get-ScopeFeatureStatus -HarnessLines $Report.harnessLog.lines -SlashResults $Report.scopeSlash
+    $Report.scopePreview = $scopeStatus
+    if ($Suite -eq "scope") {
+        $scopeLineOk = $false
+        foreach ($line in $Report.harnessLog.lines) {
+            if ($line -match 'scopeComplete=1') { $scopeLineOk = $true; break }
+        }
+        $Report.success = $scopeStatus.allRequiredPass -and ($scopeLineOk -or $summaryOk)
+    } else {
+        $Report.success = $summaryOk
+    }
     return $Report
 }
 
@@ -164,9 +179,15 @@ function Invoke-AutonomousCycle {
         addonsTxt = @{}
         steps = @()
         actions = @()
+        scopeSlash = @{}
     }
 
-    Ensure-WowReady -InWorldTimeoutSec 60 | Out-Null
+    try {
+        Ensure-WowReady -InWorldTimeoutSec 75 | Out-Null
+    } catch {
+        $null = Invoke-WowRecover -Reason $_.Exception.Message
+        Ensure-WowReady -InWorldTimeoutSec 75 | Out-Null
+    }
     $report.screenshots.before = Capture-WowWindow -Label ("cycle{0}-before" -f $Cycle)
     $report.wowTitle = Get-WowWindowTitle
     $xmlOffset = Get-FrameXmlOffset
@@ -248,8 +269,20 @@ function Invoke-AutonomousCycle {
     }
     $report.harnessLog.count = $report.harnessLog.lines.Count
 
+    $scopeFinal = Get-ScopeFeatureStatus -HarnessLines $report.harnessLog.lines -SlashResults $report.scopeSlash
+    $report.scope = $scopeFinal
     $svOk = Test-P1SavedVarsSummaryPassed -SavedVars $report.savedVars
-    if ($svOk) {
+    if ($Suite -eq "scope" -and $scopeFinal.allRequiredPass) {
+        $report.success = $true
+        $report.verification = @{
+            passed = $true
+            source = "scope"
+            summaryLine = "scope $($scopeFinal.requiredPass)/$($scopeFinal.requiredTotal) required pass"
+            savedVarsPass = $report.savedVars.lastTestPass
+            savedVarsTotal = $report.savedVars.lastTestTotal
+        }
+        $report.actions += "verified:scope_complete"
+    } elseif ($svOk) {
         $report.success = $true
         $report.verification = @{
             passed = $true
@@ -289,8 +322,13 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " P1 Autonomous Harness"
 Write-Host "========================================" -ForegroundColor Cyan
 
+if ($UntilScopeComplete) {
+    $Suite = "scope"
+    if ($MaxCycles -lt 20) { $MaxCycles = 50 }
+}
+
 if ($DryRun) {
-    Write-Host "[dry-run] sync=$(-not $SkipSync) relog=$(-not $SkipRelog) cycles=$MaxCycles suite=$Suite"
+    Write-Host "[dry-run] sync=$(-not $SkipSync) relog=$(-not $SkipRelog) cycles=$MaxCycles suite=$Suite untilScope=$UntilScopeComplete"
     exit 0
 }
 
@@ -342,11 +380,10 @@ for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
         $finalReport = Invoke-AutonomousCycle -Cycle $cycle -DoRelog:$doRelog
     } catch {
         $errMsg = $_.Exception.Message
-        if ($errMsg -match 'Wow\.exe not running|WoW window not found') {
+        if ($errMsg -match 'Wow\.exe not running|WoW window not found|not in-world') {
             try {
-                Write-Host "WoW not running - restarting client ..." -ForegroundColor Yellow
-                Start-WowClient | Out-Null
-                $null = Wait-WowPlayerInWorld -TimeoutSec 90
+                Write-Host "WoW recover + retry cycle ..." -ForegroundColor Yellow
+                $null = Invoke-WowRecover -Reason $errMsg
                 $finalReport = Invoke-AutonomousCycle -Cycle $cycle -DoRelog:$doRelog
             } catch {
                 $errMsg = $_.Exception.Message
@@ -381,9 +418,19 @@ for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
     Write-HarnessReport -Report $finalReport -FileName ("harness-{0}.json" -f (Get-Date -Format "yyyyMMdd-HHmmss")) | Out-Null
 
     if ($finalReport.success) {
-        Write-Host "PASS cycle $cycle - $reportPath" -ForegroundColor Green
-        Update-HarnessControlRunResult -Success $true -Message "cycle $cycle pass"
-        exit 0
+        $scopeMsg = ""
+        if ($finalReport.scope) {
+            $scopeMsg = " scope $($finalReport.scope.requiredPass)/$($finalReport.scope.requiredTotal)"
+        }
+        Write-Host "PASS cycle $cycle$scopeMsg - $reportPath" -ForegroundColor Green
+        if ($Suite -eq "scope" -and $finalReport.scopeComplete) {
+            Write-Host "SCOPE COMPLETE - all required features pass" -ForegroundColor Green
+            Write-Host "Gaps: $(Join-Path (Get-HarnessReportDir) 'scope-gaps.txt')" -ForegroundColor DarkGray
+        }
+        Update-HarnessControlRunResult -Success $true -Message "cycle $cycle pass$scopeMsg"
+        if (-not $UntilScopeComplete -or ($finalReport.scopeComplete)) {
+            exit 0
+        }
     }
 
     Write-Host "FAIL cycle $cycle - $reportPath" -ForegroundColor Red

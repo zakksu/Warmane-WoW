@@ -341,6 +341,125 @@ function New-HarnessRecommendations {
     return $tips
 }
 
+function Get-FeatureScopeManifest {
+    $path = Join-Path $PSScriptRoot "feature-scope.json"
+    if (-not (Test-Path $path)) { return $null }
+    return Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json
+}
+
+function Get-P1CheckResultsFromLog {
+    param([string[]]$Lines)
+    $map = @{}
+    foreach ($line in $Lines) {
+        if ($line -match '\[P1TEST\]\s+PASS\s+(.+)$') {
+            $map[$Matches[1].Trim()] = $true
+        } elseif ($line -match '\[P1TEST\]\s+FAIL\s+(.+?)(?:\s+—|$)') {
+            $map[$Matches[1].Trim()] = $false
+        }
+    }
+    return $map
+}
+
+function Get-ScopeFeatureStatus {
+    param(
+        $Manifest = $null,
+        [string[]]$HarnessLines = @(),
+        [hashtable]$SlashResults = $null
+    )
+    if (-not $Manifest) { $Manifest = Get-FeatureScopeManifest }
+    if (-not $Manifest) { return @{ features = @(); allRequiredPass = $false } }
+
+    $checks = Get-P1CheckResultsFromLog -Lines $HarnessLines
+    $scopeComplete = $false
+    foreach ($line in $HarnessLines) {
+        if ($line -match 'scopeComplete=1') { $scopeComplete = $true }
+    }
+
+    $features = New-Object System.Collections.Generic.List[object]
+    foreach ($feat in $Manifest.features) {
+        $passed = 0
+        $failed = @()
+        foreach ($c in $feat.checks) {
+            if ($checks.ContainsKey($c)) {
+                if ($checks[$c]) { $passed++ } else { $failed += $c }
+            } else {
+                $failed += $c
+            }
+        }
+        $ok = ($failed.Count -eq 0)
+        $features.Add([ordered]@{
+            id = $feat.id
+            name = $feat.name
+            required = [bool]$feat.required
+            pass = $ok
+            checksPassed = $passed
+            checksTotal = @($feat.checks).Count
+            failedChecks = @($failed)
+        }) | Out-Null
+    }
+
+    if ($Manifest.slashSmoke) {
+        foreach ($sm in $Manifest.slashSmoke) {
+            $sid = $sm.feature
+            $ok = $false
+            if ($SlashResults -and $SlashResults.ContainsKey($sid)) {
+                $ok = [bool]$SlashResults[$sid]
+            }
+            $features.Add([ordered]@{
+                id = $sid
+                name = "slash: $($sm.cmd)"
+                required = $true
+                pass = $ok
+                checksPassed = if ($ok) { 1 } else { 0 }
+                checksTotal = 1
+                failedChecks = if ($ok) { @() } else { @($sm.expect) }
+            }) | Out-Null
+        }
+    }
+
+    $required = @($features | Where-Object { $_.required })
+    $reqPass = @($required | Where-Object { $_.pass }).Count
+    $allRequiredPass = ($reqPass -eq $required.Count) -and $scopeComplete
+
+    return @{
+        version = $Manifest.version
+        scopeComplete = $scopeComplete
+        allRequiredPass = $allRequiredPass
+        requiredPass = $reqPass
+        requiredTotal = $required.Count
+        features = @($features)
+    }
+}
+
+function Write-ScopeStatusReport {
+    param($ScopeStatus)
+    $dir = Get-HarnessReportDir
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    $jsonPath = Join-Path $dir "scope-status.json"
+    $gapsPath = Join-Path $dir "scope-gaps.txt"
+    $ScopeStatus | ConvertTo-Json -Depth 6 | Set-Content -Path $jsonPath -Encoding UTF8
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    $lines.Add("P1 scope status v$($ScopeStatus.version)") | Out-Null
+    $lines.Add("required: $($ScopeStatus.requiredPass)/$($ScopeStatus.requiredTotal) | scopeComplete=$($ScopeStatus.scopeComplete)") | Out-Null
+    $lines.Add("") | Out-Null
+    foreach ($f in $ScopeStatus.features) {
+        if ($f.required -and -not $f.pass) {
+            $lines.Add("FAIL [$($f.id)] $($f.name)") | Out-Null
+            foreach ($fc in $f.failedChecks) { $lines.Add("  - $fc") | Out-Null }
+        }
+    }
+    if ($ScopeStatus.allRequiredPass) {
+        $lines.Add("") | Out-Null
+        $lines.Add("ALL REQUIRED FEATURES PASS") | Out-Null
+    }
+    Set-Content -Path $gapsPath -Value $lines -Encoding UTF8
+    return @{
+        json = $jsonPath
+        gaps = $gapsPath
+    }
+}
+
 function Write-HarnessReport {
     param(
         [hashtable]$Report,
@@ -349,8 +468,29 @@ function Write-HarnessReport {
     $dir = Get-HarnessReportDir
     if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
     $path = Join-Path $dir $FileName
+
+    $hLines = @()
+    if ($Report.harnessLog -and $Report.harnessLog.lines) { $hLines = @($Report.harnessLog.lines) }
+    elseif ($Report.savedVars -and $Report.savedVars.harnessLogLines) { $hLines = @($Report.savedVars.harnessLogLines) }
+    $slashMap = @{}
+    if ($Report.scopeSlash) {
+        foreach ($k in $Report.scopeSlash.Keys) { $slashMap[$k] = $Report.scopeSlash[$k] }
+    }
+    $scope = Get-ScopeFeatureStatus -HarnessLines $hLines -SlashResults $slashMap
+    $Report.scope = $scope
+    $Report.scopeComplete = $scope.allRequiredPass
+    if ($FileName -eq "harness-latest.json") {
+        Write-ScopeStatusReport -ScopeStatus $scope | Out-Null
+    }
+
     $Report.recommendations = @(New-HarnessRecommendations -Report $Report)
-    $json = $Report | ConvertTo-Json -Depth 8
+    if (-not $scope.allRequiredPass) {
+        $gaps = @($scope.features | Where-Object { $_.required -and -not $_.pass } | Select-Object -First 5)
+        foreach ($g in $gaps) {
+            $Report.recommendations += "SCOPE GAP [$($g.id)]: $($g.failedChecks -join ', ')"
+        }
+    }
+    $json = $Report | ConvertTo-Json -Depth 10
     Set-Content -Path $path -Value $json -Encoding UTF8
     return (Resolve-Path $path).Path
 }

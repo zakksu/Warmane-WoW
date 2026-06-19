@@ -61,7 +61,7 @@ function Start-AutoTestJob {
     $script:TestRunning = $true
     Update-PanelStatus $StatusLabel $DetailLabel $PauseBtn $ResumeBtn
     $pwsh = (Get-Command powershell).Source
-    $args = "-NoProfile -ExecutionPolicy Bypass -File `"$autoScript`" -Suite smoke -MaxCycles 1 -SkipRelog"
+    $args = "-NoProfile -ExecutionPolicy Bypass -File `"$autoScript`" -Suite scope -MaxCycles 1 -SkipRelog -UntilScopeComplete"
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName = $pwsh
     $psi.Arguments = $args

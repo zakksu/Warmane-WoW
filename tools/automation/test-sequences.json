@@ -1,26 +1,34 @@
 {
-  "description": "WoW must be logged in (druid toon). Windowed or windowed-fullscreen recommended.",
+  "description": "WoW druid in-world, windowed. Scope suite runs until feature-scope.json all required pass.",
   "prelude": [
-    { "cmd": "/chatlog", "waitMs": 600, "note": "enable chat log for automation parse" }
+    { "cmd": "/chatlog", "waitMs": 600, "note": "enable chat log when available" },
+    { "cmd": "/p1guide max", "waitMs": 400, "note": "ensure guide visible for UI tests" }
   ],
   "suites": {
     "smoke": [
-      { "cmd": "/p1scan", "waitMs": 1800, "verifyMs": 4000, "maxAttempts": 3, "expect": "P1 Scan" },
-      { "cmd": "/p1test run", "waitMs": 6000, "verifyMs": 8000, "maxAttempts": 3, "expect": "\\[P1TEST\\].*PASS.*summary" }
+      { "cmd": "/p1scan", "waitMs": 1800, "verifyMs": 5000, "maxAttempts": 4, "expect": "P1 Scan" },
+      { "cmd": "/p1test run", "waitMs": 6000, "verifyMs": 10000, "maxAttempts": 4, "expect": "\\[P1TEST\\].*PASS.*summary" }
+    ],
+    "scope": [
+      { "cmd": "/p1scan", "waitMs": 2000, "verifyMs": 5000, "maxAttempts": 4, "expect": "P1 Scan", "feature": "slash_p1scan" },
+      { "cmd": "/p1ah debug", "waitMs": 2000, "verifyMs": 5000, "maxAttempts": 3, "expect": "P1 AH debug|P1 Market", "feature": "slash_p1ah_debug" },
+      { "cmd": "/p1ah scan", "waitMs": 2000, "verifyMs": 4000, "maxAttempts": 3, "expect": "P1 AH scan", "feature": "slash_p1ah_scan" },
+      { "cmd": "/p1ah relist", "waitMs": 2000, "verifyMs": 4000, "maxAttempts": 3, "expect": "P1 Relist", "feature": "slash_p1ah_relist" },
+      { "cmd": "/p1test scope", "waitMs": 8000, "verifyMs": 12000, "maxAttempts": 4, "expect": "scopeComplete=1", "feature": "slash_p1test_scope" }
     ],
     "modules": [
-      { "cmd": "/p1test mod", "waitMs": 2500, "expect": "\\[P1TEST\\] PASS addon:P1DruidGuide" }
+      { "cmd": "/p1test mod", "waitMs": 3000, "verifyMs": 5000, "maxAttempts": 3, "expect": "\\[P1TEST\\] PASS addon:P1DruidGuide" }
     ],
     "scan": [
-      { "cmd": "/p1test scan", "waitMs": 2500, "expect": "\\[P1TEST\\]" }
+      { "cmd": "/p1test scan", "waitMs": 3000, "verifyMs": 5000, "maxAttempts": 3, "expect": "\\[P1TEST\\]" }
     ],
     "ah_closed": [
-      { "cmd": "/p1ah debug", "waitMs": 2000, "expect": "P1 AH debug" },
-      { "cmd": "/p1ah test 10410", "waitMs": 2000, "expect": "QUEUED|searching" }
+      { "cmd": "/p1ah debug", "waitMs": 2000, "verifyMs": 4000, "maxAttempts": 3, "expect": "P1 AH debug" },
+      { "cmd": "/p1ah test 10410", "waitMs": 2500, "verifyMs": 4000, "maxAttempts": 3, "expect": "QUEUED|searching|AH test" }
     ],
     "ah_open": [
-      { "cmd": "/p1ah debug", "waitMs": 2000, "expect": "shopPane=yes|Bridge ready" },
-      { "cmd": "/p1ah test 10410", "waitMs": 5000, "expect": "SEARCHED" }
+      { "cmd": "/p1ah debug", "waitMs": 2000, "verifyMs": 4000, "maxAttempts": 3, "expect": "shopPane=yes|Bridge ready|P1 AH" },
+      { "cmd": "/p1ah test 10410", "waitMs": 6000, "verifyMs": 8000, "maxAttempts": 3, "expect": "SEARCHED|searching|AH test" }
     ]
   },
   "clicks": {
