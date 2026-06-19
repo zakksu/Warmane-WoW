@@ -1,29 +1,48 @@
-# Grok tasks (read-only research — do not edit Lua)
+# Grok tasks — current cycle
 
-**From:** Cursor Agent  
-**Cycle:** v1.6.0  
-**Reply to:** `grok-response.md`
+**From:** Cursor Orchestrator  
+**Target release:** v1.6.4 / v2.0.x  
+**Reply to:** `grok-response.md` + update `CURSOR_TASKS.md`  
+**Rule:** Do **not** edit `.lua` — tables and verification only.
 
-## Task 1 — ID verification
+---
 
-Verify these IDs for **WotLK 3.3.5a**:
+## Grok owns (research)
 
-**Spells in PATH_STEPS:** 768, 1822, 33876, 783, 5217, 49376  
-**Items:** 5201, 6630, 5821, 10410, 10648, 16706, 9427, 16709, 11815, 16707  
-**New 50-58 draft:** 16705, 12927, 13148, 13965, 16708, 16710, 16714, 16716
+| # | Task | Output |
+|---|------|--------|
+| G1 | **Feral 58–80 AH table** — `itemId`, slot, name, `minIlvl`, gold tier, source | Markdown table for `Data.lua` `BIS_BRACKETS` + `GOLD_AH_BIS` |
+| G2 | **Verify v1.6.3 IDs** — 3902, 6505, 17774, 16719/20/17/15/14, 13148, 52610, 13965, 12927 | OK or FIX rows |
+| G3 | **Consumables** — audit `P1DG.AH_TIPS` itemIds vs Questie `wotlkItemDB.lua` | List wrong IDs |
+| G4 | **Warlock PATH 30–50** — spells, wand/staff, trinkets (Horde, gold AH) | 8–10 PATH rows table |
+| G5 | **Outland prep 58–60** — mount gold, first Outland gear gates | Bullet list for PATH hints |
 
-Report: `OK` or `FIX: oldId → newId (reason)`
+---
 
-## Task 2 — PATH 50-58 table
+## Cursor owns (after Grok)
 
-Markdown table: `level | type | id | slot | text | impact`
+| # | Task | Files |
+|---|------|-------|
+| C1 | Paste G1 into `Data.lua` | `P1DruidGuide/Data.lua` |
+| C2 | Apply G2/G3 fixes | `Data.lua`, `Auction.lua` if AH tips |
+| C3 | Warlock PATH 30–50 | `P1WarlockGuide/Data.lua` |
+| C4 | Guide polish (parallel lane A) | `P1DruidGuide/*` — see TASK_DIVISION Agent A |
+| C5 | Ship: version bump, RELEASE, PLAY.bat | Orchestrator |
 
-Gold AH assumed. Horde feral druid.
+---
 
-## Task 3 — Warlock skeleton
+## Run Grok
 
-5 PATH rows for levels 10, 14, 18, 24, 30 (spells + wand/staff). Table only.
+```powershell
+.\tools\agent-handoff.ps1 -RunGrok
+.\tools\agent-handoff.ps1 -Status
+```
 
-## Task 4 — Cursor follow-up
+Or paste into **Grok sidebar**:
 
-Append `CURSOR_TASKS.md` with bullet list of Lua files Cursor should edit based on your findings.
+```
+Repo: Warmane-WoW. Read AGENTS.md + Docs/grok-handoff/GROK_TASKS.md.
+Complete tasks G1–G5. Write ONLY to Docs/grok-handoff/grok-response.md.
+Update CURSOR_TASKS.md with checkbox list for Cursor. No Lua edits.
+Cross-check item IDs against PhaseOne_*/Interface/AddOns/Questie-335/Database/Wotlk/wotlkItemDB.lua.
+```

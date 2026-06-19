@@ -1,8 +1,28 @@
-# Task division — Cursor agents (parallel)
+# Task division — Cursor + Grok
 
-Use **separate Cursor Agent / Cloud tasks** on the same repo. All read `AGENTS.md`. You merge via git + **PLAY.bat** → `/reload`.
+Use **Grok for research tables**, **Cursor for Lua/ship**. Parallel Cursor agents use separate file lanes. All read `AGENTS.md`. Merge via git + **PLAY.bat** → `/reload`.
 
-Last updated: v2.0.0 sprint (2026-06-18)
+Last updated: v1.6.4 sprint (2026-06-18)
+
+---
+
+## Grok vs Cursor (quick split)
+
+| | **Grok** (sidebar / `agent-handoff.ps1`) | **Cursor** (Agent / Cloud) |
+|---|------------------------------------------|----------------------------|
+| **Does** | Wowhead-style tables, ID verify, talent/gear research | `P1*` Lua, UI, loader, tools, releases |
+| **Writes** | `Docs/grok-handoff/grok-response.md` only | `Interface/AddOns/*`, `tools/*`, `RELEASE.txt` |
+| **Never** | Edit `.lua` | Guess item IDs without Questie cross-check |
+| **Run** | `.\tools\agent-handoff.ps1 -RunGrok` | Implement `CURSOR_TASKS.md` after Grok |
+
+**Current Grok queue:** [grok-handoff/GROK_TASKS.md](grok-handoff/GROK_TASKS.md) (G1–G5: 58–80 AH, warlock 30–50, consumable audit)
+
+**Paste into Grok sidebar:**
+
+```
+Read Docs/grok-handoff/GROK_TASKS.md. Complete G1–G5.
+Write grok-response.md + CURSOR_TASKS.md. No Lua.
+```
 
 ---
 
@@ -123,14 +143,18 @@ Grok writes `Docs/grok-handoff/grok-response.md` → Cursor implements → PLAY.
 
 ---
 
-### Cursor Agent E — Grok research (no Lua)
+### Agent E — Grok research (no Lua)
 
-**Scope:** `Docs/grok-handoff/` output only.
+**Scope:** `Docs/grok-handoff/` output only. **Run:** `.\tools\agent-handoff.ps1 -RunGrok`
 
-**Tasks:**
-1. Table: **feral druid 58–80 AH upgrades** — `itemId`, slot, `minIlvl`, typical gold tier, source note.
-2. Verify consumable `itemId`s in `P1DG.AH_TIPS` for 3.3.5 Warmane.
-3. Output → `Docs/grok-handoff/grok-response.md` for Agent A to paste into `Data.lua`.
+**Tasks (see [GROK_TASKS.md](grok-handoff/GROK_TASKS.md)):**
+1. **G1** — Feral 58–80 AH table (`itemId`, slot, `minIlvl`, gold tier)
+2. **G2** — Verify v1.6.3 corrected IDs still OK in Questie DB
+3. **G3** — Audit `P1DG.AH_TIPS` consumable IDs
+4. **G4** — Warlock PATH 30–50 table
+5. **G5** — Outland prep 58–60 hints
+
+**Cursor picks up:** `CURSOR_TASKS.md` → Agent A pastes into `Data.lua`
 
 **Do not edit:** Any `.lua` in `Interface/AddOns/`.
 
@@ -193,14 +217,13 @@ Task: Document v1.6.4 pack (P1Waypoint embedded, Auctionator on, /p1ah). No TomT
 Do not edit Interface/AddOns Lua.
 ```
 
-### Agent E — Grok data
+### Agent E — Grok
 
 ```
-Repo: Warmane WoW.
-Read Docs/TASK_DIVISION.md (Agent E).
-Do NOT edit Lua. Write Docs/grok-handoff/grok-response.md only.
-Task: 58-80 feral druid AH upgrade table (itemId, slot, minIlvl, gold tier) for Warmane 3.3.5a.
-Verify P1DG.AH_TIPS item IDs against vendored Questie item DB in repo.
+Read Docs/grok-handoff/GROK_TASKS.md (tasks G1–G5).
+Do NOT edit Lua. Write grok-response.md + CURSOR_TASKS.md.
+Cross-check IDs in Questie-335/Database/Wotlk/wotlkItemDB.lua.
+Feral 58–80 AH table + warlock 30–50 PATH + AH_TIPS audit.
 ```
 
 ---
@@ -209,11 +232,11 @@ Verify P1DG.AH_TIPS item IDs against vendored Questie item DB in repo.
 
 ```mermaid
 flowchart LR
-  A[Agent A: Guide] --> O[Orchestrator]
+  E[Grok: G1–G5 tables] -->|grok-response.md| A[Cursor A: Data.lua]
+  A --> O[Orchestrator]
   B[Agent B: Nav] --> O
   C[Agent C: Loader] --> O
   D[Agent D: Release] --> O
-  E[Grok E: tables] --> A
   O -->|git push| R[main]
   R -->|PLAY.bat| You[You: /reload]
 ```

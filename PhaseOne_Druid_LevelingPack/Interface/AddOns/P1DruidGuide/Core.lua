@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "2.0.0"
+local VERSION = "2.0.1"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -214,6 +214,32 @@ end
 local function AddLine(lines, text, click)
     table.insert(lines, text)
     if click then clickTargets[#lines] = click end
+end
+
+local function SlotLineClick(slot, done)
+    if done or not slot then return nil end
+    if slot.itemId then
+        return { type = "auction", itemId = slot.itemId }
+    end
+    if slot.waypoint then
+        return { type = "waypoint", waypoint = slot.waypoint, label = slot.itemName or slot.key }
+    end
+    return nil
+end
+
+local function StepLineClick(step, playerLevel)
+    if not step then return nil end
+    if step.itemId and (step.goldAh or (step.text and step.text:find("AH", 1, true))) then
+        return { type = "auction", itemId = step.itemId }
+    end
+    if step.waypoint then
+        return { type = "waypoint", waypoint = step.waypoint, label = step.text }
+    end
+    local bisSlot = P1DG.FindBisSlotForStep and P1DG.FindBisSlotForStep(step)
+    if bisSlot and P1DG.IsStepDone then
+        return SlotLineClick(bisSlot, P1DG.IsStepDone(step, playerLevel))
+    end
+    return nil
 end
 
 local function AppendTipsBlock(lines, bracket, gray)
@@ -420,16 +446,21 @@ local function BuildPathLines(playerLevel, lines)
     if hasWp then
         AddLine(lines, "  |cff666666(click • line → TomTom)|r")
     end
+    local hasAh = false
+    for _, step in ipairs(steps) do
+        if step.itemId and (step.goldAh or (step.text and step.text:find("AH", 1, true))) then
+            hasAh = true
+            break
+        end
+    end
+    if hasAh then
+        AddLine(lines, "  |cff666666(click [AH] line → Auctionator — open AH first)|r")
+    end
     for _, step in ipairs(steps) do
         local tag = (step.goldAh or (step.text and step.text:find("AH", 1, true))) and " |cffffcc00[AH]|r" or ""
         local cat = step.type == "gear" and "|cff44ff44" or (step.type == "spell" and "|cff88ccff" or "|cffffffff")
         AddLine(lines, string.format("  %s•|r %s%s", cat, step.text or "?", tag),
-            step.waypoint and { type = "waypoint", waypoint = step.waypoint, label = step.text }
-            or (P1DG.FindBisSlotForStep and P1DG.FindBisSlotForStep(step) and {
-                type = "waypoint",
-                waypoint = P1DG.FindBisSlotForStep(step).waypoint,
-                label = step.text,
-            } or nil))
+            StepLineClick(step, playerLevel))
         if step.flavor then
             AddLine(lines, "    |cffccaa00" .. step.flavor .. "|r")
         end
@@ -653,7 +684,8 @@ local function BuildGatherLines(playerLevel, lines)
                 if tip.itemId and tip.goal and CountItemInBags(tip.itemId) >= tip.goal then skip = true end
                 if tip.itemId and matsLow and CountItemInBags(tip.itemId) >= (tip.goal or 999) * 0.5 then skip = true end
                 if not skip then
-                    AddLine(lines, "  |cff666666AH: " .. tip.tip .. "|r")
+                    AddLine(lines, "  |cff666666AH: " .. tip.tip .. "|r",
+                        tip.itemId and { type = "auction", itemId = tip.itemId } or nil)
                     shown = shown + 1
                 end
             end
@@ -681,10 +713,12 @@ local function BuildBisLines(playerLevel, lines)
     local nextUp = P1DG.GetNextBisUpgrade and P1DG.GetNextBisUpgrade(playerLevel)
     if nextUp then
         local name = nextUp.itemName or nextUp.suggest or nextUp.key
+        local click = SlotLineClick(nextUp, false)
         AddLine(lines, string.format("  |cffffcc00NEXT UPGRADE|r → %s (%s)",
-            name, nextUp.key),
-            nextUp.waypoint and { type = "waypoint", waypoint = nextUp.waypoint, label = name } or nil)
-        if nextUp.waypoint then
+            name, nextUp.key), click)
+        if click and click.type == "auction" then
+            AddLine(lines, "  |cff666666(click line → Auctionator)|r")
+        elseif click and click.type == "waypoint" then
             AddLine(lines, "  |cff666666(click line → TomTom)|r")
         end
     end
@@ -701,7 +735,7 @@ local function BuildBisLines(playerLevel, lines)
         local nameTag = slot.itemName and (" — " .. slot.itemName) or ""
         AddLine(lines, string.format("  %s %s%s:|r %s%s%s %s",
             mark, color, slot.key, slot.suggest, nameTag, ilvlTag, priceTag),
-            (not done and slot.waypoint) and { type = "waypoint", waypoint = slot.waypoint, label = slot.itemName or slot.key } or nil)
+            SlotLineClick(slot, done))
         if slot.why then
             AddLine(lines, "    |cff888888" .. slot.why .. "|r")
         end
@@ -779,10 +813,27 @@ local function HandleClickTarget(target)
     end
 end
 
+local function SectionAtLine(text, lineNum)
+    local current = 0
+    local section = nil
+    for line in text:gmatch("[^\n]+") do
+        current = current + 1
+        for _, key in ipairs(SECTIONS) do
+            if line:find(SECTION_LABELS[key], 1, true) then
+                section = key
+                break
+            end
+        end
+        if current == lineNum then return section end
+    end
+    return section
+end
+
 local function ClickTargetFromBody(y)
     if not bodyText then return nil, nil end
     local text = bodyText:GetText() or ""
-    local lineH = 11
+    local _, size = bodyText:GetFont()
+    local lineH = (size or 10) + 1
     local top = bodyText:GetTop()
     local lineNum = math.floor((top - y) / lineH) + 1
     if clickTargets[lineNum] then
@@ -796,7 +847,13 @@ local function ClickTargetFromBody(y)
                 if line:find(SECTION_LABELS[key], 1, true) then return key, nil end
             end
             local idx = line:match("^%s*(%d+)%.")
-            if idx then return "next", tonumber(idx) end
+            if idx then
+                local section = SectionAtLine(text, lineNum)
+                if section == "shop" or section == "gather" or section == "bis" then
+                    return "click", nil
+                end
+                return section or "next", tonumber(idx)
+            end
             break
         end
     end
@@ -941,7 +998,7 @@ local function BuildUI()
     bodyText:SetPoint("TOPLEFT", panel, "TOPLEFT", 8, -76)
     bodyText:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -10, 10)
     bodyText:SetJustifyH("LEFT")
-    bodyText:SetWordWrap(true)
+    bodyText:SetWordWrap(false)
 
     clickCatcher = CreateFrame("Button", nil, panel)
     clickCatcher:SetPoint("TOPLEFT", bodyText, "TOPLEFT", 0, 0)
@@ -1114,6 +1171,7 @@ init:RegisterEvent("BAG_UPDATE")
 init:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 init:RegisterEvent("SKILL_LINES_CHANGED")
 init:RegisterEvent("QUEST_LOG_UPDATE")
+init:RegisterEvent("AUCTION_HOUSE_SHOW")
 init:RegisterEvent("AUCTION_HOUSE_CLOSED")
 init:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
 init:RegisterEvent("PLAYER_MONEY")
@@ -1135,7 +1193,12 @@ init:SetScript("OnEvent", function(_, event)
         if P1DG.ResetSessionBaseline then P1DG.ResetSessionBaseline() end
         if P1DG.ScanCharacter then P1DG.ScanCharacter() end
     else
-        if event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE"
+        if event == "AUCTION_HOUSE_SHOW" then
+            init.ahFlushDelay = 0.15
+            init.ahFlushPending = true
+        elseif event == "AUCTION_HOUSE_CLOSED" then
+            init.ahFlushPending = false
+        elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "BAG_UPDATE"
             or event == "PLAYER_MONEY" or event == "QUEST_LOG_UPDATE" then
             if P1DG.ScanCharacter then P1DG.ScanCharacter() end
         end
@@ -1144,6 +1207,13 @@ init:SetScript("OnEvent", function(_, event)
 end)
 
 init:SetScript("OnUpdate", function(_, elapsed)
+    if init.ahFlushPending then
+        init.ahFlushDelay = (init.ahFlushDelay or 0) - elapsed
+        if init.ahFlushDelay <= 0 then
+            init.ahFlushPending = false
+            if P1DG.FlushPendingAuctionSearch then P1DG.FlushPendingAuctionSearch() end
+        end
+    end
     init.tick = (init.tick or 0) + elapsed
     if init.tick > 4 then
         init.tick = 0

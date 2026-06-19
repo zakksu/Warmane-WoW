@@ -2,6 +2,8 @@
 
 P1DG = P1DG or {}
 
+local BUY_TAB = 3
+
 local function CacheItem(itemId)
     if not itemId then return nil end
     local name = GetItemInfo(itemId)
@@ -11,8 +13,40 @@ local function CacheItem(itemId)
     return GetItemInfo(itemId)
 end
 
+function P1DG.EnsureAuctionator()
+    if IsAddOnLoaded("Auctionator") then return true end
+    if not LoadAddOn then return false end
+    LoadAddOn("Auctionator")
+    return IsAddOnLoaded("Auctionator")
+end
+
 function P1DG.IsAuctionatorLoaded()
-    return IsAddOnLoaded("Auctionator") and Atr_Search_Onclick and Atr_Search_Box
+    if not P1DG.EnsureAuctionator() then return false end
+    return Atr_Search_Onclick and Atr_Search_Box and Atr_SelectPane
+end
+
+function P1DG.IsAuctionHouseOpen()
+    return AuctionFrame and AuctionFrame:IsShown()
+end
+
+function P1DG.QueueAuctionSearch(itemId)
+    if not itemId then return end
+    P1DG._pendingAhItemId = itemId
+end
+
+function P1DG.ClearPendingAuctionSearch()
+    P1DG._pendingAhItemId = nil
+end
+
+function P1DG.FlushPendingAuctionSearch()
+    local itemId = P1DG._pendingAhItemId
+    if not itemId then return false end
+    if not P1DG.IsAuctionHouseOpen() then return false end
+    if P1DG.SearchAuctionItem(itemId, true) then
+        P1DG._pendingAhItemId = nil
+        return true
+    end
+    return false
 end
 
 function P1DG.FormatAhPrice(copper)
@@ -28,6 +62,7 @@ end
 
 function P1DG.GetItemBuyout(itemId)
     if not itemId then return nil end
+    if not P1DG.IsAuctionatorLoaded() then return nil end
     if Atr_GetAuctionBuyout then
         local price = Atr_GetAuctionBuyout(itemId)
         if price and price > 0 then return price end
@@ -172,7 +207,7 @@ function P1DG.GetNextAhPriority(playerLevel)
     return list[1]
 end
 
-function P1DG.SearchAuctionItem(itemId)
+function P1DG.SearchAuctionItem(itemId, fromQueue)
     if not itemId then return false end
     local name = CacheItem(itemId)
     if not name then
@@ -183,14 +218,15 @@ function P1DG.SearchAuctionItem(itemId)
         print("|cff00ccffP1 Guide|r — Auctionator not loaded. Run PLAY.bat and /reload.")
         return false
     end
-    if not AuctionFrame or not AuctionFrame:IsShown() then
-        print("|cff00ccffP1 Guide|r — open the Auction House, then click |cffffcc00[AH]|r again.")
-        print("  Searching: " .. name)
+    if not P1DG.IsAuctionHouseOpen() then
+        P1DG.QueueAuctionSearch(itemId)
+        if not fromQueue then
+            print("|cff00ccffP1 Guide|r — open the Auction House, then click |cffffcc00[AH]|r again.")
+            print("  Queued search: " .. name)
+        end
         return false
     end
-    if Atr_SelectPane then
-        Atr_SelectPane(3)
-    end
+    Atr_SelectPane(BUY_TAB)
     Atr_Search_Box:SetText(name)
     Atr_Search_Onclick()
     print("|cff00ccffP1 Guide|r Auctionator → " .. name)

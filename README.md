@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v2.0.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v2.0.1** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, embedded waypoint arrow, Auctionator AH search, and **P1 Druid Guide v2** — SHOP + fused NEXT coach overlay. **No class HUD, range HUD, damage numbers, Leatrix, WeakAuras, or TomTom** in the default install.
 
@@ -54,9 +54,9 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 
 ## Auction House click flow
 
-1. Travel to an Auction House and **open it** (required).
-2. In the guide, pending gear shows as **`[AH]`** in the header or **`AH`** lines in NEXT.
-3. **Click** the header `[AH]`, a NEXT line, a BIS icon, or type **`/p1ah`** — Auctionator searches that item.
+1. Travel to an Auction House and **open it** (or click first — search queues until AH opens).
+2. Pending gear shows as **`[AH]`** in the header, **SHOP** lines, fused **NEXT**, or **BIS** rows with item names.
+3. **Click** any `[AH]` line, SHOP row, BIS slot, icon bar item, or type **`/p1ah`** — Auctionator **Buy** tab searches that item.
 4. **`/p1scan`** lists pending upgrades and refreshes buyout prices after an Auctionator scan.
 
 Each alt sees its own priorities (level, equipped gear, bags, quest log).

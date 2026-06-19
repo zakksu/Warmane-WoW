@@ -1,9 +1,15 @@
-Phase One Warmane Leveling Packs - v2.0.0
+Phase One Warmane Leveling Packs - v2.0.1
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v2.0.1) — druid pack
+  - Click → Auctionator: SHOP, NEXT [AH], BIS slots, PATH [AH], GATHER consumables, icon bar
+  - Queued AH search — click before opening AH; auto-runs when AH opens
+  - LoadAddOn(Auctionator) + BUY tab select before Atr_Search_Onclick
+  - Guide body no-wrap for reliable line clicks
 
 CHANGELOG (v2.0.0) — druid pack
   - P1 Druid Guide v2.0: personal coach overlay (druid pack only)

@@ -2,7 +2,7 @@
 ## Title: |cff00ccffPhase One Loader|r (Druid)
 ## Notes: One-click setup for the Warmane Horde Feral Druid Leveling Pack.
 ## Author: zakksu
-## Version: 2.0.0-druid
+## Version: 2.0.1-druid
 ## SavedVariables: PhaseOneDruidLoaderDB
 ## DefaultState: enabled
 
