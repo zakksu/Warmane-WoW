@@ -5,6 +5,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "harness-control.ps1")
+
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $auto = Join-Path $PSScriptRoot "run-autonomous.ps1"
 $watchRoots = @(
@@ -13,6 +15,7 @@ $watchRoots = @(
 )
 
 Write-Host "Watching P1 addons under repo (debounce ${DebounceSec}s) ..."
+Write-Host "Killswitch: STOP_AUTO.bat  |  Resume: RESUME_AUTO.bat"
 Write-Host "Ctrl+C to stop."
 
 $pending = $false
@@ -20,12 +23,20 @@ $timer = $null
 
 function Queue-AutoTest {
     if ($script:pending) { return }
+    if (Test-HarnessControlPaused) {
+        Write-Host "Change detected but PAUSED (killswitch) — skipped." -ForegroundColor DarkYellow
+        return
+    }
     $script:pending = $true
     if ($script:timer) { $script:timer.Dispose() }
     $script:timer = New-Object System.Timers.Timer ($DebounceSec * 1000)
     $script:timer.AutoReset = $false
     Register-ObjectEvent -InputObject $script:timer -EventName Elapsed -Action {
         $script:pending = $false
+        if (Test-HarnessControlPaused) {
+            Write-Host "Debounced run skipped — automation paused." -ForegroundColor DarkYellow
+            return
+        }
         Write-Host ""
         Write-Host "Change detected - running autonomous harness ..." -ForegroundColor Cyan
         & $using:auto -Suite $using:Suite -MaxCycles 2 -SkipRelog:$false
@@ -50,5 +61,16 @@ foreach ($root in $watchRoots) {
     $watchers += $wx
 }
 
-& $auto -Suite $Suite -MaxCycles 1
-while ($true) { Start-Sleep -Seconds 60 }
+if (-not (Test-HarnessControlPaused)) {
+    & $auto -Suite $Suite -MaxCycles 1
+} else {
+    Write-Host "Initial run skipped — killswitch active." -ForegroundColor Yellow
+}
+
+while ($true) {
+    if (Test-HarnessControlPaused) {
+        Start-Sleep -Seconds 5
+        continue
+    }
+    Start-Sleep -Seconds 30
+}

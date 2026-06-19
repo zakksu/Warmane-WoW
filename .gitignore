@@ -1,6 +1,9 @@
 # Temp / build artifacts
 tools/wow-pack-build/
 tools/automation/reports/
+tools/automation/control/PAUSED
+tools/automation/control/state.json
+tools/automation/control/daemon.pid
 *.zip
 
 # OS

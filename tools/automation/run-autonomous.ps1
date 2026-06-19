@@ -8,11 +8,13 @@ param(
     [switch]$SkipRelog,
     [switch]$ForceRelog,
     [switch]$NoStartWow,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$IgnorePause
 )
 
 $ErrorActionPreference = "Stop"
 $here = $PSScriptRoot
+. (Join-Path $here "harness-control.ps1")
 . (Join-Path $here "WowInput.ps1")
 . (Join-Path $here "harness-common.ps1")
 
@@ -292,6 +294,12 @@ if ($DryRun) {
     exit 0
 }
 
+if ((Test-HarnessControlPaused) -and -not $IgnorePause) {
+    Write-Host "SKIPPED: automation paused (killswitch). Run RESUME_AUTO.bat or click Resume in tray." -ForegroundColor Yellow
+    Update-HarnessControlRunResult -Success $false -Message "skipped: paused"
+    exit 0
+}
+
 $validate = Join-Path $here "validate-p1-lua.ps1"
 if (Test-Path $validate) {
     & $validate
@@ -321,6 +329,11 @@ if (-not $NoStartWow) {
 
 $finalReport = $null
 for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
+    if ((Test-HarnessControlPaused) -and -not $IgnorePause) {
+        Write-Host "Stopped: killswitch engaged before cycle $cycle" -ForegroundColor Yellow
+        Update-HarnessControlRunResult -Success $false -Message "stopped: paused mid-run"
+        exit 0
+    }
     Write-Host ""
     Write-Host "Cycle $cycle / $MaxCycles" -ForegroundColor Cyan
     $needRelog = (Test-AddonsNeedRelog) -or $ForceRelog
@@ -369,6 +382,7 @@ for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
 
     if ($finalReport.success) {
         Write-Host "PASS cycle $cycle - $reportPath" -ForegroundColor Green
+        Update-HarnessControlRunResult -Success $true -Message "cycle $cycle pass"
         exit 0
     }
 
@@ -392,4 +406,5 @@ for ($cycle = 1; $cycle -le $MaxCycles; $cycle++) {
 Write-Host ""
 Write-Host "Autonomous harness failed after $MaxCycles cycles." -ForegroundColor Red
 Write-Host "Report: $(Join-Path (Get-HarnessReportDir) 'harness-latest.json')"
+Update-HarnessControlRunResult -Success $false -Message "failed after $MaxCycles cycles"
 exit 1

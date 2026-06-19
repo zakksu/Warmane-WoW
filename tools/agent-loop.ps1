@@ -18,6 +18,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'handoff-common.ps1')
+. (Join-Path $PSScriptRoot 'automation\harness-control.ps1')
 
 $repoRoot = Get-RepoRoot
 $paths = Get-HandoffPaths -RepoRoot $repoRoot
@@ -130,6 +131,12 @@ Write-HandoffLog "Agent loop started (poll=${PollSeconds}s, once=$Once, dryRun=$
 Write-HandoffLog "Repo: $repoRoot"
 
 do {
+    if (Test-HarnessControlPaused) {
+        Write-HandoffLog 'PAUSED (killswitch) — agent-loop idle until RESUME_AUTO.bat'
+        Start-Sleep -Seconds $PollSeconds
+        if ($Once) { break }
+        continue
+    }
     try {
         Step-HandoffLoop
     } catch {
