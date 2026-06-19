@@ -3,10 +3,10 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.6.2-druid"
+local PACK_VERSION = "1.6.3-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
-local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.2|r — PATH to 58 · talents · |cff00ff00/p1guide|r"
+local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.6.3|r — Grok-verified IDs · PATH to 58 · |cff00ff00/p1guide|r"
 
 _G.P1AutoQuestButtons = _G.P1AutoQuestButtons or {}
 

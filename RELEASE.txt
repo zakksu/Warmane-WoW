@@ -1,9 +1,16 @@
-Phase One Warmane Leveling Packs - v1.6.2
+Phase One Warmane Leveling Packs - v1.6.3
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.6.3)
+  - Grok ID audit: Staff of Nobles 3902, Crescent Staff 6505, Mark of the Chosen 17774
+  - Wildheart set IDs fixed (16719 kilt, 16720 cowl, 16717 gloves, 16715 boots, 16714 bracers)
+  - Mangle (33876) + Savage Roar (52610) at level 50; Chillpike 13148 (not Fist of Omokk)
+  - Removed fake Pole of the Ages / Horn of the Beast entries
+  - P1WarlockGuide PATH skeleton updated per Grok (697/980/5210/689/691)
 
 CHANGELOG (v1.6.2)
   - PATH extended to lvl 58: Wildheart finish, Truestrike, Fist of Omokk, Ravage, Blackhand's Breadth
