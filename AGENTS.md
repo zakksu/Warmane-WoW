@@ -1,56 +1,35 @@
-# Warmane WoW — Phase One Quest Pack
-
-Shared agent instructions for **Cursor**, **Grok Build**, and other coding agents.
-
-## Project
-
-Warmane WotLK 3.3.5a quest addon bundle (Warlock + Feral Druid packs). Lua/XML addons under:
-
-- `PhaseOne_LevelingPack/Interface/AddOns/`
-- `PhaseOne_Druid_LevelingPack/Interface/AddOns/`
-
-## Dev loop
-
-1. Edit addon Lua/XML in this repo.
-2. Double-click **`PLAY.bat`** (git pull → sync addons → cleanup → update AddOns.txt).
-3. In game: **`/reload`**.
-
-See `Docs/DEV_WORKFLOW.md` for symlink mode, manifest, and release tooling.
-
-## Coding conventions
-
-- **Lua 5.1** (WoW 3.3.5 client). No `goto`, no `\z` escapes, no 5.2+ features.
-- Match existing addon style: local functions, `CreateFrame`, event handlers, slash commands.
-- Pack-specific logic lives in `P1*` addons; Questie/TomTom are vendored — avoid editing unless fixing a Warmane-specific bug.
-- Keep changes minimal and scoped. Do not refactor unrelated addons.
-- Test mentally against 3.3.5 API (`GetQuestLogTitle`, `Questie`, `TomTom`, etc.).
-
-## File layout
-
-| Path | Role |
-|------|------|
-| `LOOP.bat` | Start Grok ↔ Cursor autonomous handoff loop |
-| `PLAY.bat` | Player/maintainer sync to Warmane client |
-| `tools/agent-loop.ps1` | Handoff daemon (Grok → Cursor → ship) |
-| `tools/agent-handoff.ps1` | Manual single Grok/Cursor handoff step |
-| `tools/sync-addons.ps1` | Robocopy pack addons to WoW |
-| `tools/addons-manifest.txt` | Required ON/OFF addon list |
-| `Docs/MINIMAL_PACK.md` | What ships in the default install |
-| `Docs/GROK_INTEGRATION.md` | Grok Build + Cursor setup |
-| `Docs/AUTONOMOUS_LOOP.md` | Full autonomy — no user prompts between cycles |
-
-## Commits and releases
-
-- **Autonomous mode:** commit, push, tag, and `gh release` without asking (see `Docs/AUTONOMOUS_LOOP.md`).
-
-- Conventional, concise commit messages focused on *why*.
-- Maintainers: `QUICK_UPDATE.bat` / `RELEASE.bat` for version bumps and zips.
-- Do not commit secrets (API keys, `tools/wow-path.cfg` with personal paths is local-only).
-
-## Agent workflow hints
-
-- **Handoff loop:** run **`LOOP.bat`** (or `tools/agent-loop.ps1`) for continuous Grok ↔ Cursor cycles. Read `Docs/grok-handoff/STATUS.md` first every session (see `.cursor/rules/handoff-always.mdc`).
-- **Plan first** for multi-addon or cross-pack changes.
-- **Parallel agents:** see `Docs/TASK_DIVISION.md` — one agent per lane (Guide / Nav / Loader / Release).
-- **Parallel exploration** is fine for Questie vs P1* boundaries, Warlock vs Druid pack diffs.
-- After Lua edits, remind the user to run `PLAY.bat` and `/reload` — agents cannot run the game client.
+Multi-Agent Coordination Protocol (Grok + Cursor)
+Goal: Achieve fast, autonomous development toward a fully autonomous WoW client controller (UI navigation, login, questing, combat, etc.) while keeping the Phase One addon pack stable and lightweight.
+Agent Roles (Shared Workload)
+Grok (High-Level Intelligence)
+Architecture, system design, and principles enforcement.
+Prompt engineering and agent orchestration.
+High-level planning, research, and creative solutions.
+Code review, quality control, and documentation.
+Cloud resource coordination (use your $70 credits wisely).
+Autonomy & learning loop improvements.
+Cursor (Execution & Implementation)
+Heavy coding, file creation, refactoring, and testing.
+Rapid iteration on Lua addons and automation scripts.
+Debugging and fixing specific issues.
+Running local tests (PLAY.bat, AUTO_TEST.bat).
+UI automation code (image recognition, coordinate systems, OCR).
+Parallel Work Rule: Grok plans + reviews. Cursor executes. They hand off via LOOP.bat / handoff files. Overlap only on critical decisions.
+Hardcoded Efficiency Principles
+Minimalism First — Never add bloat. Prefer lightweight Lua over heavy external tools.
+Fail Fast, Learn Faster — Every agent must log failures with screenshots/context.
+Robustness Over Cleverness — UI control must have fallbacks (image → coordinates → keyboard navigation).
+Cloud Leverage — Use available credits for parallel agents, longer contexts, or better models when local Cursor is limited.
+Version Control Discipline — Small, frequent commits with clear messages. Only push working code.
+Safety First — All in-game automation must be toggleable and detectable-risk-aware (Warmane anti-cheat).
+Druid Focus — Prioritize Feral leveling features unless otherwise specified.
+Handoff & Autonomy Rules
+Use Docs/AUTONOMOUS_LOOP.md as the main driver.
+Before any major change: Grok creates/updates a task in TASKS/ or comments in the relevant file.
+Cursor only implements approved tasks.
+On failure (e.g., password field detection): Take screenshot, log details, hand back to Grok for better strategy.
+Cloud Instruction: When local limits are hit, agents should propose "spawn cloud instance" or "use higher context model" using available credits.
+Login & UI Control Strategy (Current Priority)
+Robust password field detection (template matching + fallback coordinates + Tab navigation).
+Full login flow with retries and recovery.
+Future: In-game click-to-move, ability casting, quest interaction, etc.
