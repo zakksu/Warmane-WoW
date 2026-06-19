@@ -30,7 +30,9 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 | Warlock only | `INSTALL_WARLOCK.bat` |
 | Feral Druid only | `INSTALL_DRUID.bat` |
 
-**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor orchestration](Docs/CURSOR_ORCHESTRATION.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · **[Task lanes](Docs/TASK_DIVISION.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Autonomous loop](Docs/AUTONOMOUS_LOOP.md)** · **[Cursor orchestration](Docs/CURSOR_ORCHESTRATION.md)** · **[Task lanes](Docs/TASK_DIVISION.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
+
+**Agent loop (Grok ↔ Cursor):** double-click **`LOOP.bat`** and leave it running — see [Docs/AUTONOMOUS_LOOP.md](Docs/AUTONOMOUS_LOOP.md).
 
 ---
 

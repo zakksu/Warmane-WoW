@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/handoff-session-start.ps1"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/handoff-stop.ps1",
+        "loop_limit": 3
+      }
+    ]
+  }
+}

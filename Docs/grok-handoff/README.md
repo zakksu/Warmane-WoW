@@ -2,35 +2,45 @@
 
 Autonomous task queue between **Cursor Agent** and **Grok Build**.
 
+## Continuous loop
+
+```powershell
+# Leave running (recommended)
+.\LOOP.bat
+
+# Or PowerShell directly
+.\tools\agent-loop.ps1
+```
+
+See [AUTONOMOUS_LOOP.md](../AUTONOMOUS_LOOP.md) for full autonomy rules.
+
 ## Files
 
 | File | Owner writes | Reader implements |
 |------|--------------|-------------------|
-| `GROK_TASKS.md` | Cursor | Grok |
+| `GROK_TASKS.md` | Cursor / loop | Grok |
 | `grok-response.md` | Grok | Cursor |
 | `CURSOR_TASKS.md` | Grok | Cursor |
-| `STATUS.md` | Either | Both |
+| `STATUS.md` | Loop / agents | Both |
+| `CURSOR_WAKE.md` | Loop | Cursor hooks |
+| `loop.log` | Loop | Maintainer |
 
-## Run one Grok cycle
+## Manual (unchanged)
 
 ```powershell
 .\tools\agent-handoff.ps1 -RunGrok
-```
-
-Then Cursor reads `grok-response.md` and checks off `CURSOR_TASKS.md`.
-
-## Run full loop (Grok → implement hint)
-
-```powershell
 .\tools\agent-handoff.ps1 -RunGrok -NotifyCursor
+.\tools\agent-handoff.ps1 -Status
 ```
-
-Cursor Agent should run after pull when `STATUS.md` shows `GROK_DONE`.
 
 ## Status values
 
-- `IDLE` — nothing pending
+- `IDLE` — waiting for GROK_TASKS queue
+- `GROK_PENDING` — queued for Grok
 - `GROK_WORKING` — Grok task in flight
 - `GROK_DONE` — response ready for Cursor
+- `GROK_FAILED` — Grok error (loop retries)
+- `CURSOR_PENDING` — wake file / CLI triggered
 - `CURSOR_WORKING` — Cursor implementing
-- `SHIPPED` — PLAY.bat synced, version bumped
+- `CURSOR_SHIPPED` — tasks done, shipping
+- `SHIPPED` — synced, committed, cycle complete

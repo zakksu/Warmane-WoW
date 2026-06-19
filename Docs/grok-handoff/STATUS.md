@@ -1,11 +1,10 @@
 # Agent handoff status
 
-**State:** GROK_DONE → CURSOR_SHIPPED v2.0.4  
+**State:** GROK_PENDING
 **Updated:** 2026-06-19
 
-Grok G1–G4 ingested (ICC ilvl 264 AH + warlock 58–70 PATH).  
-Synced to WoW client; tagged `v2.0.4` on `main`.
+Previous cycle shipped v2.0.4. GROK_TASKS.md queued for next Grok run.
 
-**You:** `/reload` in game.
+**You:** `/reload` in game after loop ships changes.
 
 **Next Grok queue:** G5 deeper ICC BiS, G6 warlock 70+, G7 waypoint coords.

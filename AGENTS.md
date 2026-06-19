@@ -29,7 +29,10 @@ See `Docs/DEV_WORKFLOW.md` for symlink mode, manifest, and release tooling.
 
 | Path | Role |
 |------|------|
+| `LOOP.bat` | Start Grok ↔ Cursor autonomous handoff loop |
 | `PLAY.bat` | Player/maintainer sync to Warmane client |
+| `tools/agent-loop.ps1` | Handoff daemon (Grok → Cursor → ship) |
+| `tools/agent-handoff.ps1` | Manual single Grok/Cursor handoff step |
 | `tools/sync-addons.ps1` | Robocopy pack addons to WoW |
 | `tools/addons-manifest.txt` | Required ON/OFF addon list |
 | `Docs/MINIMAL_PACK.md` | What ships in the default install |
@@ -46,6 +49,7 @@ See `Docs/DEV_WORKFLOW.md` for symlink mode, manifest, and release tooling.
 
 ## Agent workflow hints
 
+- **Handoff loop:** run **`LOOP.bat`** (or `tools/agent-loop.ps1`) for continuous Grok ↔ Cursor cycles. Read `Docs/grok-handoff/STATUS.md` first every session (see `.cursor/rules/handoff-always.mdc`).
 - **Plan first** for multi-addon or cross-pack changes.
 - **Parallel agents:** see `Docs/TASK_DIVISION.md` — one agent per lane (Guide / Nav / Loader / Release).
 - **Parallel exploration** is fine for Questie vs P1* boundaries, Warlock vs Druid pack diffs.

@@ -1,0 +1,26 @@
+---
+description: Always check Grok handoff status before starting work
+alwaysApply: true
+---
+
+# Handoff-first (Grok ↔ Cursor loop)
+
+When **LOOP.bat** or `tools/agent-loop.ps1` is running, autonomous cycles use `Docs/grok-handoff/`.
+
+## On every session
+
+1. Read `Docs/grok-handoff/STATUS.md` — respect **State:**
+2. If `GROK_DONE`, `CURSOR_PENDING`, or `CURSOR_WORKING` → implement `CURSOR_TASKS.md` using `grok-response.md`
+3. If `GROK_PENDING` / tasks in `GROK_TASKS.md` → wait for loop to run Grok, or run `.\tools\agent-handoff.ps1 -RunGrok`
+4. After shipping → set **CURSOR_SHIPPED**; loop runs sync/commit/release
+
+## State machine
+
+`IDLE` → `GROK_PENDING` → `GROK_WORKING` → `GROK_DONE` → `CURSOR_PENDING` → `CURSOR_WORKING` → `CURSOR_SHIPPED` → `SHIPPED`
+
+## Rules
+
+- Questie `wotlkItemDB.lua` wins for item IDs
+- Grok does **not** edit `.lua`; Cursor implements
+- Full autonomy: `Docs/AUTONOMOUS_LOOP.md`
+- Manual one-shot still works: `agent-handoff.ps1 -RunGrok -NotifyCursor`
