@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Optional file watcher — logs when grok-response.md updates (loop handles cycles).
+  Optional file watcher  - logs when grok-response.md updates (loop handles cycles).
 
 .EXAMPLE
   .\tools\watch-handoff.ps1
@@ -24,7 +24,7 @@ while ($true) {
     if (Test-Path $response) {
         $w = (Get-Item $response).LastWriteTimeUtc
         if ($lastWrite -and $w -gt $lastWrite) {
-            Write-HandoffLog 'grok-response.md updated — agent-loop will pick up GROK_DONE'
+            Write-HandoffLog 'grok-response.md updated  - agent-loop will pick up GROK_DONE'
         }
         $lastWrite = $w
     }

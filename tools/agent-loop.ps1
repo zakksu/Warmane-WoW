@@ -30,7 +30,7 @@ function Invoke-GrokCycle {
     Write-HandoffLog 'Starting Grok cycle'
     Set-HandoffState -State 'GROK_WORKING' -RepoRoot $repoRoot
     if ($DryRun) {
-        Set-HandoffState -State 'GROK_DONE' -Note 'Dry run — Grok skipped.' -RepoRoot $repoRoot
+        Set-HandoffState -State 'GROK_DONE' -Note 'Dry run  - Grok skipped.' -RepoRoot $repoRoot
         return
     }
     Invoke-WithBackoff -Label 'Grok' -MaxAttempts $MaxRetries -BaseDelaySeconds 60 -Action {
@@ -43,7 +43,7 @@ function Invoke-GrokCycle {
 function Invoke-CursorCycle {
     Write-HandoffLog 'Starting Cursor cycle'
     if ($DryRun) {
-        Set-HandoffState -State 'CURSOR_SHIPPED' -Note 'Dry run — Cursor skipped.' -RepoRoot $repoRoot
+        Set-HandoffState -State 'CURSOR_SHIPPED' -Note 'Dry run  - Cursor skipped.' -RepoRoot $repoRoot
         return
     }
     & $cursorScript
@@ -53,7 +53,7 @@ function Invoke-CursorCycle {
 function Invoke-ShipCycle {
     Write-HandoffLog 'Starting ship cycle'
     if ($DryRun) {
-        Set-HandoffState -State 'SHIPPED' -Note 'Dry run — ship skipped.' -RepoRoot $repoRoot
+        Set-HandoffState -State 'SHIPPED' -Note 'Dry run  - ship skipped.' -RepoRoot $repoRoot
         return
     }
     & $shipScript
@@ -86,7 +86,7 @@ function Step-HandoffLoop {
             if (Test-CursorTasksComplete -RepoRoot $repoRoot) {
                 Set-HandoffState -State 'CURSOR_SHIPPED' -RepoRoot $repoRoot
             } elseif ($cursorWaitStart -and ((Get-Date) - $cursorWaitStart).TotalMinutes -gt $CursorWaitMinutes) {
-                Write-HandoffLog 'Cursor wait timeout — re-triggering wake'
+                Write-HandoffLog 'Cursor wait timeout  - re-triggering wake'
                 Invoke-CursorCycle
             }
         }
@@ -100,7 +100,7 @@ function Step-HandoffLoop {
             if (Test-GrokTasksPending -RepoRoot $repoRoot) {
                 Set-HandoffState -State 'GROK_PENDING' -RepoRoot $repoRoot
             } else {
-                Set-HandoffState -State 'IDLE' -Note 'Cycle complete — waiting for next GROK_TASKS queue.' -RepoRoot $repoRoot
+                Set-HandoffState -State 'IDLE' -Note 'Cycle complete  - waiting for next GROK_TASKS queue.' -RepoRoot $repoRoot
             }
         }
         'SHIPPED' {
@@ -109,7 +109,7 @@ function Step-HandoffLoop {
             }
         }
         default {
-            Write-HandoffLog "WARN: unknown state '$state' — resetting to IDLE"
+            Write-HandoffLog "WARN: unknown state '$state'  - resetting to IDLE"
             Set-HandoffState -State 'IDLE' -RepoRoot $repoRoot
         }
     }

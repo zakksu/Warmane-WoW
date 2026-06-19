@@ -31,14 +31,14 @@ function Find-CursorCli {
 
 function Write-CursorWakeFile {
     $prompt = @"
-# Cursor wake — implement handoff
+# Cursor wake  - implement handoff
 
 **Triggered:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 
 Read in order:
-1. `Docs/grok-handoff/STATUS.md` — set **State:** CURSOR_WORKING when you start
-2. `Docs/grok-handoff/grok-response.md` — Grok research output
-3. `Docs/grok-handoff/CURSOR_TASKS.md` — check off each item as you complete it
+1. `Docs/grok-handoff/STATUS.md`  - set **State:** CURSOR_WORKING when you start
+2. `Docs/grok-handoff/grok-response.md`  - Grok research output
+3. `Docs/grok-handoff/CURSOR_TASKS.md`  - check off each item as you complete it
 
 ## Autonomous rules (AGENTS.md + Docs/AUTONOMOUS_LOOP.md)
 
@@ -138,5 +138,5 @@ if (Invoke-CursorSdk -Prompt $cursorPrompt) {
     exit 0
 }
 
-Write-HandoffLog 'No headless Cursor runtime — waiting for IDE/hooks via CURSOR_WAKE.md'
+Write-HandoffLog 'No headless Cursor runtime  - waiting for IDE/hooks via CURSOR_WAKE.md'
 exit 0

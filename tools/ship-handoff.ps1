@@ -36,14 +36,14 @@ if ($wowPath) {
         & (Join-Path $PSScriptRoot 'write-addons-txt.ps1') -WowPath $wowPath
     }
 } else {
-    Write-HandoffLog 'WARN: tools/wow-path.cfg missing — skipped addon sync'
+    Write-HandoffLog 'WARN: tools/wow-path.cfg missing  - skipped addon sync'
 }
 
 Push-Location $repoRoot
 try {
     $luaChanged = Test-LuaDataChanged
     if ($luaChanged -and -not $DryRun) {
-        Write-HandoffLog 'Data.lua changed — running quick-release (version bump + push + tag)'
+        Write-HandoffLog 'Data.lua changed  - running quick-release (version bump + push + tag)'
         try {
             & (Join-Path $PSScriptRoot 'quick-release.ps1') -Notes 'Autonomous handoff ship'
         } catch {
@@ -69,7 +69,7 @@ try {
                     git push origin HEAD 2>&1 | Out-Null
                     Write-HandoffLog 'Pushed to remote'
                 } else {
-                    Write-HandoffLog 'WARN: gh not authenticated — skipped push'
+                    Write-HandoffLog 'WARN: gh not authenticated  - skipped push'
                 }
             }
         }
