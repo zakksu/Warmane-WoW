@@ -1,8 +1,11 @@
--- P1 Druid Guide — Auctionator bridge (AH search + price hints)
+-- P1 Druid Guide — Auctionator + Blizzard AH bridge (Warmane 3.3.5a)
 
 P1DG = P1DG or {}
 
 local BUY_TAB = 3
+
+local ahRunner = CreateFrame("Frame")
+ahRunner:Hide()
 
 local function CacheItem(itemId)
     if not itemId then return nil end
@@ -20,13 +23,33 @@ function P1DG.EnsureAuctionator()
     return IsAddOnLoaded("Auctionator")
 end
 
-function P1DG.IsAuctionatorLoaded()
+function P1DG.EnsureAuctionatorReady()
     if not P1DG.EnsureAuctionator() then return false end
-    return Atr_Search_Onclick and Atr_Search_Box and Atr_SelectPane
+    if LoadAddOn and not IsAddOnLoaded("Blizzard_AuctionUI") then
+        LoadAddOn("Blizzard_AuctionUI")
+    end
+    if Atr_Init and not gShopPane then
+        Atr_Init()
+    end
+    return Atr_Search_Onclick and Atr_Search_Box and gShopPane
+end
+
+function P1DG.IsAuctionatorLoaded()
+    return P1DG.EnsureAuctionator() and Atr_Search_Onclick and Atr_Search_Box and Atr_SelectPane
 end
 
 function P1DG.IsAuctionHouseOpen()
     return AuctionFrame and AuctionFrame:IsShown()
+end
+
+function P1DG.CanQueryAuction()
+    if not CanSendAuctionQuery then return true end
+    return CanSendAuctionQuery()
+end
+
+function P1DG.GetAuctionatorBuyTabIndex()
+    if not Atr_FindTabIndex then return 0 end
+    return Atr_FindTabIndex(BUY_TAB) or 0
 end
 
 function P1DG.QueueAuctionSearch(itemId)
@@ -36,17 +59,121 @@ end
 
 function P1DG.ClearPendingAuctionSearch()
     P1DG._pendingAhItemId = nil
+    ahRunner.pendingItemId = nil
+    ahRunner.pendingName = nil
 end
+
+function P1DG.RecordAhSearchAttempt(itemId, name, result)
+    P1DG._lastAhItemId = itemId
+    P1DG._lastAhName = name
+    P1DG._lastAhResult = result
+    P1DG._lastAhAt = GetTime()
+end
+
+function P1DG.SearchBlizzardBrowse(name)
+    if not P1DG.IsAuctionHouseOpen() then return false end
+    if not P1DG.CanQueryAuction() then
+        print("|cff00ccffP1 Guide|r — AH query on cooldown (wait 2-3s, common on private servers)")
+        return false
+    end
+    if AuctionFrameTab1 and AuctionFrameTab_OnClick then
+        AuctionFrameTab_OnClick(AuctionFrameTab1, 1)
+    end
+    if BrowseName then BrowseName:SetText(name) end
+    if AuctionFrameBrowse_Search then
+        AuctionFrameBrowse_Search()
+        return true
+    end
+    if QueryAuctionItems then
+        QueryAuctionItems(name, nil, nil, 0, 0, 0, 0, 0, 0)
+        return true
+    end
+    return false
+end
+
+function P1DG.RunAuctionatorBuySearch(name)
+    if not P1DG.EnsureAuctionatorReady() then
+        return false, "not_ready"
+    end
+    local buyIdx = P1DG.GetAuctionatorBuyTabIndex()
+    if buyIdx == 0 then
+        return false, "no_buy_tab"
+    end
+    Atr_SelectPane(BUY_TAB)
+    Atr_Search_Box:SetText(name)
+    Atr_Search_Onclick()
+    return true, "auctionator"
+end
+
+local function FinishSearch(itemId, name, method)
+    P1DG.RecordAhSearchAttempt(itemId, name, method)
+    print("|cff00ccffP1 Guide|r — |cff00ff00SEARCHED|r (" .. method .. ") → |cffffcc00" .. name .. "|r")
+end
+
+function P1DG.ExecuteAhSearch(itemId, name)
+    local ok, method = P1DG.RunAuctionatorBuySearch(name)
+    if ok then
+        FinishSearch(itemId, name, method)
+        return true
+    end
+    if P1DG.SearchBlizzardBrowse(name) then
+        FinishSearch(itemId, name, "blizzard_browse")
+        return true
+    end
+    P1DG.RecordAhSearchAttempt(itemId, name, method or "failed")
+    if method == "no_buy_tab" then
+        print("|cffff0000P1 Guide|r — Auctionator Buy tab not ready. Close/reopen AH, then /p1ah debug")
+    else
+        print("|cffff0000P1 Guide|r — search failed (" .. tostring(method) .. "). See /p1ah debug")
+    end
+    return false
+end
+
+local function ScheduleAhSearch(itemId, name, attempt)
+    ahRunner.pendingItemId = itemId
+    ahRunner.pendingName = name
+    ahRunner.attempt = attempt or 1
+    ahRunner.delay = 0.1
+end
+
+ahRunner:SetScript("OnUpdate", function(self, elapsed)
+    if not self.pendingName then return end
+    self.delay = (self.delay or 0) - elapsed
+    if self.delay > 0 then return end
+
+    local itemId = self.pendingItemId
+    local name = self.pendingName
+    local attempt = self.attempt or 1
+
+    if P1DG.IsAuctionHouseOpen() then
+        if P1DG.ExecuteAhSearch(itemId, name) then
+            self.pendingItemId = nil
+            self.pendingName = nil
+            P1DG._pendingAhItemId = nil
+            return
+        end
+    end
+
+    if attempt >= 12 then
+        P1DG.RecordAhSearchAttempt(itemId, name, "timeout")
+        print("|cffff0000P1 Guide|r — AH search timed out. Click Auctionator |cff00ccffBuy|r tab, then /p1ah test")
+        self.pendingItemId = nil
+        self.pendingName = nil
+        return
+    end
+
+    self.attempt = attempt + 1
+    self.delay = 0.15
+end)
 
 function P1DG.FlushPendingAuctionSearch()
     local itemId = P1DG._pendingAhItemId
     if not itemId then return false end
     if not P1DG.IsAuctionHouseOpen() then return false end
-    if P1DG.SearchAuctionItem(itemId, true) then
-        P1DG._pendingAhItemId = nil
-        return true
-    end
-    return false
+    local name = CacheItem(itemId)
+    if not name then return false end
+    ScheduleAhSearch(itemId, name, 1)
+    return true
 end
 
 function P1DG.FormatAhPrice(copper)
@@ -212,15 +339,19 @@ function P1DG.GetAhSearchStatus()
     local pendingName = itemId and CacheItem(itemId) or nil
     return {
         auctionatorLoaded = IsAddOnLoaded("Auctionator"),
-        bridgeReady = P1DG.IsAuctionatorLoaded(),
+        blizzardAuctionUI = IsAddOnLoaded("Blizzard_AuctionUI"),
+        bridgeReady = P1DG.EnsureAuctionatorReady(),
         ahOpen = P1DG.IsAuctionHouseOpen(),
+        canQuery = P1DG.CanQueryAuction(),
+        hasShopPane = gShopPane ~= nil,
+        buyTabIndex = P1DG.GetAuctionatorBuyTabIndex(),
         hasSearchBox = Atr_Search_Box ~= nil,
         hasSearchFn = Atr_Search_Onclick ~= nil,
-        hasSelectPane = Atr_SelectPane ~= nil,
-        buyTabActive = (Atr_IsTabSelected and Atr_IsModeBuy and Atr_IsModeBuy()) or false,
+        buyTabActive = Atr_IsModeBuy and Atr_IsModeBuy() or false,
         searchBoxText = Atr_Search_Box and Atr_Search_Box:GetText() or "",
         pendingItemId = itemId,
         pendingName = pendingName,
+        runnerActive = ahRunner.pendingName ~= nil,
         lastItemId = P1DG._lastAhItemId,
         lastName = P1DG._lastAhName,
         lastResult = P1DG._lastAhResult,
@@ -229,14 +360,14 @@ function P1DG.GetAhSearchStatus()
 end
 
 function P1DG.PrintAhDiagnostics()
-    print("|cff00ccffP1 AH debug|r — Auctionator bridge status")
+    print("|cff00ccffP1 AH debug|r — Warmane 3.3.5 uses same QueryAuctionItems API as retail WotLK")
     local st = P1DG.GetAhSearchStatus()
     local function yn(v) return v and "|cff00ff00yes|r" or "|cffff4444no|r" end
     print("  Auctionator loaded: " .. yn(st.auctionatorLoaded))
-    print("  Bridge ready: " .. yn(st.bridgeReady))
-    print("  AH frame open: " .. yn(st.ahOpen))
-    print("  Atr_Search_Box: " .. yn(st.hasSearchBox))
-    print("  Atr_Search_Onclick: " .. yn(st.hasSearchFn))
+    print("  Blizzard_AuctionUI: " .. yn(st.blizzardAuctionUI))
+    print("  Bridge ready (gShopPane): " .. yn(st.bridgeReady) .. "  shopPane=" .. yn(st.hasShopPane))
+    print("  AH frame open: " .. yn(st.ahOpen) .. "  canQuery=" .. yn(st.canQuery))
+    print("  Auctionator Buy tab index: " .. (st.buyTabIndex > 0 and st.buyTabIndex or "|cffff4444not registered (reopen AH)|r"))
     print("  Buy tab active: " .. yn(st.buyTabActive))
     if st.searchBoxText ~= "" then
         print("  Search box: |cffffcc00" .. st.searchBoxText .. "|r")
@@ -245,6 +376,9 @@ function P1DG.PrintAhDiagnostics()
         print("  Queued: " .. (st.pendingName or "?") .. " (id " .. st.pendingItemId .. ")")
     else
         print("  Queued: |cff888888(none)|r")
+    end
+    if st.runnerActive then
+        print("  Search runner: |cffffcc00active|r")
     end
     if st.lastItemId then
         local ago = st.lastAt and string.format("%.1fs ago", GetTime() - st.lastAt) or "?"
@@ -258,14 +392,7 @@ function P1DG.PrintAhDiagnostics()
     else
         print("  Top priority: |cff888888(none)|r")
     end
-    print("  |cff666666Tests: /p1ah test · /p1ah test 10410 · open AH then retry|r")
-end
-
-function P1DG.RecordAhSearchAttempt(itemId, name, result)
-    P1DG._lastAhItemId = itemId
-    P1DG._lastAhName = name
-    P1DG._lastAhResult = result
-    P1DG._lastAhAt = GetTime()
+    print("  |cff666666Tests: /p1ah test 10410 (open AH first) · click = left-click not hover|r")
 end
 
 function P1DG.SearchAuctionItem(itemId, fromQueue)
@@ -273,10 +400,10 @@ function P1DG.SearchAuctionItem(itemId, fromQueue)
     local name = CacheItem(itemId)
     if not name then
         P1DG.RecordAhSearchAttempt(itemId, nil, "uncached")
-        print("|cff00ccffP1 Guide|r — item not cached. Mouse over it once, then retry.")
+        print("|cff00ccffP1 Guide|r — item not cached. Mouse over icon once, then retry.")
         return false
     end
-    if not P1DG.IsAuctionatorLoaded() then
+    if not P1DG.IsAuctionatorLoaded() and not LoadAddOn then
         P1DG.RecordAhSearchAttempt(itemId, name, "no_addon")
         print("|cff00ccffP1 Guide|r — Auctionator not loaded. Run PLAY.bat and /reload.")
         return false
@@ -286,14 +413,13 @@ function P1DG.SearchAuctionItem(itemId, fromQueue)
         P1DG.RecordAhSearchAttempt(itemId, name, "queued")
         if not fromQueue then
             print("|cff00ccffP1 Guide|r — |cffff8800QUEUED|r (open AH to search)")
-            print("  Item: |cffffcc00" .. name .. "|r — will auto-search on AH open")
+            print("  Item: |cffffcc00" .. name .. "|r — auto-search when AH opens")
         end
         return false
     end
-    Atr_SelectPane(BUY_TAB)
-    Atr_Search_Box:SetText(name)
-    Atr_Search_Onclick()
-    P1DG.RecordAhSearchAttempt(itemId, name, "searched")
-    print("|cff00ccffP1 Guide|r — |cff00ff00SEARCHED|r Auctionator Buy tab → |cffffcc00" .. name .. "|r")
+    if not fromQueue then
+        print("|cff00ccffP1 Guide|r — searching |cffffcc00" .. name .. "|r …")
+    end
+    ScheduleAhSearch(itemId, name, 1)
     return true
 end

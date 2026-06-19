@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "2.0.2-druid"
+local PACK_VERSION = "2.0.3-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
 local WELCOME_LINE = "|cff00ccffP1 Druid Guide v2.0|r — SHOP + fused NEXT · |cff00ff00/p1guide|r · |cff00ff00/p1scan|r"
@@ -270,6 +270,46 @@ local function EnsureSlash()
     SLASH_P1AUTO2 = "/p1qauto"
     SlashCmdList["P1AUTO"] = function()
         P1_AutoQuest_Toggle()
+    end
+
+    SLASH_P1AH1 = "/p1ah"
+    SlashCmdList["P1AH"] = function(msg)
+        msg = string.lower((msg or ""):match("^%s*(.-)%s*$") or "")
+        if msg == "debug" or msg == "status" then
+            if P1DG and P1DG.PrintAhDiagnostics then
+                P1DG.PrintAhDiagnostics()
+            else
+                print("|cff00ccffP1 AH|r — enable P1DruidGuide at character select, /reload")
+            end
+            return
+        end
+        local testId = tonumber(msg:match("^test%s+(%d+)$"))
+        if msg == "test" or testId then
+            if not P1DG or not P1DG.SearchAuctionItem then
+                print("|cff00ccffP1 AH|r — enable P1DruidGuide at character select, /reload")
+                return
+            end
+            local itemId = testId
+            if not itemId and P1DG.GetNextAhPriority then
+                local top = P1DG.GetNextAhPriority(UnitLevel("player"))
+                itemId = top and top.itemId
+            end
+            if not itemId then
+                print("|cff00ccffP1 AH|r — /p1ah test 10410")
+                return
+            end
+            P1DG.SearchAuctionItem(itemId)
+            if P1DG.PrintAhDiagnostics then P1DG.PrintAhDiagnostics() end
+            return
+        end
+        if P1DG and P1DG.GetNextAhPriority and P1DG.SearchAuctionItem then
+            local top = P1DG.GetNextAhPriority(UnitLevel("player"))
+            if top and top.itemId then
+                P1DG.SearchAuctionItem(top.itemId)
+                return
+            end
+        end
+        print("|cff00ccffP1 AH|r — no pending upgrades · /p1ah debug")
     end
 
     SLASH_P1SCAN1 = "/p1scan"

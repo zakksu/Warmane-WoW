@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "2.0.2"
+local VERSION = "2.0.3"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -1220,7 +1220,7 @@ init:SetScript("OnEvent", function(_, event)
         if P1DG.ScanCharacter then P1DG.ScanCharacter() end
     else
         if event == "AUCTION_HOUSE_SHOW" then
-            init.ahFlushDelay = 0.15
+            init.ahFlushDelay = 0.4
             init.ahFlushPending = true
         elseif event == "AUCTION_HOUSE_CLOSED" then
             init.ahFlushPending = false
