@@ -1,9 +1,7 @@
 # Agent handoff status
 
-**State:** GROK_PENDING
-**Updated:** 2026-06-19
-
-Previous cycle shipped v2.0.4. GROK_TASKS.md queued for next Grok run.
+**State:** CURSOR_SHIPPED
+**Updated:** 2026-06-19 00:27
 
 **You:** `/reload` in game after loop ships changes.
 

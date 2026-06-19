@@ -111,5 +111,13 @@ Write-Host " Results: $pass pass, $fail fail"
 Write-Host " Chat log: $(Get-WowChatLogPath)"
 Write-Host "========================================" -ForegroundColor Cyan
 
-if ($fail -gt 0) { exit 1 }
+if ($fail -gt 0) {
+    try {
+        $shot = Capture-WowWindow -Label "fail-$Suite"
+        Write-Host "Screenshot: $shot" -ForegroundColor Yellow
+    } catch {
+        Write-Host "Screenshot skipped: $_" -ForegroundColor DarkGray
+    }
+    exit 1
+}
 exit 0

@@ -222,8 +222,6 @@ function P1Waypoint:ClearActive()
     if self.arrow then self.arrow:Hide() end
 end
 
-P1Waypoint.AddWaypoint = P1Waypoint.AddWaypoint
-
 local init = CreateFrame("Frame")
 init:RegisterEvent("PLAYER_LOGIN")
 init:SetScript("OnEvent", function()

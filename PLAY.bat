@@ -35,7 +35,7 @@ set "ADDONS=!WOWPATH!\Interface\AddOns"
 set "PACK=DRUID"
 set "PACK_FLAG=-Pack DRUID"
 if exist "!ADDONS!\PhaseOneLoader\PhaseOneLoader.lua" (
-  findstr /C:"Warlock Pack" "!ADDONS!\PhaseOneLoader\PhaseOneLoader.lua" >nul 2>&1
+  findstr /C:"Phase One Quest Pack (Warlock)" "!ADDONS!\PhaseOneLoader\PhaseOneLoader.lua" >nul 2>&1
   if not errorlevel 1 (
     set "PACK=WARLOCK"
     set "PACK_FLAG=-Pack WARLOCK"

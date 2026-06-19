@@ -109,8 +109,10 @@ function Detect-PackGuide {
     $loader = Join-Path $AddonsDir "PhaseOneLoader\PhaseOneLoader.lua"
     if (Test-Path $loader) {
         $text = Get-Content -Path $loader -Raw -ErrorAction SilentlyContinue
-        if ($text -match "Warlock Pack") { return "WARLOCK" }
-        if ($text -match "Druid Pack") { return "DRUID" }
+        if ($text -match 'PACK_NAME\s*=\s*"Phase One Quest Pack \(Warlock\)"') { return "WARLOCK" }
+        if ($text -match 'PACK_NAME\s*=\s*"Phase One Quest Pack \(Druid\)"') { return "DRUID" }
+        if ($text -match "PhaseOneDruidLoaderDB") { return "DRUID" }
+        if ($text -match "PhaseOneLoaderDB") { return "WARLOCK" }
     }
     if (Test-Path (Join-Path $AddonsDir "P1DruidGuide")) { return "DRUID" }
     if (Test-Path (Join-Path $AddonsDir "P1WarlockHUD")) { return "WARLOCK" }

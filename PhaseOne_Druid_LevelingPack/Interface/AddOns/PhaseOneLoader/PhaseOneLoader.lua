@@ -443,7 +443,7 @@ loader:SetScript("OnEvent", function()
         Delay(4, function()
             print("|cff00ccffP1 v2.0.2:|r PATH through 80 · TIPS Outland/Northrend · /p1scan")
             print("|cff00ccffP1 v2.0.2:|r Click SHOP/NEXT [AH] lines → Auctionator search")
-            print("|cff00ccffP1 v2.0.2:|r Warlock pack: P1WarlockGuide /p1wguide PATH 10-50")
+            print("|cff00ccffP1 v2.0.2:|r /p1test run for self-test · /p1ah debug for AH bridge")
         end)
     end
 

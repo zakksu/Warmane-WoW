@@ -1,5 +1,6 @@
 # Temp / build artifacts
 tools/wow-pack-build/
+tools/automation/reports/
 *.zip
 
 # OS

@@ -151,3 +151,83 @@ function Invoke-WowClickSequence {
     }
 }
 
+function Get-FrameXmlLogPath {
+    return Join-Path (Get-WowPath) "Logs\FrameXML.log"
+}
+
+function Get-FrameXmlTail {
+    param([int]$Lines = 120)
+    $path = Get-FrameXmlLogPath
+    if (-not (Test-Path $path)) { return @() }
+    return @(Get-Content -Path $path -Tail $Lines -Encoding UTF8 -ErrorAction SilentlyContinue)
+}
+
+function Get-P1FrameErrors {
+    param([int]$TailLines = 200)
+    $errors = New-Object System.Collections.Generic.List[string]
+    foreach ($line in (Get-FrameXmlTail -Lines $TailLines)) {
+        if ($line -match 'Error loading Interface\\AddOns\\P1') {
+            $errors.Add($line) | Out-Null
+            continue
+        }
+        if ($line -match 'Interface\\AddOns\\P1[^:]*:\d+:') {
+            $errors.Add($line) | Out-Null
+        }
+    }
+    return $errors
+}
+
+function Capture-WowWindow {
+    param(
+        [string]$OutPath = "",
+        [string]$Label = "capture"
+    )
+    Add-Type -AssemblyName System.Drawing
+    $hwnd = Focus-WowWindow
+    $rect = New-Object WowWin32+RECT
+    [void][WowWin32]::GetWindowRect($hwnd, [ref]$rect)
+    $w = $rect.Right - $rect.Left
+    $h = $rect.Bottom - $rect.Top
+    if ($w -le 8 -or $h -le 8) { throw "WoW window rect too small ($w x $h) - use windowed mode" }
+
+    if (-not $OutPath) {
+        $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+        $dir = Join-Path $PSScriptRoot "reports\screenshots"
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $OutPath = Join-Path $dir ("{0}-{1}.png" -f $Label, $stamp)
+    } else {
+        $parent = Split-Path -Parent $OutPath
+        if ($parent -and -not (Test-Path $parent)) {
+            New-Item -ItemType Directory -Path $parent -Force | Out-Null
+        }
+    }
+
+    $bmp = New-Object System.Drawing.Bitmap $w, $h
+    try {
+        $g = [System.Drawing.Graphics]::FromImage($bmp)
+        $g.CopyFromScreen($rect.Left, $rect.Top, 0, 0, (New-Object System.Drawing.Size $w, $h))
+        $g.Dispose()
+        $bmp.Save($OutPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally {
+        $bmp.Dispose()
+    }
+    return (Resolve-Path $OutPath).Path
+}
+
+function Get-P1TestLinesFromChat {
+    param([int]$Lines = 150)
+    $out = New-Object System.Collections.Generic.List[string]
+    foreach ($line in (Get-ChatLogTail -Lines $Lines)) {
+        if ($line -match '\[P1TEST\]') { $out.Add($line) | Out-Null }
+    }
+    return $out
+}
+
+function Test-P1SummaryPassed {
+    param([string[]]$ChatLines)
+    foreach ($line in $ChatLines) {
+        if ($line -match '\[P1TEST\].*PASS.*summary') { return $true }
+    }
+    return $false
+}
+

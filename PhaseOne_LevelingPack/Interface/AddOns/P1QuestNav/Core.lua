@@ -14,6 +14,11 @@ local PIN_SIZE = 28
 local RUN_SPEED = 7
 local KILL_SEC_PER_OBJ = 30
 
+local function UiMapToAreaId(uiMapId)
+    if not uiMapId or not ZoneDB or not ZoneDB.GetAreaIdByUiMapId then return nil end
+    return ZoneDB:GetAreaIdByUiMapId(uiMapId)
+end
+
 local MODE_COLORS = {
     available = { 1.0, 0.92, 0.15 },
     objective = { 0.25, 0.65, 1.0 },
@@ -354,7 +359,7 @@ local function FindAvailableFromQuestieFrames()
                 local frame = _G[frameName]
                 if frame and frame.data and frame.data.Type == "available" and frame.x and frame.y then
                     local uiMapId = frame.UiMapID or frame.data.UiMapID
-                    local areaId = uiMapId and ZoneDB:GetAreaIdByUiMapId and ZoneDB:GetAreaIdByUiMapId(uiMapId)
+                    local areaId = UiMapToAreaId(uiMapId)
                     if areaId then
                         local spawn = { frame.x * 100, frame.y * 100 }
                         local dX, dY, dInstance = hbd:GetWorldCoordinatesFromZone(frame.x, frame.y, uiMapId)

@@ -1,0 +1,26 @@
+﻿[2026-06-19 00:23:38] Agent loop started (poll=45s, once=True, dryRun=True)
+[2026-06-19 00:23:38] Repo: C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 00:23:38] Starting Grok cycle
+[2026-06-19 00:23:38] STATE -> GROK_WORKING
+[2026-06-19 00:23:38] STATE -> GROK_DONE
+[2026-06-19 00:23:38] Agent loop exited
+[2026-06-19 00:27:02] Agent loop started (poll=45s, once=False, dryRun=False)
+[2026-06-19 00:27:02] Repo: C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 00:27:02] Starting Cursor cycle
+[2026-06-19 00:27:02] STATE -> CURSOR_PENDING
+[2026-06-19 00:27:02] Wrote CURSOR_WAKE.md (hook / IDE pickup)
+[2026-06-19 00:27:02] Trying: C:\Users\godin\AppData\Local\Programs\cursor\resources\app\bin\cursor.cmd agent --print --workspace C:\Users\godin\Documents\GitHub\Warmane WoW You are the Cursor agent on Warmane-WoW. Autonomous handoff cycle.
+
+Read Docs/grok-handoff/STATUS.md, grok-response.md, and CURSOR_TASKS.md.
+Set STATUS State to CURSOR_WORKING, implement every unchecked CURSOR_TASKS item,
+sync addons (tools/sync-addons.ps1 + tools/wow-path.cfg), commit when done,
+mark all CURSOR_TASKS [x], set STATUS to CURSOR_SHIPPED, queue next GROK_TASKS.md.
+Follow AGENTS.md and Docs/AUTONOMOUS_LOOP.md. Do not ask the user.
+[2026-06-19 00:27:04] Cursor CLI pattern failed: Warning: 'print' is not in the list of known options, but still passed to Electron/Chromium.
+[2026-06-19 00:27:04] Trying: C:\Users\godin\AppData\Local\Programs\cursor\resources\app\bin\cursor.cmd --new-window C:\Users\godin\Documents\GitHub\Warmane WoW
+[2026-06-19 00:27:05] Cursor CLI invoked
+[2026-06-19 00:27:05] STATE -> CURSOR_WORKING
+[2026-06-19 00:27:20] STATE -> CURSOR_SHIPPED
+[2026-06-19 00:28:06] Starting ship cycle
+[2026-06-19 00:28:09] Ship cycle starting
+[2026-06-19 00:28:11] Syncing addons to C:\Users\godin\Desktop\World.of.Warcraft.3.3.5a.Truewow

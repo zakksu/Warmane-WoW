@@ -169,6 +169,9 @@ function P1DG.RunSelfTests(scope)
     P1DruidGuideDB.lastTestAt = GetTime()
     P1DruidGuideDB.lastTestPass = pass
     P1DruidGuideDB.lastTestTotal = total
+    P1DG.EmitState("summary_pass", pass)
+    P1DG.EmitState("summary_total", total)
+    P1DG.EmitState("summary_ok", (pass == total) and 1 or 0)
     return pass, total
 end
 
@@ -183,6 +186,44 @@ function P1DG.PrintDevLog(lastN)
     end
 end
 
+function P1DG.EmitState(key, value)
+    P1DG.DevLog("STATE", (key or "?") .. "=" .. tostring(value))
+end
+
+function P1DG.EmitHarnessState()
+    local _, class = UnitClass("player")
+    P1DG.EmitState("addon_P1DruidGuide", IsAddOnLoaded("P1DruidGuide") and 1 or 0)
+    P1DG.EmitState("addon_P1QuestNav", IsAddOnLoaded("P1QuestNav") and 1 or 0)
+    P1DG.EmitState("addon_P1AutoQuest", IsAddOnLoaded("P1AutoQuest") and 1 or 0)
+    P1DG.EmitState("addon_Auctionator", IsAddOnLoaded("Auctionator") and 1 or 0)
+    P1DG.EmitState("class", class or "?")
+    P1DG.EmitState("level", UnitLevel("player"))
+    P1DG.EmitState("zone", GetRealZoneText() or "?")
+    P1DG.EmitState("ah_open", (AuctionFrame and AuctionFrame:IsShown()) and 1 or 0)
+    if P1DG.GetAhSearchStatus then
+        local st = P1DG.GetAhSearchStatus()
+        if st then
+            P1DG.EmitState("ah_shopPane", st.hasShopPane and 1 or 0)
+            P1DG.EmitState("ah_canQuery", (st.canQuery ~= false) and 1 or 0)
+        end
+    end
+    if P1DruidGuideFrame then
+        local shown = P1DruidGuideFrame:IsShown() and 1 or 0
+        P1DG.EmitState("guide_visible", shown)
+        P1DG.EmitState("guide_left", math.floor(P1DruidGuideFrame:GetLeft() or 0))
+        P1DG.EmitState("guide_bottom", math.floor(P1DruidGuideFrame:GetBottom() or 0))
+        P1DG.EmitState("guide_width", math.floor(P1DruidGuideFrame:GetWidth() or 0))
+        P1DG.EmitState("guide_height", math.floor(P1DruidGuideFrame:GetHeight() or 0))
+    else
+        P1DG.EmitState("guide_visible", 0)
+    end
+    P1DruidGuideDB = P1DruidGuideDB or {}
+    if P1DruidGuideDB.lastTestPass and P1DruidGuideDB.lastTestTotal then
+        P1DG.EmitState("last_pass", P1DruidGuideDB.lastTestPass)
+        P1DG.EmitState("last_total", P1DruidGuideDB.lastTestTotal)
+    end
+end
+
 function P1DG.PrintCalibrateHint()
     P1DG.DevLog("INFO", "calibrate: hover guide line/icon, note cursor % — automation uses window-relative clicks")
     if P1DruidGuideFrame then
@@ -194,6 +235,7 @@ function P1DG.PrintCalibrateHint()
     local x, y = GetCursorPosition()
     local s = P1DruidGuideFrame and P1DruidGuideFrame:GetEffectiveScale() or 1
     P1DG.DevLog("INFO", string.format("cursor_ui %.0f,%.0f scale=%.2f", x / s, y / s, s))
+    P1DG.EmitHarnessState()
 end
 
 local function HandleP1Test(msg)
@@ -213,8 +255,10 @@ local function HandleP1Test(msg)
         P1DG.DevLog("INFO", "log cleared")
     elseif msg == "cal" or msg == "calibrate" then
         P1DG.PrintCalibrateHint()
+    elseif msg == "state" or msg == "status" then
+        P1DG.EmitHarnessState()
     else
-        P1DG.DevLog("INFO", "usage: /p1test run|mod|scan|ah|log|clear|calibrate")
+        P1DG.DevLog("INFO", "usage: /p1test run|mod|scan|ah|state|log|clear|calibrate")
     end
 end
 

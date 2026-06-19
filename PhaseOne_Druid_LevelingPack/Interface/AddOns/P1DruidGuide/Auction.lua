@@ -418,7 +418,7 @@ function P1DG.SearchAuctionItem(itemId, fromQueue)
         return false
     end
     if not fromQueue then
-        print("|cff00ccffP1 Guide|r — searching |cffffcc00" .. name .. "|r …")
+        print("|cff00ccffP1 Guide|r — searching |cffffcc00" .. name .. "|r ...")
     end
     ScheduleAhSearch(itemId, name, 1)
     return true

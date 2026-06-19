@@ -80,6 +80,11 @@ local function GetHBD()
     return HBD
 end
 
+local function UiMapToAreaId(uiMapId)
+    if not uiMapId or not ZoneDB or not ZoneDB.GetAreaIdByUiMapId then return nil end
+    return ZoneDB:GetAreaIdByUiMapId(uiMapId)
+end
+
 local function IsAutoQuestOn()
     if _G.P1_IsAutoQuestEnabled then
         return P1_IsAutoQuestEnabled()
@@ -221,7 +226,7 @@ local function FindAvailableFromQuestieFrames()
                 local frame = _G[frameName]
                 if frame and frame.data and frame.data.Type == "available" and frame.x and frame.y then
                     local uiMapId = frame.UiMapID or frame.data.UiMapID
-                    local areaId = uiMapId and ZoneDB:GetAreaIdByUiMapId and ZoneDB:GetAreaIdByUiMapId(uiMapId)
+                    local areaId = UiMapToAreaId(uiMapId)
                     if areaId then
                         local spawn = { frame.x * 100, frame.y * 100 }
                         local dX, dY, dInstance = hbd:GetWorldCoordinatesFromZone(frame.x, frame.y, uiMapId)
