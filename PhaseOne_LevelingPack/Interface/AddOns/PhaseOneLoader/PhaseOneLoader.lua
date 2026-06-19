@@ -3,7 +3,7 @@
 PhaseOneLoaderDB = PhaseOneLoaderDB or {}
 local db = PhaseOneLoaderDB
 
-local PACK_VERSION = "1.6.0"
+local PACK_VERSION = "1.6.1"
 local PACK_NAME = "Phase One Quest Pack (Warlock)"
 
 local WELCOME_LINE = "|cff00ccffP1 ready:|r Auto Q, Nav, Glow, Guide v1.5. |cff00ff00/p1settings|r"

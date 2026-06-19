@@ -10,7 +10,7 @@ P1DruidGuideDB = P1DruidGuideDB or {
 }
 
 local DB = P1DruidGuideDB
-local VERSION = "1.6.0"
+local VERSION = "1.6.1"
 local panel, headerText, headerBtn, bodyText, resizeGrip, iconBar, minimizeBtn, clickCatcher
 local iconFrames = {}
 local guideVisible = true
@@ -75,6 +75,23 @@ local function SyncLoaderTips(on)
     DB.tipsVisible = on
     if PhaseOneLoaderDB then PhaseOneLoaderDB.tipsVisible = on end
     if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.tipsVisible = on end
+end
+
+local function ReadAutoWaypoint()
+    if PhaseOneLoaderDB and PhaseOneLoaderDB.guideAutoWaypoint ~= nil then
+        return PhaseOneLoaderDB.guideAutoWaypoint
+    end
+    if PhaseOneDruidLoaderDB and PhaseOneDruidLoaderDB.guideAutoWaypoint ~= nil then
+        return PhaseOneDruidLoaderDB.guideAutoWaypoint
+    end
+    if DB.autoWaypoint ~= nil then return DB.autoWaypoint end
+    return true
+end
+
+local function SyncLoaderAutoWaypoint(on)
+    DB.autoWaypoint = on
+    if PhaseOneLoaderDB then PhaseOneLoaderDB.guideAutoWaypoint = on end
+    if PhaseOneDruidLoaderDB then PhaseOneDruidLoaderDB.guideAutoWaypoint = on end
 end
 
 local function IsDruidPlayer()
@@ -870,8 +887,9 @@ function P1DruidGuide_SetVisible(show)
 end
 
 function P1DruidGuide_SetAutoWaypoint(on)
-    DB.autoWaypoint = on and true or false
-    if DB.autoWaypoint then
+    on = on and true or false
+    SyncLoaderAutoWaypoint(on)
+    if on then
         lastAutoQuestKey = nil
         MaybeAutoWaypoint()
     end
@@ -955,6 +973,7 @@ init:SetScript("OnEvent", function(_, event)
         guideVisible = ReadGuideVisible()
         tipsVisible = ReadTipsVisible()
         SyncLoaderTips(tipsVisible)
+        P1DruidGuide_SetAutoWaypoint(ReadAutoWaypoint())
         P1DruidGuide_SetVisible(guideVisible)
         if DB.minimized then SetMinimized(true) end
     else

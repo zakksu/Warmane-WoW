@@ -8,6 +8,7 @@ local REFRESH_INTERVAL = 1.5
 local REFRESH_THROTTLE = 0.35
 local AVAIL_CACHE_TTL = 3
 local DOT_COUNT = 12
+local PATH_TRAIL_SLOTS = 3
 local LINE_DOT_SIZE = 6
 local PIN_SIZE = 28
 local RUN_SPEED = 7
@@ -592,9 +593,16 @@ local function PlacePinOnEdge(pin, target)
     return true, "edge-astro"
 end
 
+local TRAIL_SLOT_STYLE = {
+    { length = 1.0, alpha = 1.0, angleOff = 0 },
+    { length = 0.72, alpha = 0.55, angleOff = 0.06 },
+    { length = 0.45, alpha = 0.38, angleOff = -0.06 },
+}
+
 local function EnsureMinimapDots()
-    if #minimapDots >= DOT_COUNT then return end
-    for i = #minimapDots + 1, DOT_COUNT do
+    local needed = DOT_COUNT * PATH_TRAIL_SLOTS
+    if #minimapDots >= needed then return end
+    for i = #minimapDots + 1, needed do
         local t = Minimap:CreateTexture(nil, "OVERLAY")
         t:SetDrawLayer("OVERLAY", 7)
         t:SetTexture("Interface\\Buttons\\WHITE8X8")
@@ -731,12 +739,8 @@ local function UpdateLegend()
     end
 end
 
-local function UpdateMinimapLine(target)
-    EnsureMinimapDots()
-    if not target or not target.spawn then
-        for _, d in ipairs(minimapDots) do d:Hide() end
-        return
-    end
+local function GetMinimapTargetAngle(target)
+    if not target or not target.spawn then return nil end
     local hbd = GetHBD()
     if hbd and target.zone then
         local px, py = hbd:GetPlayerWorldPosition()
@@ -746,49 +750,69 @@ local function UpdateMinimapLine(target)
         end
         local tx, ty = hbd:GetWorldCoordinatesFromZone(target.spawn[1] / 100, target.spawn[2] / 100, uiMapId)
         if px and tx then
-            local angle = math.atan2(tx - px, -(ty - py))
-            local r, g, b = BlendColor(target.mode, 1)
-            local radius = (Minimap:GetWidth() / 2) - 10
-            for i, dot in ipairs(minimapDots) do
-                local frac = i / (DOT_COUNT + 1)
-                local dist = radius * frac
-                dot:ClearAllPoints()
-                dot:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * dist, -math.cos(angle) * dist)
-                dot:SetVertexColor(r, g, b, 0.65 + frac * 0.35)
-                dot:Show()
-            end
-            return
+            return math.atan2(tx - px, -(ty - py))
         end
     end
     local ast = GetAstrolabe()
-    if not ast then
-        for _, d in ipairs(minimapDots) do d:Hide() end
-        return
-    end
+    if not ast then return nil end
     local pc, pz, px, py = ast:GetCurrentPlayerPosition()
-    if not pc then
-        for _, d in ipairs(minimapDots) do d:Hide() end
-        return
-    end
+    if not pc then return nil end
     local wc, wz = AreaIdToCZ(target.zone)
-    if not wc then
-        for _, d in ipairs(minimapDots) do d:Hide() end
-        return
-    end
+    if not wc then return nil end
     local wx, wy = target.spawn[1] / 100, target.spawn[2] / 100
     if ast.TranslateWorldMapPosition then
         wx, wy = ast:TranslateWorldMapPosition(wc, wz, wx, wy, pc, pz)
     end
-    local angle = math.atan2(wx - px, -(wy - py))
-    local r, g, b = BlendColor(target.mode, 1)
+    return math.atan2(wx - px, -(wy - py))
+end
+
+local function HideMinimapTrailDots(dotBase)
+    for i = dotBase, dotBase + DOT_COUNT - 1 do
+        local d = minimapDots[i]
+        if d then d:Hide() end
+    end
+end
+
+local function UpdateMinimapLineSlot(target, slot, dotBase)
+    EnsureMinimapDots()
+    if not target or not target.spawn then
+        HideMinimapTrailDots(dotBase)
+        return
+    end
+    local angle = GetMinimapTargetAngle(target)
+    if not angle then
+        HideMinimapTrailDots(dotBase)
+        return
+    end
+    local style = TRAIL_SLOT_STYLE[slot] or TRAIL_SLOT_STYLE[1]
+    angle = angle + (style.angleOff or 0)
+    local r, g, b = BlendColor(target.mode, slot)
     local radius = (Minimap:GetWidth() / 2) - 10
-    for i, dot in ipairs(minimapDots) do
-        local frac = i / (DOT_COUNT + 1)
-        local dist = radius * frac
-        dot:ClearAllPoints()
-        dot:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * dist, -math.cos(angle) * dist)
-        dot:SetVertexColor(r, g, b, 0.65 + frac * 0.35)
-        dot:Show()
+    local maxDist = radius * style.length
+    local alphaScale = style.alpha or 1
+    for i = 1, DOT_COUNT do
+        local dot = minimapDots[dotBase + i - 1]
+        if dot then
+            local frac = i / (DOT_COUNT + 1)
+            local dist = maxDist * frac
+            dot:ClearAllPoints()
+            dot:SetPoint("CENTER", Minimap, "CENTER", math.sin(angle) * dist, -math.cos(angle) * dist)
+            dot:SetVertexColor(r, g, b, (0.65 + frac * 0.35) * alphaScale)
+            dot:Show()
+        end
+    end
+end
+
+local function UpdateMinimapTrails()
+    if P1DruidGuideFrame and P1DruidGuideFrame:IsShown() then
+        for _, d in ipairs(minimapDots) do d:Hide() end
+        return
+    end
+    EnsureMinimapDots()
+    local pathTop = P1QuestPath_GetTop and P1QuestPath_GetTop(3) or {}
+    for slot = 1, PATH_TRAIL_SLOTS do
+        local dotBase = (slot - 1) * DOT_COUNT + 1
+        UpdateMinimapLineSlot(pathTop[slot], slot, dotBase)
     end
 end
 
@@ -933,9 +957,9 @@ function P1QuestNav_Refresh(force)
     UpdateLegend()
     UpdateNextLine()
     UpdateWorldBadges()
+    UpdateMinimapTrails()
 
     if tracked[1] then
-        UpdateMinimapLine(tracked[1])
         UpdateWorldMapLine(tracked[1])
         local primaryId = tracked[1].questId
         if lastTomPrimaryId and lastTomPrimaryId ~= primaryId then
@@ -944,7 +968,6 @@ function P1QuestNav_Refresh(force)
         lastTomPrimaryId = primaryId
         SetTomTomWaypoint(tracked[1])
     else
-        for _, d in ipairs(minimapDots) do d:Hide() end
         for _, d in ipairs(worldDots) do d:Hide() end
         ClearTomTomWaypoint()
         lastTomPrimaryId = nil

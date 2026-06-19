@@ -1,9 +1,15 @@
-Phase One Warmane Leveling Packs — v1.6.0
+Phase One Warmane Leveling Packs - v1.6.1
 Released: 2026-06-18
 ==========================================
 
 Warlock pack:  PhaseOne_LevelingPack/
 Druid pack:    PhaseOne_Druid_LevelingPack/
+
+CHANGELOG (v1.6.1)
+  - P1QuestNav: 3-quest minimap dot trails from /p1path ranking (fainter #2/#3)
+  - Autogo synced via /p1settings and PhaseOneDruidLoaderDB.guideAutoWaypoint
+  - quick-release.ps1 encoding fix (ASCII hyphen in RELEASE header)
+  - Docs/TASK_DIVISION.md — Cursor/Grok parallel agent lanes
 
 CHANGELOG (v1.6.0)
   - P1DruidGuide v1.6: drag fix (SetMovable + title bar / right-drag header)

@@ -28,6 +28,13 @@ P1DG.FIRST_AID = {
             altClothId = 4338, altClothName = "Mageweave",
             goalTotal = 50,
         },
+        {
+            skillMin = 225, skillMax = 300, levelMin = 40, levelMax = 58,
+            label = "Artisan FA (225+)",
+            clothId = 14047, clothName = "Runecloth",
+            bandageIds = { [14529] = 3, [14530] = 3 },
+            goalTotal = 40,
+        },
     },
 }
 
@@ -48,6 +55,10 @@ P1DG.HERB_MILESTONES = {
         { id = 3818, name = "Fadeleaf", goal = 10 },
         { id = 3821, name = "Goldthorn", goal = 10 },
     }},
+    { levelMin = 50, levelMax = 58, items = {
+        { id = 13463, name = "Dreamfoil", goal = 8 },
+        { id = 13464, name = "Golden Sansam", goal = 8 },
+    }},
 }
 
 P1DG.ORE_MILESTONES = {
@@ -64,6 +75,10 @@ P1DG.ORE_MILESTONES = {
     { levelMin = 40, levelMax = 50, items = {
         { id = 10620, name = "Thorium Ore", goal = 8 },
         { id = 7912, name = "Solid Stone", goal = 10 },
+    }},
+    { levelMin = 50, levelMax = 58, items = {
+        { id = 10620, name = "Thorium Ore", goal = 12 },
+        { id = 11370, name = "Dark Iron Ore", goal = 6 },
     }},
 }
 
@@ -286,6 +301,42 @@ P1DG.BIS_BRACKETS = {
               waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Blackrock Depths" } },
         },
     },
+    {
+        levelMin = 50, levelMax = 58,
+        slots = {
+            { key = "Shoulders", order = 1, equipSlot = 3, minIlvl = 50,
+              suggest = "Truestrike Shoulders", itemName = "Truestrike Shoulders", itemId = 12927,
+              source = "LBRS / AH splurge", priceTier = "splurge",
+              why = "Best pre-60 shoulders — buy if listed",
+              flavor = "Shoulders so good they have their own fan club.",
+              waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Lower Blackrock Spire" } },
+            { key = "Weapon", order = 2, equipSlot = 16, minIlvl = 54,
+              suggest = "Fist of Omokk", itemName = "Fist of Omokk", itemId = 13148,
+              source = "LBRS / AH", priceTier = "splurge",
+              why = "Huge 2H spike past Golem Skull",
+              flavor = "Omokk's fist. Your new best friend.",
+              alt = "Keep Golem Skull if AH dry",
+              waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Fist of Omokk" } },
+            { key = "Gloves", order = 3, equipSlot = 10, minIlvl = 45,
+              suggest = "Wildheart Gloves", itemName = "Wildheart Gloves", itemId = 16705,
+              source = "AH / DM", priceTier = "cheap",
+              why = "Set piece — Agi + stam for cat",
+              flavor = "Gloves that match your kilt. Coordination matters.",
+              waypoint = { zone = 357, x = 59.2, y = 45.8, title = "Dire Maul" } },
+            { key = "Boots", order = 4, equipSlot = 8, minIlvl = 52,
+              suggest = "Wildheart Boots", itemName = "Wildheart Wrangler's Boots", itemId = 16708,
+              source = "AH / DM", priceTier = "cheap",
+              why = "Boots complete travel + combat feel",
+              flavor = "Wrangle mobs. Wrangle quests. Wrangle life.",
+              waypoint = { zone = 357, x = 59.2, y = 45.8, title = "Dire Maul" } },
+            { key = "Trinket", order = 5, equipSlot = 13, minIlvl = 45,
+              suggest = "Blackhand's Breadth", itemName = "Blackhand's Breadth", itemId = 13965,
+              source = "UBRS quest / AH", priceTier = "splurge",
+              why = "Crit trinket until Outland — worth gold",
+              flavor = "Breadth of crits. Depth of pain dealt.",
+              waypoint = { zone = 36, x = 80.4, y = 46.8, title = "Upper Blackrock Spire" } },
+        },
+    },
 }
 
 P1DG.AH_TIPS = {
@@ -356,6 +407,44 @@ P1DG.TIPS_BRACKETS = {
         quests = "Wildheart set in Dire Maul · Zul'Farrak for XP",
         gather = "Fadeleaf/Goldthorn STV · Thorium later zones",
     },
+    {
+        levelMin = 50, levelMax = 58,
+        zone = "WPL / EPL / BRD",
+        flavor = "Pre-Outland crunch. Finish set + buy splurges.",
+        rotation = "Cat: Rake → Rip → Shred maintain\nBear: dense quest hubs with 3+ mobs",
+        talents = "Max Shredding Attacks / Savage Fury / Predatory Strikes",
+        survival = "WPL casters — bear + Fa pot; bandage between chains",
+        quests = "Scholomance chains · BRD attunement · Wildheart AH fill-ins",
+        gather = "Dreamfoil/Sansam EPL · Thorium WPL · Runecloth for FA Artisan",
+    },
+}
+
+-- Per-level talent reminders (feral cat leveling, Horde)
+P1DG.TALENT_SCHEDULE = {
+    { level = 10, tip = "After Cat Form quest: Ferocity 1/5" },
+    { level = 11, tip = "Ferocity 2/5 — more cat damage" },
+    { level = 12, tip = "Ferocity 3/5 or Feral Aggression 1/5" },
+    { level = 14, tip = "Sharpened Claws 1/3 when available" },
+    { level = 16, tip = "Feral Swiftness 1/2 — run speed in cat" },
+    { level = 18, tip = "Ferocity 5/5 then Furor 1/5" },
+    { level = 20, tip = "Furor 2-3/5 — energy on shift" },
+    { level = 22, tip = "Savage Fury 1/2 — shred damage" },
+    { level = 24, tip = "Predatory Strikes 1/3 — AP from Agi" },
+    { level = 26, tip = "Feral Charge at 30 — bank points until then" },
+    { level = 30, tip = "Feral Charge (Cat) — gap close unlocked" },
+    { level = 32, tip = "Savage Fury 2/2 · Shredding Attacks 1/3" },
+    { level = 34, tip = "Predatory Strikes 2/3" },
+    { level = 36, tip = "Leader of the Pack 1/1 if grouping else skip" },
+    { level = 40, tip = "Heart of the Wild 1/5 — stat stick" },
+    { level = 42, tip = "Shredding Attacks 2/3" },
+    { level = 44, tip = "Predatory Strikes 3/3" },
+    { level = 46, tip = "Survival of the Fittest 1/3 — armor in bear" },
+    { level = 48, tip = "Feral Instinct 1/3 — bear threat if needed" },
+    { level = 50, tip = "Shredding Attacks 3/3 — max shred" },
+    { level = 52, tip = "Primal Fury 1/2 — crit combo points" },
+    { level = 54, tip = "Heart of the Wild 3/5" },
+    { level = 56, tip = "Primal Fury 2/2" },
+    { level = 58, tip = "Bank for 60 mount gold — stop spending on junk AH" },
 }
 
 -- Optimal path bullets — impact order, gold AH assumed (buy BIS at level gate)

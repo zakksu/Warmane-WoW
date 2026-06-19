@@ -44,5 +44,6 @@ See `Docs/DEV_WORKFLOW.md` for symlink mode, manifest, and release tooling.
 ## Agent workflow hints
 
 - **Plan first** for multi-addon or cross-pack changes.
+- **Parallel agents:** see `Docs/TASK_DIVISION.md` — one agent per lane (Guide / Nav / Loader / Release).
 - **Parallel exploration** is fine for Questie vs P1* boundaries, Warlock vs Druid pack diffs.
 - After Lua edits, remind the user to run `PLAY.bat` and `/reload` — agents cannot run the game client.

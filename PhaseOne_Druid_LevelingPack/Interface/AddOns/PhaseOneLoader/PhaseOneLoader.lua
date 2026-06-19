@@ -3,7 +3,7 @@
 PhaseOneDruidLoaderDB = PhaseOneDruidLoaderDB or {}
 local db = PhaseOneDruidLoaderDB
 
-local PACK_VERSION = "1.6.0-druid"
+local PACK_VERSION = "1.6.1-druid"
 local PACK_NAME = "Phase One Quest Pack (Druid)"
 
 local WELCOME_LINE = "|cff00ccffP1 Druid Guide v1.5|r — PATH · icons · |cff00ff00/p1guide|r (minimize title bar)"
@@ -86,6 +86,7 @@ local function PrintSettings()
     print("  Nav:     " .. Yn(IsFeatureOn("navEnabled")) .. "  — /p1nav")
     print("  Path:    " .. Yn(IsFeatureOn("pathEnabled")) .. "  — /p1path (feeds guide NEXT)")
     print("  Guide:   " .. Yn(IsFeatureOn("guideVisible")) .. "  — /p1guide  (new: PATH + BIS icons + min btn)")
+    print("  Autogo:  " .. Yn(IsFeatureOn("guideAutoWaypoint")) .. "  — /p1guide autogo")
     print("  Tips:    " .. Yn(IsFeatureOn("tipsVisible")) .. "  — /p1tips")
     print("  Glow:    " .. Yn(IsFeatureOn("questGlowEnabled")) .. "  — /p1glow")
     print("  Questie: |cff00ff00ON|r (presets)  — /p1questie")
@@ -97,6 +98,7 @@ local function SetAllFeatures(on)
     db.navEnabled = on
     db.pathEnabled = on
     db.guideVisible = on
+    db.guideAutoWaypoint = on
     db.tipsVisible = on
     db.questGlowEnabled = on
     ApplyFeatureDefaults(1)
@@ -204,6 +206,7 @@ function ApplyFeatureDefaults(attempt)
     if P1DruidGuide_SetVisible then P1DruidGuide_SetVisible(IsFeatureOn("guideVisible"))
     elseif P1AdventureGuide_SetVisible then P1AdventureGuide_SetVisible(IsFeatureOn("guideVisible")) end
     if P1DruidGuide_SetTipsVisible then P1DruidGuide_SetTipsVisible(IsFeatureOn("tipsVisible")) end
+    if P1DruidGuide_SetAutoWaypoint then P1DruidGuide_SetAutoWaypoint(IsFeatureOn("guideAutoWaypoint")) end
     if P1QuestGlow_SetEnabled then P1QuestGlow_SetEnabled(IsFeatureOn("questGlowEnabled")) end
     -- default new PATH section visible (for old DBs or retries)
     if IsFeatureOn("guideVisible") then
@@ -226,6 +229,7 @@ function ApplyFeatureDefaults(attempt)
     if IsFeatureOn("navEnabled") and not P1QuestNav_SetEnabled then needRetry = true end
     if IsFeatureOn("pathEnabled") and not P1QuestPath_SetEnabled then needRetry = true end
     if IsFeatureOn("guideVisible") and not P1DruidGuide_SetVisible and not P1AdventureGuide_SetVisible then needRetry = true end
+    if not P1DruidGuide_SetAutoWaypoint then needRetry = true end
     if needRetry and attempt < 6 then
         Delay(attempt == 1 and 2 or 1, function() ApplyFeatureDefaults(attempt + 1) end)
     end
@@ -331,12 +335,13 @@ loader:SetScript("OnEvent", function()
     end
     db.lastSeenVersion = PACK_VERSION
 
+    if db.guideAutoWaypoint == nil then db.guideAutoWaypoint = true end
+
     if db.onboardingVersion ~= PACK_VERSION then
         db.onboardingVersion = PACK_VERSION
         Delay(4, function()
-            print("|cff00ccffP1 v1.6.0:|r Drag fixed — left-drag title bar, right-drag header")
-            print("|cff00ccffP1 v1.6.0:|r BIS upgraded — why/flavor/alt, click → TomTom")
-            print("|cff00ccffP1 v1.6.0:|r [GO] header · /p1guide autogo · fun cat tips")
+            print("|cff00ccffP1 v1.6.1:|r Autogo in /p1settings — top quest auto-sets TomTom")
+            print("|cff00ccffP1 v1.6.1:|r /p1guide autogo on|off · /p1settings all on|off syncs it")
         end)
     end
 

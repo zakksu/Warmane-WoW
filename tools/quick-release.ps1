@@ -23,7 +23,7 @@ function Update-ReleaseOneLiner {
     param([string]$Version)
     $lines = Get-Content -Path $releaseTxt -Encoding UTF8
     if ($lines.Count -lt 1) { throw "RELEASE.txt is empty" }
-    $lines[0] = "Phase One Warmane Leveling Packs — v$Version"
+    $lines[0] = "Phase One Warmane Leveling Packs - v$Version"
     if ($lines.Count -ge 2 -and $lines[1] -match '^Released:') {
         $lines[1] = "Released: $(Get-Date -Format 'yyyy-MM-dd')"
     }

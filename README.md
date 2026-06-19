@@ -1,6 +1,6 @@
 # Warmane WotLK — Phase One Quest Pack
 
-**Latest release: v1.6.0** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
+**Latest release: v1.6.1** (Jun 18, 2026) — see [RELEASE.txt](RELEASE.txt)
 
 Quest-focused addon bundle for **Warmane Icecrown** (3.3.5a): tracking, auto accept/complete, waypoint arrow, and a unified **P1 Druid Guide** overlay. **No class HUD, range HUD, damage numbers, Leatrix, or WeakAuras** in the default install.
 
@@ -30,7 +30,7 @@ First time only: paste your Warmane folder when prompted (must contain `Wow.exe`
 | Warlock only | `INSTALL_WARLOCK.bat` |
 | Feral Druid only | `INSTALL_DRUID.bat` |
 
-**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
+**Maintainers / dev:** see **[Docs/DEV_WORKFLOW.md](Docs/DEV_WORKFLOW.md)** · **[Cursor Cloud](Docs/CURSOR_CLOUD.md)** · **[Cursor ↔ Grok tasks](Docs/TASK_DIVISION.md)** · `PLAY.bat FULL` for full pack mirror (dev only).
 
 ---
 
